@@ -1,0 +1,43 @@
+page,
+body,
+.page-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.border-box {
+  box-sizing: border-box;
+}
+.overflow{
+  overflow: hidden;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-shrink{
+  flex-shrink: 0;
+}
+/* flex-row */
+/*flex-center-start */
+.flex-center-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+/* flex-center-end */
+.flex-center-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+/* flex-center-center */
+.flex-center-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flex-column{
+  display: flex;
+  flex-direction: column;
+
+}

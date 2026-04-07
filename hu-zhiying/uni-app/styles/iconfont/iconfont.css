@@ -1,0 +1,33 @@
+@font-face {
+  font-family: "x-icon"; /* Project id 4937925 */
+  /* Color fonts */
+  src: 
+       url('iconfont.woff2?t=1774278145626') format('woff2'),
+       url('iconfont.woff?t=1774278145626') format('woff'),
+       url('iconfont.ttf?t=1774278145626') format('truetype');
+}
+
+.x-icon {
+  font-family: "x-icon" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.x-icon-sousuobeifen2:before {
+  content: "\e628";
+}
+
+.x-icon-Location:before {
+  content: "\e621";
+}
+
+.x-icon-time:before {
+  content: "\e745";
+}
+
+.x-icon-speed:before {
+  content: "\e746";
+}
+

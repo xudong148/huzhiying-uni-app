@@ -1,0 +1,101 @@
+{
+    "pages": [
+        {
+            "path": "pages/home/home",
+            "style": {
+                "navigationStyle": "custom",
+                "navigationBarTitleText": "首页",
+                "app-plus": {
+                    "titleNView": false
+                }
+            }
+        },
+       
+        {
+            "path": "pages/services/services",
+            "style": {
+                "navigationStyle": "custom",
+                "navigationBarTitleText": "所有服务",
+                "app-plus": {
+                    "titleNView": false
+                }
+            }
+        }, {
+            "path": "pages/repairs/repairs",
+            "style": {
+                "navigationStyle": "custom",
+                "navigationBarTitleText": "快速报修",
+                "app-plus": {
+                    "titleNView": false
+                }
+            }
+        },
+        {
+            "path": "pages/goods/goods",
+            "style": {
+                "navigationStyle": "custom",
+                "navigationBarTitleText": "应商城",
+                "app-plus": {
+                    "titleNView": false
+                }
+            }
+        },
+        {
+            "path": "pages/user/user",
+            "style": {
+                "navigationStyle": "custom",
+                "navigationBarTitleText": "我的",
+                "app-plus": {
+                    "titleNView": false
+                }
+            }
+		}
+	
+    ],
+    "tabBar": {
+        "color": "#7A7E83",
+        "selectedColor": "#3cc51f",
+        "borderStyle": "black",
+        "backgroundColor": "#ffffff",
+        "list": [
+            {
+                "pagePath": "pages/home/home",
+                "iconPath": "static/home.png",
+                "selectedIconPath": "static/home.png",
+                "text": "首页"
+            }, 
+			  {
+                "pagePath": "pages/services/services",
+                "iconPath": "static/services.png",
+                "selectedIconPath": "static/services.png",
+                "text": "所有服务"
+            },
+            {
+                "pagePath": "pages/repairs/repairs",
+                "iconPath": "static/repairs.png",
+                "selectedIconPath": "static/repairs.png", 
+                "text": "快速报修"
+            },
+          
+            {
+                "pagePath": "pages/goods/goods",
+                "iconPath": "static/goods.png",
+                "selectedIconPath": "static/goods.png",
+                "text": "应商城"
+            },
+            {
+                "pagePath": "pages/user/user",
+                "iconPath": "static/user.png",
+                "selectedIconPath": "static/user.png",
+                "text": "我的"
+            }
+        ]
+    },
+    "globalStyle": {
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "呼之应",
+        "navigationBarBackgroundColor": "#F8F8F8",
+        "backgroundColor": "#F8F8F8"
+    },
+    "uniIdRouter": {}
+}
