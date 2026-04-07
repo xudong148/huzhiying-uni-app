@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: huzhiying-platform
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+hzy:
+  app:
+    name: 呼之应
+  amap:
+    enabled: true
+    key: ${HZY_AMAP_KEY:}
+  wechat:
+    pay-enabled: false
+    app-id: ${HZY_WX_APP_ID:}
+    mch-id: ${HZY_WX_MCH_ID:}
+  storage:
+    provider: local

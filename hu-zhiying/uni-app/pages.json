@@ -1,101 +1,196 @@
 {
-    "pages": [
-        {
-            "path": "pages/home/home",
-            "style": {
-                "navigationStyle": "custom",
-                "navigationBarTitleText": "首页",
-                "app-plus": {
-                    "titleNView": false
-                }
-            }
-        },
-       
-        {
-            "path": "pages/services/services",
-            "style": {
-                "navigationStyle": "custom",
-                "navigationBarTitleText": "所有服务",
-                "app-plus": {
-                    "titleNView": false
-                }
-            }
-        }, {
-            "path": "pages/repairs/repairs",
-            "style": {
-                "navigationStyle": "custom",
-                "navigationBarTitleText": "快速报修",
-                "app-plus": {
-                    "titleNView": false
-                }
-            }
-        },
-        {
-            "path": "pages/goods/goods",
-            "style": {
-                "navigationStyle": "custom",
-                "navigationBarTitleText": "应商城",
-                "app-plus": {
-                    "titleNView": false
-                }
-            }
-        },
-        {
-            "path": "pages/user/user",
-            "style": {
-                "navigationStyle": "custom",
-                "navigationBarTitleText": "我的",
-                "app-plus": {
-                    "titleNView": false
-                }
-            }
-		}
-	
-    ],
-    "tabBar": {
-        "color": "#7A7E83",
-        "selectedColor": "#3cc51f",
-        "borderStyle": "black",
-        "backgroundColor": "#ffffff",
-        "list": [
-            {
-                "pagePath": "pages/home/home",
-                "iconPath": "static/home.png",
-                "selectedIconPath": "static/home.png",
-                "text": "首页"
-            }, 
-			  {
-                "pagePath": "pages/services/services",
-                "iconPath": "static/services.png",
-                "selectedIconPath": "static/services.png",
-                "text": "所有服务"
-            },
-            {
-                "pagePath": "pages/repairs/repairs",
-                "iconPath": "static/repairs.png",
-                "selectedIconPath": "static/repairs.png", 
-                "text": "快速报修"
-            },
-          
-            {
-                "pagePath": "pages/goods/goods",
-                "iconPath": "static/goods.png",
-                "selectedIconPath": "static/goods.png",
-                "text": "应商城"
-            },
-            {
-                "pagePath": "pages/user/user",
-                "iconPath": "static/user.png",
-                "selectedIconPath": "static/user.png",
-                "text": "我的"
-            }
-        ]
+  "easycom": {
+    "autoscan": true
+  },
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
     },
-    "globalStyle": {
-        "navigationBarTextStyle": "black",
-        "navigationBarTitleText": "呼之应",
-        "navigationBarBackgroundColor": "#F8F8F8",
-        "backgroundColor": "#F8F8F8"
+    {
+      "path": "pages/category/index",
+      "style": {
+        "navigationBarTitleText": "全部分类"
+      }
     },
-    "uniIdRouter": {}
+    {
+      "path": "pages/order/list",
+      "style": {
+        "navigationBarTitleText": "订单"
+      }
+    },
+    {
+      "path": "pages/message/chat",
+      "style": {
+        "navigationBarTitleText": "在线沟通"
+      }
+    },
+    {
+      "path": "pages/user/index",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/location/select",
+      "style": {
+        "navigationBarTitleText": "选择城市"
+      }
+    },
+    {
+      "path": "pages/search/index",
+      "style": {
+        "navigationBarTitleText": "搜索"
+      }
+    },
+    {
+      "path": "pages/goods/detail",
+      "style": {
+        "navigationBarTitleText": "服务详情"
+      }
+    },
+    {
+      "path": "pages/goods/comment",
+      "style": {
+        "navigationBarTitleText": "全部评价"
+      }
+    },
+    {
+      "path": "pages/order/checkout",
+      "style": {
+        "navigationBarTitleText": "确认预约"
+      }
+    },
+    {
+      "path": "pages/order/detail",
+      "style": {
+        "navigationBarTitleText": "订单详情"
+      }
+    },
+    {
+      "path": "pages/order/refund",
+      "style": {
+        "navigationBarTitleText": "售后申请"
+      }
+    },
+    {
+      "path": "pages/order/tracking",
+      "style": {
+        "navigationBarTitleText": "履约追踪"
+      }
+    },
+    {
+      "path": "pages/setting/address-list",
+      "style": {
+        "navigationBarTitleText": "地址管理"
+      }
+    },
+    {
+      "path": "pages/setting/address-edit",
+      "style": {
+        "navigationBarTitleText": "编辑地址"
+      }
+    },
+    {
+      "path": "pages/setting/profile",
+      "style": {
+        "navigationBarTitleText": "个人资料"
+      }
+    },
+    {
+      "path": "pages/auth/login",
+      "style": {
+        "navigationBarTitleText": "登录"
+      }
+    },
+    {
+      "path": "pages/apply/master",
+      "style": {
+        "navigationBarTitleText": "师傅入驻"
+      }
+    },
+    {
+      "path": "pages/marketing/coupon",
+      "style": {
+        "navigationBarTitleText": "优惠券中心"
+      }
+    }
+  ],
+  "subPackages": [
+    {
+      "root": "pages-master",
+      "pages": [
+        {
+          "path": "master/dispatch",
+          "style": {
+            "navigationBarTitleText": "抢派单大厅"
+          }
+        },
+        {
+          "path": "master/workbench",
+          "style": {
+            "navigationBarTitleText": "履约工作台"
+          }
+        },
+        {
+          "path": "master/wallet",
+          "style": {
+            "navigationBarTitleText": "师傅钱包"
+          }
+        },
+        {
+          "path": "master/setting",
+          "style": {
+            "navigationBarTitleText": "接单设置"
+          }
+        }
+      ]
+    }
+  ],
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#2B5CFF",
+    "borderStyle": "black",
+    "backgroundColor": "#FFFFFF",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "static/home.png",
+        "selectedIconPath": "static/home.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/category/index",
+        "iconPath": "static/services.png",
+        "selectedIconPath": "static/services.png",
+        "text": "分类"
+      },
+      {
+        "pagePath": "pages/order/list",
+        "iconPath": "static/repairs.png",
+        "selectedIconPath": "static/repairs.png",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/message/chat",
+        "iconPath": "static/goods.png",
+        "selectedIconPath": "static/goods.png",
+        "text": "消息"
+      },
+      {
+        "pagePath": "pages/user/index",
+        "iconPath": "static/user.png",
+        "selectedIconPath": "static/user.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "呼之应",
+    "navigationBarBackgroundColor": "#F4F6F9",
+    "backgroundColor": "#F4F6F9"
+  }
 }

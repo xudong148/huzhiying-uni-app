@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: hzy-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: huzhiying
+      MYSQL_USER: hzy
+      MYSQL_PASSWORD: hzy123456
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./java/sql:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:7.2
+    container_name: hzy-redis
+    ports:
+      - "6379:6379"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    container_name: hzy-es
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
