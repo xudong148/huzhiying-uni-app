@@ -8,6 +8,7 @@
       </swiper>
 
       <view class="page-shell goods-page__body">
+        <!-- 基础信息 -->
         <view class="card goods-page__summary">
           <view class="goods-page__title">{{ detail.title }}</view>
           <view class="goods-page__subtitle">{{ detail.subtitle }}</view>
@@ -16,7 +17,7 @@
             <price-format :value="displayPrice" :suffix="isProduct ? '起' : '基础检测费'"></price-format>
             <template v-if="isProduct">
               <text class="goods-page__guide">{{ detail.deliveryDesc }}</text>
-              <text class="goods-page__guide" v-if="detail.createInstallOrder">购买成功后自动生成安装工单</text>
+              <text v-if="detail.createInstallOrder" class="goods-page__guide">购买成功后自动生成安装工单</text>
             </template>
             <template v-else>
               <text class="goods-page__guide">上门费 ¥{{ detail.doorPrice }} / 指导价 {{ detail.guidePrice }}</text>
@@ -29,6 +30,7 @@
           </view>
         </view>
 
+        <!-- SKU 选择 -->
         <view v-if="isProduct" class="card goods-page__section">
           <view class="section-title">
             <text class="section-title__text">规格选择</text>
@@ -43,11 +45,12 @@
               @tap="selectedSkuId = item.id"
             >
               <view class="goods-page__sku-name">{{ item.name }}</view>
-              <view class="goods-page__sku-meta">¥{{ Number(item.price || 0).toFixed(2) }} · 库存 {{ item.stock }}</view>
+              <view class="goods-page__sku-meta">¥{{ Number(item.price || 0).toFixed(2) }} / 库存 {{ item.stock }}</view>
             </view>
           </view>
         </view>
 
+        <!-- 流程说明 -->
         <view class="card goods-page__section">
           <view class="section-title">
             <text class="section-title__text">{{ isProduct ? '履约说明' : '服务流程' }}</text>
@@ -58,19 +61,20 @@
           </view>
         </view>
 
+        <!-- 评论区 -->
         <view v-if="!isProduct" class="card goods-page__section">
           <view class="section-title">
             <text class="section-title__text">用户评价</text>
             <text class="section-title__desc" @tap="goComment">查看全部</text>
           </view>
-          <view v-for="item in detail.comments" :key="item.id" class="goods-page__comment">
+          <view v-for="item in previewComments" :key="item.id" class="goods-page__comment">
             <view class="goods-page__comment-top">
               <text class="goods-page__comment-user">{{ item.user }}</text>
               <text class="muted">{{ item.date }}</text>
             </view>
             <view class="goods-page__comment-content">{{ item.content }}</view>
             <image
-              v-if="item.images.length"
+              v-if="item.images?.length"
               class="goods-page__comment-image"
               :src="item.images[0]"
               mode="aspectFill"
@@ -82,6 +86,7 @@
       </view>
     </scroll-view>
 
+    <!-- 底部操作栏 -->
     <view class="goods-page__dock">
       <view class="goods-page__dock-actions">
         <view class="goods-page__dock-item" @tap="goChat">客服</view>
@@ -95,11 +100,17 @@
 </template>
 
 <script setup>
+/**
+ * 商品 / 服务详情页。
+ * 1. 服务详情和商品详情都走真实接口。
+ * 2. 商品购买走真实商品订单与预支付接口，服务详情直达下单页。
+ */
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import PriceFormat from '../../components/price-format.vue';
-import { confirmWechatPayment, createProductOrder, requestWechatPrepay } from '../../api/order';
-import { getProductDetail, getServiceDetail } from '../../api/service';
+import { createProductOrder, requestWechatPrepay } from '../../api/order';
+import { getProductDetail, getServiceComments, getServiceDetail } from '../../api/service';
+import { launchWechatPay } from '../../utils/wechat-pay';
 
 const detailMode = ref('service');
 const currentId = ref(201);
@@ -113,11 +124,13 @@ const detail = ref({
   skus: [],
   highlights: [],
 });
+const comments = ref([]);
 
 const isProduct = computed(() => detailMode.value === 'product');
 const selectedSku = computed(() => detail.value.skus?.find((item) => item.id === selectedSkuId.value) || detail.value.skus?.[0] || null);
 const displayPrice = computed(() => (isProduct.value ? selectedSku.value?.price : detail.value.basePrice) || detail.value.price || 0);
 const tags = computed(() => (isProduct.value ? detail.value.highlights || [] : detail.value.guarantees || []));
+const previewComments = computed(() => comments.value.slice(0, 2));
 const processList = computed(() => {
   if (!isProduct.value) {
     return detail.value.process || [];
@@ -137,10 +150,16 @@ async function loadPage() {
   if (isProduct.value && detail.value.skus?.length) {
     selectedSkuId.value = detail.value.skus[0].id;
   }
+  if (!isProduct.value) {
+    const commentRes = await getServiceComments(currentId.value);
+    comments.value = commentRes.data || [];
+  }
 }
 
 function goComment() {
-  uni.showToast({ title: '评价详情后续补充', icon: 'none' });
+  uni.navigateTo({
+    url: `/pages/goods/comment?serviceItemId=${currentId.value}`,
+  });
 }
 
 function goOrderList() {
@@ -163,7 +182,6 @@ async function buyProduct() {
     uni.showToast({ title: '请选择商品规格', icon: 'none' });
     return;
   }
-
   submitting.value = true;
   try {
     const createRes = await createProductOrder({
@@ -171,17 +189,21 @@ async function buyProduct() {
       skuId: selectedSku.value.id,
     });
     const orderId = createRes.data.id;
-    const prepayRes = await requestWechatPrepay(orderId);
-    if (prepayRes.data?.sandbox) {
-      await confirmWechatPayment(orderId);
+    try {
+      const prepayRes = await requestWechatPrepay(orderId);
+      await launchWechatPay(prepayRes.data);
+      uni.showToast({
+        title: '支付结果确认中，请稍后查看订单状态',
+        icon: 'none',
+      });
+    } catch (error) {
+      if (error?.errMsg?.includes('cancel')) {
+        uni.showToast({ title: '你已取消支付，可稍后在订单详情继续支付', icon: 'none' });
+      }
     }
-    uni.showToast({
-      title: prepayRes.data?.sandbox ? '开发沙箱支付成功' : '订单已创建',
-      icon: 'none',
-    });
     setTimeout(() => {
       uni.redirectTo({ url: `/pages/order/detail?id=${orderId}` });
-    }, 500);
+    }, 400);
   } finally {
     submitting.value = false;
   }
@@ -203,6 +225,7 @@ onLoad((options) => {
 </script>
 
 <style scoped>
+/* 页面主体 */
 .goods-page {
   background: #f4f6f9;
 }
@@ -263,6 +286,7 @@ onLoad((options) => {
   margin-top: 20rpx;
 }
 
+/* SKU 与流程 */
 .goods-page__sku-list {
   display: flex;
   flex-direction: column;
@@ -315,6 +339,7 @@ onLoad((options) => {
   font-weight: 700;
 }
 
+/* 评论区域 */
 .goods-page__comment + .goods-page__comment {
   margin-top: 24rpx;
   padding-top: 24rpx;
@@ -345,6 +370,7 @@ onLoad((options) => {
   border-radius: 18rpx;
 }
 
+/* 底部操作栏 */
 .goods-page__dock {
   position: fixed;
   left: 0;
@@ -359,19 +385,17 @@ onLoad((options) => {
 }
 
 .goods-page__dock-actions {
-  width: 180rpx;
   display: flex;
   gap: 12rpx;
 }
 
 .goods-page__dock-item {
-  flex: 1;
-  height: 84rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 24rpx;
-  background: #f4f6f9;
+  min-width: 88rpx;
+  padding: 16rpx 18rpx;
+  border-radius: 20rpx;
+  background: #eef2ff;
+  color: #2b5cff;
+  text-align: center;
   font-size: 24rpx;
   font-weight: 700;
 }

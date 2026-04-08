@@ -33,8 +33,9 @@ class OrderWorkflowServiceTest {
                 BigDecimal.TEN, QuotationStatus.PENDING_CONFIRM, "test");
         ServiceOrder order = mockOrder(ServiceOrderStatus.WAITING_SUPPLEMENT_PAYMENT, quotation);
         ServiceOrder updated = orderWorkflowService.confirmQuotation(order);
-        Assertions.assertEquals(ServiceOrderStatus.IN_SERVICE, updated.status());
-        Assertions.assertEquals(PaymentStatus.PAID, updated.paymentStatus());
+        Assertions.assertEquals(ServiceOrderStatus.WAITING_SUPPLEMENT_PAYMENT, updated.status());
+        Assertions.assertEquals(PaymentStatus.PARTIAL_PAID, updated.paymentStatus());
+        Assertions.assertEquals(QuotationStatus.CONFIRMED, updated.quotation().status());
     }
 
     private ServiceOrder mockOrder(ServiceOrderStatus status, Quotation quotation) {

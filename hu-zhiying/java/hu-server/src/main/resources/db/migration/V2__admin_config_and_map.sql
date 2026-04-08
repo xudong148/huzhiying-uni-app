@@ -107,6 +107,7 @@ SET name = '空调不制冷上门维修',
     guarantees_text = '不修不收费|迟到赔付|实名认证|保证金先赔',
     tags_text = '空调维修|极速上门',
     process_steps = '在线描述故障并预约上门时间|平台智能派单或师傅抢单|师傅上门检测并给出处置方案|增项需用户确认后施工|完工验收与电子报告归档',
+    image_urls = '/seed-media/service-aircon.svg|/seed-media/service-aircon.svg|/seed-media/service-aircon.svg',
     enabled = TRUE
 WHERE id = 201;
 
@@ -118,6 +119,7 @@ SET name = '智能锁标准安装',
     guarantees_text = '品牌认证|安装质保',
     tags_text = '安装服务|配件自带',
     process_steps = '确认门型与锁型|预约安装时间|现场开孔和调试|联网测试|交付讲解',
+    image_urls = '/seed-media/service-lock.svg|/seed-media/service-lock.svg',
     enabled = TRUE
 WHERE id = 301;
 
@@ -129,23 +131,26 @@ SET name = '日常保洁 3 小时',
     guarantees_text = '自带工具|平台背书',
     tags_text = '保洁|高频服务',
     process_steps = '确认保洁范围|师傅上门签到|分区作业|用户验收',
+    image_urls = '/seed-media/service-cleaning.svg|/seed-media/service-cleaning.svg',
     enabled = TRUE
 WHERE id = 401;
 
 UPDATE products
 SET name = '智能锁 Pro 套装',
     description_text = '支持购买后自动生成安装工单',
+    image_url = '/seed-media/product-lock.svg',
     enabled = TRUE
 WHERE id = 1001;
 
 UPDATE products
 SET name = '空调清洗年卡',
     description_text = '全年 2 次深度清洗',
+    image_url = '/seed-media/product-card.svg',
     enabled = TRUE
 WHERE id = 1002;
 
 UPDATE skus SET name = '雅黑标准款', enabled = TRUE WHERE id = 1;
-UPDATE skus SET name = '家庭版', enabled = TRUE WHERE id = 2;
+UPDATE skus SET name = '家庭卡', enabled = TRUE WHERE id = 2;
 
 UPDATE service_orders
 SET title = '空调不制冷上门维修',
@@ -245,7 +250,7 @@ WHERE id = 3;
 UPDATE banners
 SET title = '家电维修专场',
     subtitle = '不修不收费，90 天质保',
-    image = 'https://picsum.photos/960/360?random=901',
+    image = '/seed-media/banner-home.svg',
     link = '/pages/goods/detail?id=201',
     sort_order = 10,
     enabled = TRUE
@@ -318,7 +323,7 @@ INSERT INTO permissions (id, code, name, description_text, enabled) VALUES
 INSERT INTO pricing_rules (id, category_id, label_text, base_price, coefficient, guide_price, enabled) VALUES
   (1, 2, '空调维修基础价', 58.00, '加急 +20%，夜间 +30%', '58 - 299', TRUE),
   (2, 3, '智能锁安装基础价', 128.00, '加急 +15%，高峰时段 +10%', '128 - 388', TRUE),
-  (3, 4, '保洁服务基础价', 135.00, '高峰日 +12%', '135 - 388', TRUE);
+  (3, 4, '保洁服务基础价', 135.00, '高峰时段 +12%', '135 - 388', TRUE);
 
 INSERT INTO dispatch_zones (id, city_name, district_name, sort_order, enabled) VALUES
   (1, '上海', '浦东新区', 10, TRUE),

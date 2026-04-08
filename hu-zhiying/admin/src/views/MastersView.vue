@@ -1,7 +1,10 @@
 <template>
   <div class="page-panel">
+    <!-- 页面标题 -->
     <h2 class="page-title">师傅管理</h2>
     <p class="page-desc">查看技能标签、服务区域、在线状态与保证金情况。</p>
+
+    <!-- 师傅表格 -->
     <el-table :data="rows">
       <el-table-column prop="name" label="师傅" width="120" />
       <el-table-column prop="skills" label="技能标签" min-width="220" />
@@ -17,6 +20,10 @@
 </template>
 
 <script setup>
+/**
+ * 师傅管理页面。
+ * 用于查看师傅资质、在线状态和资金信息。
+ */
 import { onMounted, ref } from 'vue';
 import { fetchAdminMasters } from '../api/request';
 
@@ -26,3 +33,7 @@ onMounted(async () => {
   rows.value = await fetchAdminMasters();
 });
 </script>
+
+<style scoped>
+/* 当前页依赖全局表格样式，这里保留样式区块注释以统一页面结构。 */
+</style>

@@ -22,6 +22,10 @@
 </template>
 
 <script setup>
+/**
+ * 首页头部组件。
+ * 展示城市、通知和滚动热搜词。
+ */
 defineProps({
   locationName: {
     type: String,

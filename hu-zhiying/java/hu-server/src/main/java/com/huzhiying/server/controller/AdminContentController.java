@@ -36,7 +36,7 @@ public class AdminContentController {
 
     @GetMapping("/api/admin/content/banners/{id}")
     @Operation(summary = "查询 Banner 详情")
-    public ApiResponse<AdminConfigDtos.BannerPayload> banner(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.BannerPayload> banner(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getBanner(id));
     }
 
@@ -48,14 +48,14 @@ public class AdminContentController {
 
     @PutMapping("/api/admin/content/banners/{id}")
     @Operation(summary = "更新 Banner")
-    public ApiResponse<AdminConfigDtos.BannerPayload> updateBanner(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.BannerPayload> updateBanner(@PathVariable("id") Long id,
                                                                    @RequestBody AdminConfigDtos.BannerPayload payload) {
         return ApiResponse.success(adminConfigService.saveBanner(id, payload));
     }
 
     @DeleteMapping("/api/admin/content/banners/{id}")
     @Operation(summary = "删除 Banner")
-    public ApiResponse<Boolean> deleteBanner(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteBanner(@PathVariable("id") Long id) {
         adminConfigService.deleteBanner(id);
         return ApiResponse.success(true);
     }
@@ -68,7 +68,7 @@ public class AdminContentController {
 
     @GetMapping("/api/admin/content/notices/{id}")
     @Operation(summary = "查询公告详情")
-    public ApiResponse<AdminConfigDtos.NoticePayload> notice(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.NoticePayload> notice(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getNotice(id));
     }
 
@@ -80,14 +80,14 @@ public class AdminContentController {
 
     @PutMapping("/api/admin/content/notices/{id}")
     @Operation(summary = "更新公告")
-    public ApiResponse<AdminConfigDtos.NoticePayload> updateNotice(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.NoticePayload> updateNotice(@PathVariable("id") Long id,
                                                                    @RequestBody AdminConfigDtos.NoticePayload payload) {
         return ApiResponse.success(adminConfigService.saveNotice(id, payload));
     }
 
     @DeleteMapping("/api/admin/content/notices/{id}")
     @Operation(summary = "删除公告")
-    public ApiResponse<Boolean> deleteNotice(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteNotice(@PathVariable("id") Long id) {
         adminConfigService.deleteNotice(id);
         return ApiResponse.success(true);
     }
@@ -100,7 +100,7 @@ public class AdminContentController {
 
     @GetMapping("/api/admin/content/agreements/{id}")
     @Operation(summary = "查询协议详情")
-    public ApiResponse<AdminConfigDtos.AgreementPayload> agreement(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.AgreementPayload> agreement(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getAgreement(id));
     }
 
@@ -112,14 +112,14 @@ public class AdminContentController {
 
     @PutMapping("/api/admin/content/agreements/{id}")
     @Operation(summary = "更新协议")
-    public ApiResponse<AdminConfigDtos.AgreementPayload> updateAgreement(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.AgreementPayload> updateAgreement(@PathVariable("id") Long id,
                                                                          @RequestBody AdminConfigDtos.AgreementPayload payload) {
         return ApiResponse.success(adminConfigService.saveAgreement(id, payload));
     }
 
     @DeleteMapping("/api/admin/content/agreements/{id}")
     @Operation(summary = "删除协议")
-    public ApiResponse<Boolean> deleteAgreement(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteAgreement(@PathVariable("id") Long id) {
         adminConfigService.deleteAgreement(id);
         return ApiResponse.success(true);
     }

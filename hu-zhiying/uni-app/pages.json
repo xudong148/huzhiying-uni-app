@@ -78,7 +78,7 @@
     {
       "path": "pages/order/tracking",
       "style": {
-        "navigationBarTitleText": "履约追踪"
+        "navigationBarTitleText": "履约轨迹"
       }
     },
     {

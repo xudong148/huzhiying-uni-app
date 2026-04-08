@@ -1,38 +1,16 @@
-import {
-  arbitrationRows,
-  contentRows,
-  dashboard,
-  dispatchRows,
-  financeRows,
-  marketingRows,
-  masterRows,
-  orderRows,
-  pricingRows,
-  systemRows,
-} from '../mock/data';
+/**
+ * 管理后台请求层。
+ * 说明：
+ * 1. 运行时只访问真实后端接口，不再保留演示分支。
+ * 2. 统一处理鉴权注入、401 刷新和通用 CRUD 请求。
+ */
 
 const RUNTIME_KEY = 'hzy-admin-runtime';
 const SESSION_KEY = 'hzy-admin-session';
 
 const defaultRuntime = {
   baseUrl: 'http://localhost:8080',
-  useMock: false,
 };
-
-const dataset = {
-  dashboard,
-  dispatchRows,
-  orderRows,
-  masterRows,
-  pricingRows,
-  financeRows,
-  arbitrationRows,
-  marketingRows,
-  contentRows,
-  systemRows,
-};
-
-const clone = (payload) => JSON.parse(JSON.stringify(payload));
 
 function readStorage(key, fallback) {
   if (typeof window === 'undefined') {
@@ -58,19 +36,16 @@ function normalizeAmount(value) {
   return typeof value === 'number' ? value : Number(value || 0);
 }
 
-export function getAdminMock(name) {
-  return Promise.resolve(clone(dataset[name]));
-}
-
+/**
+ * 读取后台运行环境配置。
+ */
 export function getRuntimeConfig() {
   return readStorage(RUNTIME_KEY, defaultRuntime);
 }
 
-export function buildAdminWsUrl(path) {
-  const runtime = getRuntimeConfig();
-  return `${runtime.baseUrl.replace(/^http/, 'ws')}${path}`;
-}
-
+/**
+ * 更新后台运行环境配置。
+ */
 export function setRuntimeConfig(payload) {
   const next = {
     ...getRuntimeConfig(),
@@ -80,6 +55,17 @@ export function setRuntimeConfig(payload) {
   return next;
 }
 
+/**
+ * 构造后台 WebSocket 地址。
+ */
+export function buildAdminWsUrl(path) {
+  const runtime = getRuntimeConfig();
+  return `${runtime.baseUrl.replace(/^http/, 'ws')}${path}`;
+}
+
+/**
+ * 获取后台登录会话。
+ */
 export function getAdminSession() {
   return readStorage(SESSION_KEY, {
     token: '',
@@ -88,14 +74,43 @@ export function getAdminSession() {
   });
 }
 
+/**
+ * 保存后台登录会话。
+ */
 export function saveAdminSession(session) {
   writeStorage(SESSION_KEY, session);
 }
 
+/**
+ * 清除后台登录会话。
+ */
 export function clearAdminSession() {
   if (typeof window !== 'undefined') {
     window.localStorage.removeItem(SESSION_KEY);
   }
+}
+
+async function refreshAccessToken(refreshToken) {
+  const runtime = getRuntimeConfig();
+  const response = await fetch(`${runtime.baseUrl}/api/auth/refresh`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ refreshToken }),
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok || !payload?.success) {
+    clearAdminSession();
+    throw new Error(payload?.message || '登录已过期');
+  }
+
+  const session = getAdminSession();
+  saveAdminSession({
+    ...session,
+    token: payload.data.token,
+    refreshToken: payload.data.refreshToken,
+  });
 }
 
 async function rawRequest({ url, method = 'GET', data, auth = true, retry = true }) {
@@ -128,42 +143,17 @@ async function rawRequest({ url, method = 'GET', data, auth = true, retry = true
   return payload;
 }
 
-async function refreshAccessToken(refreshToken) {
-  const runtime = getRuntimeConfig();
-  const response = await fetch(`${runtime.baseUrl}/api/auth/refresh`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ refreshToken }),
-  });
-  const payload = await response.json().catch(() => null);
-  if (!response.ok || !payload?.success) {
-    clearAdminSession();
-    throw new Error(payload?.message || '登录已过期');
-  }
-
-  const session = getAdminSession();
-  saveAdminSession({
-    ...session,
-    token: payload.data.token,
-    refreshToken: payload.data.refreshToken,
-  });
-}
-
+/**
+ * 对外暴露统一请求方法。
+ */
 export async function request(options) {
   return rawRequest(options);
 }
 
+/**
+ * 后台登录。
+ */
 export async function loginAsAdmin() {
-  if (getRuntimeConfig().useMock) {
-    return {
-      token: `admin-token-${Date.now()}`,
-      refreshToken: `admin-refresh-${Date.now()}`,
-      role: 'admin',
-    };
-  }
-
   const payload = await rawRequest({
     url: '/api/auth/sms-login',
     method: 'POST',
@@ -173,27 +163,27 @@ export async function loginAsAdmin() {
   return payload.data;
 }
 
+/**
+ * 获取后台仪表盘数据。
+ */
 export async function fetchAdminDashboard() {
-  if (getRuntimeConfig().useMock) {
-    return clone(dashboard);
-  }
   return (await rawRequest({ url: '/api/admin/dashboard' })).data;
 }
 
+/**
+ * 获取调度中心列表。
+ */
 export async function fetchAdminDispatch() {
-  if (getRuntimeConfig().useMock) {
-    return clone(dispatchRows);
-  }
   return (await rawRequest({ url: '/api/admin/dispatch' })).data.map((item) => ({
     ...item,
     amount: normalizeAmount(item.amount),
   }));
 }
 
+/**
+ * 强制派单。
+ */
 export async function forceAssignDispatch(taskId, masterName = '张师傅') {
-  if (getRuntimeConfig().useMock) {
-    return { taskId, masterName };
-  }
   return (
     await rawRequest({
       url: `/api/dispatch/tasks/${taskId}/force-assign`,
@@ -203,21 +193,22 @@ export async function forceAssignDispatch(taskId, masterName = '张师傅') {
   ).data;
 }
 
+/**
+ * 获取订单管理列表。
+ */
 export async function fetchAdminOrders() {
-  if (getRuntimeConfig().useMock) {
-    return clone(orderRows);
-  }
   return (await rawRequest({ url: '/api/admin/orders' })).data.map((item) => ({
     ...item,
     amount: normalizeAmount(item.amount),
   }));
 }
 
+/**
+ * 获取师傅管理列表。
+ */
 export async function fetchAdminMasters() {
-  if (getRuntimeConfig().useMock) {
-    return clone(masterRows);
-  }
   return (await rawRequest({ url: '/api/admin/masters' })).data.map((item) => ({
+    ...item,
     name: item.realName,
     skills: item.skillTags,
     score: item.creditScore,
@@ -228,29 +219,61 @@ export async function fetchAdminMasters() {
   }));
 }
 
-export async function fetchAdminPricing() {
-  if (getRuntimeConfig().useMock) {
-    return clone(pricingRows);
-  }
-  return (await rawRequest({ url: '/api/admin/pricing' })).data.map((item) => ({
-    ...item,
-    basePrice: normalizeAmount(item.basePrice),
-  }));
-}
-
+/**
+ * 获取财务视图。
+ */
 export async function fetchAdminFinance() {
-  if (getRuntimeConfig().useMock) {
-    return clone(financeRows);
-  }
   return (await rawRequest({ url: '/api/admin/finance' })).data.map((item) => ({
     ...item,
     amount: normalizeAmount(item.amount),
   }));
 }
 
+/**
+ * 获取仲裁列表。
+ */
 export async function fetchAdminArbitrations() {
-  if (getRuntimeConfig().useMock) {
-    return clone(arbitrationRows);
-  }
   return (await rawRequest({ url: '/api/admin/arbitrations' })).data;
+}
+
+/**
+ * 获取后台定价规则视图数据。
+ */
+export async function fetchAdminPricing() {
+  return fetchCrudList('/api/admin/pricing/rules');
+}
+
+/**
+ * 查询任意配置类资源列表。
+ */
+export async function fetchCrudList(resource) {
+  return (await rawRequest({ url: resource })).data;
+}
+
+/**
+ * 查询任意配置类资源详情。
+ */
+export async function fetchCrudDetail(resource, id) {
+  return (await rawRequest({ url: `${resource}/${id}` })).data;
+}
+
+/**
+ * 新增任意配置类资源。
+ */
+export async function createCrudItem(resource, payload) {
+  return (await rawRequest({ url: resource, method: 'POST', data: payload })).data;
+}
+
+/**
+ * 更新任意配置类资源。
+ */
+export async function updateCrudItem(resource, id, payload) {
+  return (await rawRequest({ url: `${resource}/${id}`, method: 'PUT', data: payload })).data;
+}
+
+/**
+ * 删除任意配置类资源。
+ */
+export async function deleteCrudItem(resource, id) {
+  return (await rawRequest({ url: `${resource}/${id}`, method: 'DELETE' })).data;
 }

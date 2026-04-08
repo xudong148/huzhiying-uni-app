@@ -1,9 +1,11 @@
 <template>
   <view class="page-shell">
+    <!-- 搜索输入 -->
     <view class="card search-page__box">
       <input v-model="keyword" placeholder="搜索故障、服务或商品" @confirm="loadSuggestions" />
     </view>
 
+    <!-- 热门搜索 -->
     <view class="section-title search-page__section">
       <text class="section-title__text">热门搜索</text>
     </view>
@@ -11,11 +13,12 @@
       <view v-for="item in keywords" :key="item" class="chip" @tap="useKeyword(item)">{{ item }}</view>
     </view>
 
+    <!-- 联想结果 -->
     <view class="section-title search-page__section">
       <text class="section-title__text">智能联想</text>
     </view>
     <view class="card search-page__suggestion">
-      <view class="search-page__row" v-for="item in suggestionList" :key="item.id" @tap="handleSuggestion(item)">
+      <view v-for="item in suggestionList" :key="item.id" class="search-page__row" @tap="handleSuggestion(item)">
         <view class="search-page__row-top">
           <view class="search-page__row-title">{{ item.title }}</view>
           <text class="chip chip--small">{{ item.type === 'product' ? '商品' : '服务' }}</text>
@@ -27,6 +30,11 @@
 </template>
 
 <script setup>
+/**
+ * 搜索页。
+ * 1. 热词为固定推荐词，联想结果来自真实搜索接口。
+ * 2. 搜索结果直接路由到商品或服务详情页。
+ */
 import { onMounted, ref, watch } from 'vue';
 import { searchCatalog } from '../../api/service';
 
@@ -65,6 +73,7 @@ onMounted(loadSuggestions);
 </script>
 
 <style scoped>
+/* 搜索框 */
 .search-page__box {
   padding: 18rpx 26rpx;
 }
@@ -78,6 +87,7 @@ onMounted(loadSuggestions);
   margin-top: 24rpx;
 }
 
+/* 热词与结果 */
 .search-page__chips {
   display: flex;
   flex-wrap: wrap;

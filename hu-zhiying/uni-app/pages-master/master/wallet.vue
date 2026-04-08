@@ -1,11 +1,15 @@
 <template>
   <view class="page-shell">
+    <!-- 钱包概览 -->
     <view class="card master-wallet__hero">
       <view class="master-wallet__label">可提现余额</view>
       <view class="master-wallet__balance">¥{{ Number(wallet.balance || 0).toFixed(2) }}</view>
-      <view class="master-wallet__meta">冻结保证金 ¥{{ Number(wallet.frozen || 0).toFixed(2) }} · 今日收入 ¥{{ Number(wallet.todayIncome || 0).toFixed(2) }}</view>
+      <view class="master-wallet__meta">
+        冻结保证金 ¥{{ Number(wallet.frozen || 0).toFixed(2) }} · 今日收入 ¥{{ Number(wallet.todayIncome || 0).toFixed(2) }}
+      </view>
     </view>
 
+    <!-- 流水列表 -->
     <view class="card master-wallet__section">
       <view class="section-title">
         <text class="section-title__text">流水明细</text>
@@ -24,6 +28,11 @@
 </template>
 
 <script setup>
+/**
+ * 师傅钱包页面。
+ * 1. 展示可提现余额、冻结金额与今日收入。
+ * 2. 流水列表直接读取真实钱包接口。
+ */
 import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { getWalletData } from '../../api/master';
@@ -39,6 +48,7 @@ onShow(async () => {
 </script>
 
 <style scoped>
+/* 钱包头图与流水区块 */
 .master-wallet__hero,
 .master-wallet__section {
   padding: 30rpx;

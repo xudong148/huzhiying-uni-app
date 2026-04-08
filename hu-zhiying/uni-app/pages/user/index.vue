@@ -1,6 +1,7 @@
 <template>
   <scroll-view scroll-y class="page-container" :show-scrollbar="false">
     <view class="page-shell">
+      <!-- 用户头部 -->
       <view class="user-page__profile">
         <view class="user-page__profile-main">
           <image class="user-page__avatar" :src="user.profile.avatar" mode="aspectFill" />
@@ -15,6 +16,7 @@
         </view>
       </view>
 
+      <!-- 常用入口 -->
       <view class="card user-page__section">
         <view class="section-title">
           <text class="section-title__text">订单面板</text>
@@ -39,6 +41,7 @@
         </view>
       </view>
 
+      <!-- 师傅端快捷入口 -->
       <view v-if="user.role === 'master'" class="card user-page__section">
         <view class="section-title">
           <text class="section-title__text">师傅工作台</text>
@@ -58,6 +61,11 @@
 </template>
 
 <script setup>
+/**
+ * 用户中心。
+ * 1. 用户端和师傅端共用同一资料页，通过角色切换展示快捷入口。
+ * 2. 所有导航都落到当前真实业务页面，不再保留原型页链接。
+ */
 import { computed } from 'vue';
 import { useUserStore } from '../../stores/user';
 
@@ -94,6 +102,7 @@ function goMaster(url) {
 </script>
 
 <style scoped>
+/* 头部信息 */
 .user-page__profile {
   padding: 30rpx;
   border-radius: 32rpx;
@@ -130,6 +139,7 @@ function goMaster(url) {
   margin-top: 22rpx;
 }
 
+/* 功能入口 */
 .user-page__section {
   margin-top: 20rpx;
   padding: 28rpx;

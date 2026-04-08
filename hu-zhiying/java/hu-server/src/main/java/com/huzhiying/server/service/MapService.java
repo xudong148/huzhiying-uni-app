@@ -58,7 +58,7 @@ public class MapService {
 
     public MapDtos.GeofenceCheckPayload geofenceCheck(String city, String district) {
         boolean serviceable = isServiceable(city, district);
-        String matchedZone = serviceable ? (city + "·" + district) : "当前地址不在服务范围";
+        String matchedZone = serviceable ? (city + district) : "当前地址不在服务范围";
         return new MapDtos.GeofenceCheckPayload(serviceable, matchedZone);
     }
 

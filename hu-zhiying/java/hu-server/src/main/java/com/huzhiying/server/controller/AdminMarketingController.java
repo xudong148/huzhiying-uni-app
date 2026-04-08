@@ -36,7 +36,7 @@ public class AdminMarketingController {
 
     @GetMapping("/api/admin/marketing/coupons/{id}")
     @Operation(summary = "查询优惠券详情")
-    public ApiResponse<AdminConfigDtos.CouponPayload> coupon(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.CouponPayload> coupon(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getCoupon(id));
     }
 
@@ -48,14 +48,14 @@ public class AdminMarketingController {
 
     @PutMapping("/api/admin/marketing/coupons/{id}")
     @Operation(summary = "更新优惠券")
-    public ApiResponse<AdminConfigDtos.CouponPayload> updateCoupon(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.CouponPayload> updateCoupon(@PathVariable("id") Long id,
                                                                    @RequestBody AdminConfigDtos.CouponPayload payload) {
         return ApiResponse.success(adminConfigService.saveCoupon(id, payload));
     }
 
     @DeleteMapping("/api/admin/marketing/coupons/{id}")
     @Operation(summary = "删除优惠券")
-    public ApiResponse<Boolean> deleteCoupon(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteCoupon(@PathVariable("id") Long id) {
         adminConfigService.deleteCoupon(id);
         return ApiResponse.success(true);
     }
@@ -68,7 +68,7 @@ public class AdminMarketingController {
 
     @GetMapping("/api/admin/marketing/member-levels/{id}")
     @Operation(summary = "查询会员等级详情")
-    public ApiResponse<AdminConfigDtos.MemberLevelPayload> memberLevel(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.MemberLevelPayload> memberLevel(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getMemberLevel(id));
     }
 
@@ -80,14 +80,14 @@ public class AdminMarketingController {
 
     @PutMapping("/api/admin/marketing/member-levels/{id}")
     @Operation(summary = "更新会员等级")
-    public ApiResponse<AdminConfigDtos.MemberLevelPayload> updateMemberLevel(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.MemberLevelPayload> updateMemberLevel(@PathVariable("id") Long id,
                                                                              @RequestBody AdminConfigDtos.MemberLevelPayload payload) {
         return ApiResponse.success(adminConfigService.saveMemberLevel(id, payload));
     }
 
     @DeleteMapping("/api/admin/marketing/member-levels/{id}")
     @Operation(summary = "删除会员等级")
-    public ApiResponse<Boolean> deleteMemberLevel(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteMemberLevel(@PathVariable("id") Long id) {
         adminConfigService.deleteMemberLevel(id);
         return ApiResponse.success(true);
     }

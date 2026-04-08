@@ -1,5 +1,6 @@
 <template>
   <view class="page-shell">
+    <!-- 当前位置卡片 -->
     <view class="card location-page__current">
       <view>
         <view class="location-page__title">当前位置</view>
@@ -8,8 +9,9 @@
       <button class="secondary-btn location-page__btn" @tap="relocate">重新定位</button>
     </view>
 
+    <!-- 城市列表 -->
     <view class="section-title location-page__section">
-      <text class="section-title__text">热门城市</text>
+      <text class="section-title__text">可服务城市</text>
     </view>
 
     <view class="location-page__list">
@@ -30,8 +32,13 @@
 </template>
 
 <script setup>
+/**
+ * 城市选择页。
+ * 1. 城市列表来自真实服务区域接口。
+ * 2. 重新定位时通过平台地图接口反查城市和区县。
+ */
 import { onMounted, ref } from 'vue';
-import { getCityList } from '../../api/user';
+import { getServiceCities } from '../../api/map';
 import { useLocationStore } from '../../stores/location';
 
 const location = useLocationStore();
@@ -52,12 +59,13 @@ function selectCity(item) {
 }
 
 onMounted(async () => {
-  const res = await getCityList();
+  const res = await getServiceCities();
   cities.value = res.data;
 });
 </script>
 
 <style scoped>
+/* 页面卡片样式 */
 .location-page__current {
   padding: 28rpx;
 }

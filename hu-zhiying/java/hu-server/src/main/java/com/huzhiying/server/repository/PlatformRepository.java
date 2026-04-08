@@ -8,13 +8,16 @@ import com.huzhiying.server.persistence.PersistenceEntities.CouponEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.DispatchTaskEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MasterProfileEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MemberLevelEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.MediaFileEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.NoticeEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductOrderEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.QuotationEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.QuotationItemEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.CommentEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceCategoryEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceOrderEntity;
@@ -174,6 +177,15 @@ public class PlatformRepository {
         return Optional.ofNullable(entityManager.find(ServiceItemEntity.class, id));
     }
 
+    public List<CommentEntity> listCommentsByServiceItemId(Long serviceItemId) {
+        return entityManager.createQuery(
+                        "select c from CommentEntity c where c.serviceItemId = :serviceItemId order by c.createdAt desc, c.id desc",
+                        CommentEntity.class
+                )
+                .setParameter("serviceItemId", serviceItemId)
+                .getResultList();
+    }
+
     public List<ProductEntity> listProducts() {
         return entityManager.createQuery("select p from ProductEntity p order by p.id asc", ProductEntity.class).getResultList();
     }
@@ -207,6 +219,19 @@ public class PlatformRepository {
         return entityManager.merge(entity);
     }
 
+    public List<OrderTrackPointEntity> listTrackPoints(String orderId) {
+        return entityManager.createQuery(
+                        "select t from OrderTrackPointEntity t where t.orderId = :orderId order by t.createdAt asc, t.id asc",
+                        OrderTrackPointEntity.class
+                )
+                .setParameter("orderId", orderId)
+                .getResultList();
+    }
+
+    public OrderTrackPointEntity saveTrackPoint(OrderTrackPointEntity entity) {
+        return entityManager.merge(entity);
+    }
+
     public List<ProductOrderEntity> listProductOrders() {
         return entityManager.createQuery("select p from ProductOrderEntity p order by p.createdAt desc", ProductOrderEntity.class)
                 .getResultList();
@@ -227,6 +252,16 @@ public class PlatformRepository {
 
     public Optional<DispatchTaskEntity> findDispatchTask(String id) {
         return Optional.ofNullable(entityManager.find(DispatchTaskEntity.class, id));
+    }
+
+    public Optional<DispatchTaskEntity> findDispatchTaskByOrderId(String orderId) {
+        TypedQuery<DispatchTaskEntity> query = entityManager.createQuery(
+                "select d from DispatchTaskEntity d where d.orderId = :orderId order by d.createdAt desc",
+                DispatchTaskEntity.class
+        );
+        query.setParameter("orderId", orderId);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
     }
 
     public DispatchTaskEntity saveDispatchTask(DispatchTaskEntity entity) {
@@ -335,6 +370,24 @@ public class PlatformRepository {
     }
 
     public MessageItemEntity saveMessageItem(MessageItemEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public Optional<MediaFileEntity> findMediaFile(Long id) {
+        return Optional.ofNullable(entityManager.find(MediaFileEntity.class, id));
+    }
+
+    public List<MediaFileEntity> listMediaFilesByBiz(String bizType, String bizId) {
+        return entityManager.createQuery(
+                        "select m from MediaFileEntity m where m.bizType = :bizType and m.bizId = :bizId order by m.createdAt asc, m.id asc",
+                        MediaFileEntity.class
+                )
+                .setParameter("bizType", bizType)
+                .setParameter("bizId", bizId)
+                .getResultList();
+    }
+
+    public MediaFileEntity saveMediaFile(MediaFileEntity entity) {
         return entityManager.merge(entity);
     }
 

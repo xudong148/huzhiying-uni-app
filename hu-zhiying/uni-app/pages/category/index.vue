@@ -1,6 +1,7 @@
 <template>
   <view class="page-container category-page">
     <view class="category-page__shell">
+      <!-- 左侧类目菜单 -->
       <view class="category-page__menu">
         <view
           v-for="(item, index) in categories"
@@ -13,10 +14,11 @@
         </view>
       </view>
 
+      <!-- 右侧分类内容 -->
       <scroll-view scroll-y class="category-page__content" :show-scrollbar="false">
         <view class="card category-page__hero">
           <view class="category-page__hero-title">{{ activeCategory.name }}</view>
-          <view class="category-page__hero-desc">{{ activeCategory.subs.join(' · ') }}</view>
+          <view class="category-page__hero-desc">{{ activeCategory.subs.join(' / ') }}</view>
           <image class="category-page__hero-icon" :src="activeCategory.icon" mode="aspectFit" />
         </view>
 
@@ -37,6 +39,7 @@
             </view>
           </view>
         </view>
+
         <view class="safe-bottom"></view>
       </scroll-view>
     </view>
@@ -44,6 +47,11 @@
 </template>
 
 <script setup>
+/**
+ * 分类页。
+ * 1. 左侧主类目和右侧服务分组都来自真实接口。
+ * 2. 首页选中的类目通过事件总线同步到当前页。
+ */
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { getCategoryTree } from '../../api/service';
 
@@ -70,7 +78,7 @@ function handleCategorySelected(id) {
 
 onMounted(async () => {
   const res = await getCategoryTree();
-  categories.value = res.data;
+  categories.value = res.data || [];
   uni.$on('category-selected', handleCategorySelected);
 });
 
@@ -80,6 +88,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* 页面布局 */
 .category-page {
   background: #f4f6f9;
 }
@@ -127,6 +136,7 @@ onUnmounted(() => {
   padding: 20rpx;
 }
 
+/* 顶部类目卡片 */
 .category-page__hero {
   position: relative;
   overflow: hidden;
@@ -154,6 +164,7 @@ onUnmounted(() => {
   height: 100rpx;
 }
 
+/* 服务宫格 */
 .category-page__group {
   margin-top: 24rpx;
 }

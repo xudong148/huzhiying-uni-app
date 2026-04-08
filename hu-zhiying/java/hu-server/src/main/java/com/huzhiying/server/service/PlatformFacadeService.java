@@ -31,10 +31,14 @@ public class PlatformFacadeService {
     public Object currentMember() { return queryService.currentMember(); }
     public Object serviceOrders() { return queryService.serviceOrders(); }
     public Object serviceOrder(String id) { return queryService.serviceOrder(id); }
-    public Object createServiceOrder(Long serviceItemId, String title, String appointment, Long addressId, String description, boolean emergency, boolean nightService) {
-        return commandService.createServiceOrder(serviceItemId, title, appointment, addressId, description, emergency, nightService);
+    public Object orderTracking(String id) { return queryService.orderTracking(id); }
+    public Object serviceComments(Long serviceItemId) { return queryService.serviceComments(serviceItemId); }
+    public Object createServiceOrder(Long serviceItemId, String title, String appointment, Long addressId, String description, boolean emergency, boolean nightService, java.util.List<Long> evidenceFileIds) {
+        return commandService.createServiceOrder(serviceItemId, title, appointment, addressId, description, emergency, nightService, evidenceFileIds);
     }
     public Object updateServiceOrderStatus(String id, ServiceOrderStatus status) { return commandService.updateServiceOrderStatus(id, status); }
+    public Object cancelOrder(String id, String reason) { return commandService.cancelOrder(id, reason); }
+    public Object urgeOrder(String id, String remark) { return commandService.urgeOrder(id, remark); }
     public Object productOrders() { return queryService.productOrders(); }
     public Object productOrder(String id) { return queryService.productOrder(id); }
     public Object createProductOrder(Long productId, Long skuId, Long addressId) {
@@ -53,9 +57,15 @@ public class PlatformFacadeService {
     public Object saveMasterSettings(boolean listening, String maxDistance, boolean privacyNumber) {
         return commandService.saveMasterSettings(listening, maxDistance, privacyNumber);
     }
+    public Object masterCheckIn(String orderId, Double latitude, Double longitude, Double accuracy) {
+        return commandService.masterCheckIn(orderId, latitude, longitude, accuracy);
+    }
+    public Object attachOrderMedia(String orderId, String stage, java.util.List<Long> fileIds, String note) {
+        return commandService.attachOrderMedia(orderId, stage, fileIds, note);
+    }
     public Object messageSessions() { return queryService.messageSessions(); }
     public Object messageItems(String sessionId) { return queryService.messageItems(sessionId); }
-    public Object sendMessage(String sessionId, String senderCode, String content) { return commandService.sendMessage(sessionId, senderCode, content); }
+    public Object sendMessage(String sessionId, String senderCode, String messageType, String content) { return commandService.sendMessage(sessionId, senderCode, messageType, content); }
     public Object notices() { return queryService.notices(); }
     public Object adminDashboard() { return queryService.adminDashboard(); }
     public Object masters() { return queryService.masters(); }

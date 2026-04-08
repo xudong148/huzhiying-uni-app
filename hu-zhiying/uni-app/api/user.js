@@ -1,28 +1,20 @@
-import { addressList, chatMessages, cityList, couponList } from '../mock/data';
-import { request, shouldUseMock } from '../utils/request';
-
-const clone = (payload) => JSON.parse(JSON.stringify(payload));
+import { request } from '../utils/request';
 
 function normalizeMessages(list = []) {
   return list.map((item) => ({
     id: item.id,
-    type: item.type || item.sender || 'system',
+    sender: item.sender || item.senderCode || 'system',
+    type: item.type || item.messageType || 'text',
     content: item.content,
     time: item.time || '刚刚',
   }));
 }
 
-export async function loginWithRole(role = 'user') {
-  if (shouldUseMock()) {
-    return {
-      data: {
-        token: `mock-token-${role}`,
-        refreshToken: `mock-refresh-${role}`,
-        role,
-      },
-    };
-  }
-
+/**
+ * 用户或师傅登录。
+ * @param {'user'|'master'} role
+ */
+export function loginWithRole(role = 'user') {
   const api = role === 'user' ? '/api/auth/wechat-login' : '/api/auth/sms-login';
   return request({
     url: api,
@@ -31,31 +23,18 @@ export async function loginWithRole(role = 'user') {
   });
 }
 
-export async function getCurrentUser() {
-  if (shouldUseMock()) {
-    return {
-      data: {
-        profile: {
-          id: 10001,
-          nickname: '周女士',
-          mobile: '138****5288',
-          avatar: '/static/user.png',
-          level: 'SVIP 预备用户',
-        },
-        notices: [],
-        banners: [],
-      },
-    };
-  }
+/**
+ * 查询当前登录用户信息。
+ */
+export function getCurrentUser() {
   return request({ url: '/api/users/me' });
 }
 
-export async function updateProfile(payload) {
-  if (shouldUseMock()) {
-    return {
-      data: payload,
-    };
-  }
+/**
+ * 更新用户资料。
+ * @param {{nickname:string,mobile:string}} payload
+ */
+export function updateProfile(payload) {
   return request({
     url: '/api/users/me',
     method: 'PUT',
@@ -63,10 +42,10 @@ export async function updateProfile(payload) {
   });
 }
 
+/**
+ * 查询地址列表。
+ */
 export async function getAddressList() {
-  if (shouldUseMock()) {
-    return { data: clone(addressList) };
-  }
   const response = await request({ url: '/api/addresses' });
   return {
     data: (response.data || []).map((item) => ({
@@ -77,10 +56,11 @@ export async function getAddressList() {
   };
 }
 
-export async function saveAddress(payload) {
-  if (shouldUseMock()) {
-    return { data: payload };
-  }
+/**
+ * 新增或更新地址。
+ * @param {{id?:number|string,tag:string,name:string,mobile:string,address:string,default:boolean}} payload
+ */
+export function saveAddress(payload) {
   return request({
     url: '/api/addresses',
     method: 'POST',
@@ -95,38 +75,50 @@ export async function saveAddress(payload) {
   });
 }
 
-export async function getCouponList() {
-  if (shouldUseMock()) {
-    return { data: clone(couponList) };
-  }
+/**
+ * 删除地址。
+ * @param {number|string} id
+ */
+export function deleteAddress(id) {
+  return request({
+    url: `/api/addresses/${id}`,
+    method: 'DELETE',
+  });
+}
+
+/**
+ * 查询优惠券列表。
+ */
+export function getCouponList() {
   return request({ url: '/api/coupons' });
 }
 
-export async function getCityList() {
-  return { data: clone(cityList) };
+/**
+ * 兼容旧页面查询可服务城市。
+ */
+export function getCityList() {
+  return request({ url: '/api/map/service-cities' });
 }
 
+/**
+ * 查询聊天消息列表。
+ * @param {string} sessionId
+ * @returns {Promise<{data:Array}>}
+ */
 export async function getChatMessages(sessionId = 'MS-001') {
-  if (shouldUseMock()) {
-    return { data: normalizeMessages(clone(chatMessages)) };
-  }
   const response = await request({ url: `/api/messages/${sessionId}/items` });
   return {
     data: normalizeMessages(response.data || []),
   };
 }
 
+/**
+ * 发送聊天消息。
+ * @param {string} sessionId
+ * @param {{senderCode:string,messageType:string,content:string}} payload
+ * @returns {Promise<{data:object}>}
+ */
 export async function sendChatMessage(sessionId, payload) {
-  if (shouldUseMock()) {
-    return {
-      data: {
-        id: Date.now(),
-        type: payload.senderCode || 'user',
-        content: payload.content,
-        time: '刚刚',
-      },
-    };
-  }
   const response = await request({
     url: `/api/messages/${sessionId}/items`,
     method: 'POST',

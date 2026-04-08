@@ -1,11 +1,15 @@
 package com.huzhiying.server.service;
 
+import com.huzhiying.domain.enums.DomainEnums;
 import com.huzhiying.domain.model.DomainModels.MemberLevel;
 import com.huzhiying.domain.model.DomainModels.SearchDocument;
 import com.huzhiying.domain.model.DomainModels.ServiceCategory;
 import com.huzhiying.domain.model.DomainModels.ServiceItem;
 import com.huzhiying.domain.model.DomainModels.ServiceOrder;
+import com.huzhiying.server.dto.SupportDtos;
+import com.huzhiying.server.persistence.PersistenceEntities.CommentEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MasterProfileEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceItemEntity;
 import com.huzhiying.server.repository.PlatformRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,22 +27,27 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class PlatformQueryService {
 
+    private static final DateTimeFormatter COMMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     private final PlatformRepository platformRepository;
     private final PlatformAssembler assembler;
     private final PlatformDomainSupport domainSupport;
     private final boolean wechatPayEnabled;
     private final String wechatAppId;
+    private final String wechatMerchantId;
 
     public PlatformQueryService(PlatformRepository platformRepository,
                                 PlatformAssembler assembler,
                                 PlatformDomainSupport domainSupport,
                                 @Value("${hzy.wechat.pay-enabled:false}") boolean wechatPayEnabled,
-                                @Value("${hzy.wechat.app-id:}") String wechatAppId) {
+                                @Value("${hzy.wechat.app-id:}") String wechatAppId,
+                                @Value("${hzy.wechat.mch-id:}") String wechatMerchantId) {
         this.platformRepository = platformRepository;
         this.assembler = assembler;
         this.domainSupport = domainSupport;
         this.wechatPayEnabled = wechatPayEnabled;
         this.wechatAppId = wechatAppId;
+        this.wechatMerchantId = wechatMerchantId;
     }
 
     public List<ServiceCategory> categories() {
@@ -66,25 +76,14 @@ public class PlatformQueryService {
         payload.put("images", assembler.splitList(entity.imageUrls));
         payload.put("guarantees", assembler.splitList(entity.guaranteesText));
         payload.put("process", assembler.splitList(entity.processSteps));
-        payload.put("comments", List.of(
-                Map.of(
-                        "id", 1,
-                        "user", "赵女士",
-                        "score", 5,
-                        "content", "响应很快，到场前会电话确认，增项报价也说得很清楚。",
-                        "images", List.of("https://picsum.photos/360/240?random=214"),
-                        "date", "2026-04-06"
-                ),
-                Map.of(
-                        "id", 2,
-                        "user", "吴先生",
-                        "score", 4,
-                        "content", "收费透明，现场解决了冷媒不足的问题。",
-                        "images", List.of(),
-                        "date", "2026-04-02"
-                )
-        ));
+        payload.put("comments", serviceComments(serviceItemId));
         return payload;
+    }
+
+    public List<SupportDtos.CommentPayload> serviceComments(Long serviceItemId) {
+        return platformRepository.listCommentsByServiceItemId(serviceItemId).stream()
+                .map(this::toCommentPayload)
+                .toList();
     }
 
     public List<?> products() {
@@ -106,7 +105,7 @@ public class PlatformQueryService {
         payload.put("subtitle", productEntity.descriptionText);
         payload.put("price", productEntity.price);
         payload.put("images", productEntity.imageUrl == null || productEntity.imageUrl.isBlank()
-                ? List.of("https://picsum.photos/960/720?random=" + productId)
+                ? List.of("/seed-media/product-card.svg")
                 : List.of(productEntity.imageUrl));
         payload.put("createInstallOrder", Boolean.TRUE.equals(productEntity.createInstallOrder));
         payload.put("deliveryDesc", Boolean.TRUE.equals(productEntity.createInstallOrder)
@@ -167,6 +166,21 @@ public class PlatformQueryService {
 
     public ServiceOrder serviceOrder(String id) {
         return domainSupport.buildServiceOrder(domainSupport.findServiceOrderEntity(id));
+    }
+
+    public SupportDtos.OrderTrackingPayload orderTracking(String orderId) {
+        ServiceOrder order = serviceOrder(orderId);
+        List<SupportDtos.OrderTrackPointPayload> points = platformRepository.listTrackPoints(orderId).stream()
+                .map(this::toTrackPointPayload)
+                .toList();
+        return new SupportDtos.OrderTrackingPayload(
+                order.id(),
+                domainSupport.statusLabel(order.status()),
+                order.appointment(),
+                order.address() == null ? "" : order.address().detail(),
+                order.eta(),
+                points
+        );
     }
 
     public List<?> productOrders() {
@@ -311,8 +325,8 @@ public class PlatformQueryService {
                 "status", item.amount.signum() >= 0 ? "待结算" : "已冻结"
         )));
         platformRepository.listServiceOrders().stream()
-                .filter(order -> order.paymentStatus == com.huzhiying.domain.enums.DomainEnums.PaymentStatus.REFUNDING
-                        || order.status == com.huzhiying.domain.enums.DomainEnums.ServiceOrderStatus.REFUNDING)
+                .filter(order -> order.paymentStatus == DomainEnums.PaymentStatus.REFUNDING
+                        || order.status == DomainEnums.ServiceOrderStatus.REFUNDING)
                 .forEach(order -> rows.add(Map.of(
                         "billNo", "REFUND-" + order.id,
                         "type", "退款单",
@@ -322,16 +336,54 @@ public class PlatformQueryService {
         return rows;
     }
 
-    public Map<String, Object> createWechatPrepay(String orderId) {
-        return Map.of(
-                "orderId", orderId,
-                "appId", wechatAppId == null || wechatAppId.isBlank() ? "demo-wx-appid" : wechatAppId,
-                "timeStamp", String.valueOf(System.currentTimeMillis() / 1000),
-                "nonceStr", java.util.UUID.randomUUID().toString().replace("-", ""),
-                "packageValue", "prepay_id=demo",
-                "signType", "RSA",
-                "paySign", "demo-sign",
-                "sandbox", !wechatPayEnabled
+    public SupportDtos.WechatPrepayPayload createWechatPrepay(String orderId) {
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("缺少订单号，无法创建预支付单。");
+        }
+
+        if (orderId.startsWith("SO")) {
+            var order = domainSupport.findServiceOrderEntity(orderId);
+            if (order.status != DomainEnums.ServiceOrderStatus.PENDING_PAYMENT
+                    && order.status != DomainEnums.ServiceOrderStatus.WAITING_SUPPLEMENT_PAYMENT) {
+                throw new IllegalStateException("当前服务订单不处于待支付状态，无需重复发起支付。");
+            }
+        } else if (orderId.startsWith("PO")) {
+            var order = platformRepository.findProductOrder(orderId).orElseThrow(() -> new IllegalArgumentException("商品订单不存在。"));
+            if (order.status != DomainEnums.ProductOrderStatus.PENDING_PAYMENT) {
+                throw new IllegalStateException("当前商品订单不处于待支付状态，无需重复发起支付。");
+            }
+        } else {
+            throw new IllegalArgumentException("不支持的订单号格式。");
+        }
+
+        if (!wechatPayEnabled || wechatAppId == null || wechatAppId.isBlank() || wechatMerchantId == null || wechatMerchantId.isBlank()) {
+            throw new IllegalStateException("当前环境未配置微信支付商户参数，无法创建预支付单。");
+        }
+
+        throw new IllegalStateException("当前版本尚未接入真实微信支付下单服务，不能返回伪造支付参数。");
+    }
+
+    private SupportDtos.CommentPayload toCommentPayload(CommentEntity entity) {
+        return new SupportDtos.CommentPayload(
+                entity.id,
+                entity.userName,
+                entity.score,
+                entity.contentText,
+                assembler.splitList(entity.imagesText),
+                assembler.splitList(entity.tagsText),
+                entity.createdAt == null ? "" : entity.createdAt.format(COMMENT_DATE_FORMATTER)
+        );
+    }
+
+    private SupportDtos.OrderTrackPointPayload toTrackPointPayload(OrderTrackPointEntity entity) {
+        return new SupportDtos.OrderTrackPointPayload(
+                entity.id,
+                entity.pointType,
+                entity.labelText,
+                entity.descriptionText,
+                entity.latitude,
+                entity.longitude,
+                entity.createdAt
         );
     }
 }

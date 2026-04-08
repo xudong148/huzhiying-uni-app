@@ -1,6 +1,7 @@
 <template>
   <div class="login-page">
     <div class="login-card">
+      <!-- 登录卡片头部 -->
       <div class="login-card__eyebrow">Dispatch Console</div>
       <h1>呼之应运营后台</h1>
       <p>订单调度、履约监控、财务结算与仲裁处理统一工作台。</p>
@@ -10,6 +11,10 @@
 </template>
 
 <script setup>
+/**
+ * 后台登录页。
+ * 当前通过真实短信登录接口获取后台会话。
+ */
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
@@ -41,6 +46,7 @@ async function handleLogin() {
 </script>
 
 <style scoped>
+/* 登录页布局 */
 .login-page {
   min-height: 100vh;
   display: flex;

@@ -1,14 +1,11 @@
-import { masterOrders, walletData } from '../mock/data';
-import { request, shouldUseMock } from '../utils/request';
-
-const clone = (payload) => JSON.parse(JSON.stringify(payload));
+import { request } from '../utils/request';
 
 const statusTextMap = {
   PENDING_DISPATCH: '平台正在匹配可服务师傅',
   PENDING_ACCEPT: '等待师傅确认上门',
-  ON_THE_WAY: '已出发，正在前往服务地点',
-  ARRIVED: '已到达，等待开始施工',
-  WAITING_SUPPLEMENT_PAYMENT: '已提交增项报价',
+  ON_THE_WAY: '师傅已出发，正在前往服务地址',
+  ARRIVED: '师傅已到场，等待开始施工',
+  WAITING_SUPPLEMENT_PAYMENT: '已提交增项报价，等待补款',
   IN_SERVICE: '施工中',
   COMPLETED: '已完工',
   REFUNDING: '退款处理中',
@@ -26,10 +23,10 @@ function normalizeOrder(item) {
   };
 }
 
+/**
+ * 查询抢派单大厅列表。
+ */
 export async function getDispatchOrders() {
-  if (shouldUseMock()) {
-    return { data: clone(masterOrders) };
-  }
   const response = await request({ url: '/api/dispatch/tasks' });
   return {
     data: (response.data || []).map((item) => ({
@@ -45,10 +42,12 @@ export async function getDispatchOrders() {
   };
 }
 
-export async function claimDispatchOrder(taskId, masterName = '张师傅') {
-  if (shouldUseMock()) {
-    return { data: { taskId, masterName } };
-  }
+/**
+ * 师傅抢单。
+ * @param {string} taskId
+ * @param {string} masterName
+ */
+export function claimDispatchOrder(taskId, masterName = '张师傅') {
   return request({
     url: `/api/dispatch/tasks/${taskId}/claim`,
     method: 'POST',
@@ -56,16 +55,10 @@ export async function claimDispatchOrder(taskId, masterName = '张师傅') {
   });
 }
 
+/**
+ * 查询师傅工作台。
+ */
 export async function getMasterDashboard() {
-  if (shouldUseMock()) {
-    return {
-      data: {
-        dispatchCount: 2,
-        wallet: walletData,
-        orders: [],
-      },
-    };
-  }
   const response = await request({ url: '/api/master/dashboard' });
   return {
     data: {
@@ -75,10 +68,10 @@ export async function getMasterDashboard() {
   };
 }
 
+/**
+ * 查询师傅钱包数据。
+ */
 export async function getWalletData() {
-  if (shouldUseMock()) {
-    return { data: clone(walletData) };
-  }
   const response = await request({ url: '/api/master/wallet' });
   return {
     data: {
@@ -90,23 +83,18 @@ export async function getWalletData() {
   };
 }
 
-export async function getMasterSettings() {
-  if (shouldUseMock()) {
-    return {
-      data: {
-        listening: true,
-        maxDistance: '20km',
-        privacyNumber: true,
-      },
-    };
-  }
+/**
+ * 查询师傅接单设置。
+ */
+export function getMasterSettings() {
   return request({ url: '/api/master/settings' });
 }
 
-export async function saveMasterSettings(payload) {
-  if (shouldUseMock()) {
-    return { data: payload };
-  }
+/**
+ * 保存师傅接单设置。
+ * @param {{listening:boolean,maxDistance:string,privacyNumber:boolean}} payload
+ */
+export function saveMasterSettings(payload) {
   return request({
     url: '/api/master/settings',
     method: 'POST',
@@ -114,12 +102,52 @@ export async function saveMasterSettings(payload) {
   });
 }
 
-export async function applyMaster(payload) {
-  if (shouldUseMock()) {
-    return { data: payload };
-  }
+/**
+ * 提交师傅入驻申请。
+ * @param {object} payload
+ */
+export function applyMaster(payload) {
   return request({
     url: '/api/master/apply',
+    method: 'POST',
+    data: payload,
+  });
+}
+
+/**
+ * 到场签到。
+ * @param {string} orderId
+ * @param {{latitude:number,longitude:number,accuracy:number}} payload
+ */
+export function checkInOrder(orderId, payload) {
+  return request({
+    url: `/api/master/orders/${orderId}/check-in`,
+    method: 'POST',
+    data: payload,
+  });
+}
+
+/**
+ * 上传施工前媒体。
+ * @param {string} orderId
+ * @param {{fileIds:number[],note:string}} payload
+ */
+export function uploadBeforeWorkMedia(orderId, payload) {
+  return request({
+    url: `/api/master/orders/${orderId}/before-work-media`,
+    method: 'POST',
+    data: payload,
+  });
+}
+
+/**
+ * 上传完工媒体。
+ * @param {string} orderId
+ * @param {{fileIds:number[],note:string}} payload
+ */
+export function uploadAfterWorkMedia(orderId, payload) {
+  return request({
+    url: `/api/master/orders/${orderId}/after-work-media`,
     method: 'POST',
     data: payload,
   });

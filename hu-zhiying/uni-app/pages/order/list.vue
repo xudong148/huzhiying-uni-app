@@ -1,5 +1,6 @@
 <template>
   <view class="page-shell">
+    <!-- 订单筛选 -->
     <view class="order-list__tabs">
       <view
         v-for="tab in tabs"
@@ -12,6 +13,7 @@
       </view>
     </view>
 
+    <!-- 订单卡片 -->
     <view v-for="item in filteredOrders" :key="item.id" class="card order-list__card pressable" @tap="goDetail(item.id)">
       <view class="order-list__top">
         <view class="order-list__title">{{ item.title }}</view>
@@ -33,6 +35,11 @@
 </template>
 
 <script setup>
+/**
+ * 订单列表页。
+ * 1. 服务单和商品单通过同一接口适配层聚合展示。
+ * 2. 前端只做状态筛选，不再拼接本地假数据。
+ */
 import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import PriceFormat from '../../components/price-format.vue';
@@ -41,7 +48,7 @@ import { getOrderList } from '../../api/order';
 const tabs = [
   { label: '全部', value: 'all' },
   { label: '待接单', value: 'pending' },
-  { label: '施工中', value: 'service' },
+  { label: '服务中', value: 'service' },
   { label: '待补款', value: 'quote' },
   { label: '售后中', value: 'afterSales' },
 ];
@@ -71,13 +78,14 @@ function goDetail(id) {
 
 async function loadOrders() {
   const res = await getOrderList();
-  orders.value = res.data;
+  orders.value = res.data || [];
 }
 
 onShow(loadOrders);
 </script>
 
 <style scoped>
+/* 筛选标签 */
 .order-list__tabs {
   display: flex;
   gap: 12rpx;
@@ -100,6 +108,7 @@ onShow(loadOrders);
   color: #ffffff;
 }
 
+/* 订单卡片 */
 .order-list__card {
   padding: 26rpx;
 }

@@ -36,7 +36,7 @@ public class AdminCatalogController {
 
     @GetMapping("/api/admin/catalog/categories/{id}")
     @Operation(summary = "查询服务类目详情")
-    public ApiResponse<AdminConfigDtos.ServiceCategoryPayload> category(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.ServiceCategoryPayload> category(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getCategory(id));
     }
 
@@ -48,14 +48,14 @@ public class AdminCatalogController {
 
     @PutMapping("/api/admin/catalog/categories/{id}")
     @Operation(summary = "更新服务类目")
-    public ApiResponse<AdminConfigDtos.ServiceCategoryPayload> updateCategory(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.ServiceCategoryPayload> updateCategory(@PathVariable("id") Long id,
                                                                               @RequestBody AdminConfigDtos.ServiceCategoryPayload payload) {
         return ApiResponse.success(adminConfigService.saveCategory(id, payload));
     }
 
     @DeleteMapping("/api/admin/catalog/categories/{id}")
     @Operation(summary = "删除服务类目")
-    public ApiResponse<Boolean> deleteCategory(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteCategory(@PathVariable("id") Long id) {
         adminConfigService.deleteCategory(id);
         return ApiResponse.success(true);
     }
@@ -68,7 +68,7 @@ public class AdminCatalogController {
 
     @GetMapping("/api/admin/catalog/service-items/{id}")
     @Operation(summary = "查询服务项详情")
-    public ApiResponse<AdminConfigDtos.ServiceItemPayload> serviceItem(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.ServiceItemPayload> serviceItem(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getServiceItem(id));
     }
 
@@ -80,14 +80,14 @@ public class AdminCatalogController {
 
     @PutMapping("/api/admin/catalog/service-items/{id}")
     @Operation(summary = "更新服务项")
-    public ApiResponse<AdminConfigDtos.ServiceItemPayload> updateServiceItem(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.ServiceItemPayload> updateServiceItem(@PathVariable("id") Long id,
                                                                              @RequestBody AdminConfigDtos.ServiceItemPayload payload) {
         return ApiResponse.success(adminConfigService.saveServiceItem(id, payload));
     }
 
     @DeleteMapping("/api/admin/catalog/service-items/{id}")
     @Operation(summary = "删除服务项")
-    public ApiResponse<Boolean> deleteServiceItem(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteServiceItem(@PathVariable("id") Long id) {
         adminConfigService.deleteServiceItem(id);
         return ApiResponse.success(true);
     }
@@ -100,7 +100,7 @@ public class AdminCatalogController {
 
     @GetMapping("/api/admin/catalog/products/{id}")
     @Operation(summary = "查询商品详情")
-    public ApiResponse<AdminConfigDtos.ProductPayload> product(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.ProductPayload> product(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getProduct(id));
     }
 
@@ -112,14 +112,14 @@ public class AdminCatalogController {
 
     @PutMapping("/api/admin/catalog/products/{id}")
     @Operation(summary = "更新商品")
-    public ApiResponse<AdminConfigDtos.ProductPayload> updateProduct(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.ProductPayload> updateProduct(@PathVariable("id") Long id,
                                                                      @RequestBody AdminConfigDtos.ProductPayload payload) {
         return ApiResponse.success(adminConfigService.saveProduct(id, payload));
     }
 
     @DeleteMapping("/api/admin/catalog/products/{id}")
     @Operation(summary = "删除商品")
-    public ApiResponse<Boolean> deleteProduct(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteProduct(@PathVariable("id") Long id) {
         adminConfigService.deleteProduct(id);
         return ApiResponse.success(true);
     }
@@ -132,7 +132,7 @@ public class AdminCatalogController {
 
     @GetMapping("/api/admin/catalog/skus/{id}")
     @Operation(summary = "查询 SKU 详情")
-    public ApiResponse<AdminConfigDtos.SkuPayload> sku(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.SkuPayload> sku(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getSku(id));
     }
 
@@ -144,14 +144,14 @@ public class AdminCatalogController {
 
     @PutMapping("/api/admin/catalog/skus/{id}")
     @Operation(summary = "更新 SKU")
-    public ApiResponse<AdminConfigDtos.SkuPayload> updateSku(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.SkuPayload> updateSku(@PathVariable("id") Long id,
                                                              @RequestBody AdminConfigDtos.SkuPayload payload) {
         return ApiResponse.success(adminConfigService.saveSku(id, payload));
     }
 
     @DeleteMapping("/api/admin/catalog/skus/{id}")
     @Operation(summary = "删除 SKU")
-    public ApiResponse<Boolean> deleteSku(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteSku(@PathVariable("id") Long id) {
         adminConfigService.deleteSku(id);
         return ApiResponse.success(true);
     }

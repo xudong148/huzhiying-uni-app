@@ -36,7 +36,7 @@ public class AdminPricingController {
 
     @GetMapping("/api/admin/pricing/rules/{id}")
     @Operation(summary = "查询定价规则详情")
-    public ApiResponse<AdminConfigDtos.PricingRulePayload> pricingRule(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.PricingRulePayload> pricingRule(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getPricingRule(id));
     }
 
@@ -48,14 +48,14 @@ public class AdminPricingController {
 
     @PutMapping("/api/admin/pricing/rules/{id}")
     @Operation(summary = "更新定价规则")
-    public ApiResponse<AdminConfigDtos.PricingRulePayload> updatePricingRule(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.PricingRulePayload> updatePricingRule(@PathVariable("id") Long id,
                                                                              @RequestBody AdminConfigDtos.PricingRulePayload payload) {
         return ApiResponse.success(adminConfigService.savePricingRule(id, payload));
     }
 
     @DeleteMapping("/api/admin/pricing/rules/{id}")
     @Operation(summary = "删除定价规则")
-    public ApiResponse<Boolean> deletePricingRule(@PathVariable Long id) {
+    public ApiResponse<Boolean> deletePricingRule(@PathVariable("id") Long id) {
         adminConfigService.deletePricingRule(id);
         return ApiResponse.success(true);
     }
@@ -68,7 +68,7 @@ public class AdminPricingController {
 
     @GetMapping("/api/admin/dispatch/zones/{id}")
     @Operation(summary = "查询服务区域详情")
-    public ApiResponse<AdminConfigDtos.DispatchZonePayload> dispatchZone(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.DispatchZonePayload> dispatchZone(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getDispatchZone(id));
     }
 
@@ -80,14 +80,14 @@ public class AdminPricingController {
 
     @PutMapping("/api/admin/dispatch/zones/{id}")
     @Operation(summary = "更新服务区域")
-    public ApiResponse<AdminConfigDtos.DispatchZonePayload> updateDispatchZone(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.DispatchZonePayload> updateDispatchZone(@PathVariable("id") Long id,
                                                                                @RequestBody AdminConfigDtos.DispatchZonePayload payload) {
         return ApiResponse.success(adminConfigService.saveDispatchZone(id, payload));
     }
 
     @DeleteMapping("/api/admin/dispatch/zones/{id}")
     @Operation(summary = "删除服务区域")
-    public ApiResponse<Boolean> deleteDispatchZone(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteDispatchZone(@PathVariable("id") Long id) {
         adminConfigService.deleteDispatchZone(id);
         return ApiResponse.success(true);
     }

@@ -1,19 +1,26 @@
 <template>
   <view class="page-shell login-page">
+    <!-- 欢迎信息 -->
     <view class="login-page__hero">
       <view class="login-page__headline">欢迎来到呼之应</view>
       <view class="login-page__subline">微信授权、验证码登录和师傅端切换共用同一套鉴权体系。</view>
     </view>
 
+    <!-- 登录操作 -->
     <view class="card login-page__card">
       <button class="primary-btn" @tap="loginAs('user')">微信一键登录</button>
       <button class="secondary-btn login-page__btn" @tap="loginAs('user')">手机号验证码登录</button>
-      <button class="secondary-btn login-page__btn" @tap="loginAs('master')">演示切换到师傅端</button>
+      <button class="secondary-btn login-page__btn" @tap="loginAs('master')">切换到师傅端</button>
     </view>
   </view>
 </template>
 
 <script setup>
+/**
+ * 登录页。
+ * 1. 用户与师傅端共用同一套登录接口。
+ * 2. 登录成功后立即回拉当前用户资料并写入 Pinia。
+ */
 import { getCurrentUser, loginWithRole } from '../../api/user';
 import { useUserStore } from '../../stores/user';
 
@@ -43,6 +50,7 @@ async function loginAs(role) {
 </script>
 
 <style scoped>
+/* 登录页背景与结构 */
 .login-page {
   min-height: 100vh;
   background:

@@ -1,5 +1,6 @@
 <template>
   <view class="page-shell">
+    <!-- 设置表单 -->
     <view class="card master-setting__section">
       <view class="master-setting__row">
         <text>听单状态</text>
@@ -12,7 +13,7 @@
         </picker>
       </view>
       <view class="master-setting__row">
-        <text>隐私号拨打</text>
+        <text>隐私号外呼</text>
         <switch :checked="form.privacyNumber" color="#2B5CFF" @change="form.privacyNumber = $event.detail.value" />
       </view>
     </view>
@@ -22,6 +23,10 @@
 </template>
 
 <script setup>
+/**
+ * 师傅接单设置页面。
+ * 所有配置直接读写真实师傅设置接口。
+ */
 import { reactive, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { getMasterSettings, saveMasterSettings } from '../../api/master';
@@ -61,6 +66,7 @@ onShow(async () => {
 </script>
 
 <style scoped>
+/* 表单区块 */
 .master-setting__section {
   padding: 28rpx;
 }

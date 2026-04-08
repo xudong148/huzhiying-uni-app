@@ -155,7 +155,7 @@ public class PlatformDomainSupport {
             case PENDING_DISPATCH -> "待派单";
             case PENDING_ACCEPT -> "待接单";
             case ON_THE_WAY -> "出发中";
-            case ARRIVED -> "已到达";
+            case ARRIVED -> "已到场";
             case WAITING_SUPPLEMENT_PAYMENT -> "待补款";
             case IN_SERVICE -> "施工中";
             case COMPLETED -> "已完成";

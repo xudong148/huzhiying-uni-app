@@ -1,14 +1,12 @@
-import { orderList, quotationDetail, timeSlots } from '../mock/data';
-import { request, shouldUseMock } from '../utils/request';
-
-const clone = (payload) => JSON.parse(JSON.stringify(payload));
+import { request } from '../utils/request';
 
 const statusTextMap = {
+  PENDING_PAYMENT: '待支付预付款，支付后开始派单',
   PENDING_DISPATCH: '平台正在匹配可服务师傅',
-  PENDING_ACCEPT: '附近师傅正在抢单',
+  PENDING_ACCEPT: '等待师傅确认上门',
   ON_THE_WAY: '师傅已出发，正在赶来',
-  ARRIVED: '师傅已到达，等待开始施工',
-  WAITING_SUPPLEMENT_PAYMENT: '师傅已提交增项报价，待确认补款',
+  ARRIVED: '师傅已到场，等待开始施工',
+  WAITING_SUPPLEMENT_PAYMENT: '师傅已提交增项报价，等待确认补款',
   IN_SERVICE: '订单正在施工中',
   COMPLETED: '服务已完成，欢迎评价',
   REFUNDING: '退款处理中',
@@ -41,6 +39,14 @@ function normalizeQuotation(quotation) {
 }
 
 function normalizeServiceOrder(item) {
+  const tags = item.status === 'PENDING_PAYMENT'
+    ? ['待支付', '支付后派单']
+    : item.status === 'WAITING_SUPPLEMENT_PAYMENT'
+      ? ['待补款', '平台担保']
+      : item.paymentStatus === 'PARTIAL_PAID'
+        ? ['预付上门费', '平台担保']
+        : ['已支付'];
+
   return {
     ...item,
     type: 'service',
@@ -49,7 +55,7 @@ function normalizeServiceOrder(item) {
     price: Number(item.amount || 0),
     eta: item.eta || '待确认',
     masterMobile: item.masterName && item.masterName !== '待接单' ? '170****8899' : '',
-    tags: item.paymentStatus === 'PARTIAL_PAID' ? ['预付上门费', '平台担保'] : ['已支付'],
+    tags,
     timeline: normalizeTimeline(item.timeline),
     quotation: normalizeQuotation(item.quotation),
   };
@@ -57,9 +63,9 @@ function normalizeServiceOrder(item) {
 
 function normalizeProductOrder(item) {
   const statusText = item.status === 'PENDING_SHIPMENT'
-    ? '仓库已打单，等待出库'
+    ? '仓库已打包，等待出库'
     : item.status === 'PENDING_PAYMENT'
-      ? '待完成支付确认'
+      ? '等待完成支付确认'
       : '商品订单处理中';
 
   return {
@@ -75,11 +81,10 @@ function normalizeProductOrder(item) {
   };
 }
 
+/**
+ * 查询订单列表。
+ */
 export async function getOrderList() {
-  if (shouldUseMock()) {
-    return { data: clone(orderList) };
-  }
-
   const [serviceRes, productRes] = await Promise.all([
     request({ url: '/api/service-orders' }),
     request({ url: '/api/product-orders' }),
@@ -93,17 +98,11 @@ export async function getOrderList() {
   };
 }
 
+/**
+ * 查询订单详情。
+ * @param {string} orderId
+ */
 export async function getOrderDetail(orderId) {
-  if (shouldUseMock()) {
-    const order = orderList.find((item) => item.id === orderId) || orderList[0];
-    return {
-      data: {
-        ...clone(order),
-        quotation: clone(quotationDetail),
-      },
-    };
-  }
-
   const response = orderId.startsWith('PO')
     ? await request({ url: `/api/product-orders/${orderId}` })
     : await request({ url: `/api/service-orders/${orderId}` });
@@ -115,19 +114,29 @@ export async function getOrderDetail(orderId) {
   };
 }
 
-export async function getTimeSlots() {
-  return { data: clone(timeSlots) };
+/**
+ * 查询订单轨迹。
+ * @param {string} orderId
+ */
+export function getOrderTracking(orderId) {
+  return request({ url: `/api/orders/${orderId}/tracking` });
 }
 
-export async function createServiceOrder(payload) {
-  if (shouldUseMock()) {
-    return {
-      data: {
-        id: `SO${Date.now()}`,
-      },
-    };
-  }
+/**
+ * 查询预约时段。
+ */
+export async function getTimeSlots() {
+  const response = await request({ url: '/api/service-orders/time-slots' });
+  return {
+    data: (response.data || []).map((item) => item.value),
+  };
+}
 
+/**
+ * 创建服务订单。
+ * @param {object} payload
+ */
+export function createServiceOrder(payload) {
   return request({
     url: '/api/service-orders',
     method: 'POST',
@@ -135,16 +144,11 @@ export async function createServiceOrder(payload) {
   });
 }
 
-export async function createProductOrder(payload) {
-  if (shouldUseMock()) {
-    return {
-      data: {
-        id: `PO${Date.now()}`,
-        ...payload,
-      },
-    };
-  }
-
+/**
+ * 创建商品订单。
+ * @param {object} payload
+ */
+export function createProductOrder(payload) {
   return request({
     url: '/api/product-orders',
     method: 'POST',
@@ -152,15 +156,11 @@ export async function createProductOrder(payload) {
   });
 }
 
-export async function requestWechatPrepay(orderId) {
-  if (shouldUseMock()) {
-    return {
-      data: {
-        orderId,
-        sandbox: true,
-      },
-    };
-  }
+/**
+ * 创建微信预支付单。
+ * @param {string} orderId
+ */
+export function requestWechatPrepay(orderId) {
   return request({
     url: '/api/payments/wechat/prepay',
     method: 'POST',
@@ -168,35 +168,23 @@ export async function requestWechatPrepay(orderId) {
   });
 }
 
-export async function confirmWechatPayment(orderId) {
-  if (shouldUseMock()) {
-    return {
-      data: {
-        orderId,
-        status: 'SUCCESS',
-      },
-    };
-  }
-  return request({
-    url: `/api/payments/wechat/${orderId}/callback`,
-    method: 'POST',
-  });
-}
-
-export async function confirmQuotation(quotationId) {
-  if (shouldUseMock()) {
-    return { data: { quotationId } };
-  }
+/**
+ * 确认增项报价。
+ * @param {string} quotationId
+ */
+export function confirmQuotation(quotationId) {
   return request({
     url: `/api/quotations/${quotationId}/confirm`,
     method: 'POST',
   });
 }
 
-export async function updateServiceOrderStatus(orderId, status) {
-  if (shouldUseMock()) {
-    return { data: { orderId, status } };
-  }
+/**
+ * 更新服务订单状态。
+ * @param {string} orderId
+ * @param {string} status
+ */
+export function updateServiceOrderStatus(orderId, status) {
   return request({
     url: `/api/service-orders/${orderId}/status`,
     method: 'POST',
@@ -204,10 +192,12 @@ export async function updateServiceOrderStatus(orderId, status) {
   });
 }
 
-export async function createQuotation(orderId, remark) {
-  if (shouldUseMock()) {
-    return { data: { orderId, remark } };
-  }
+/**
+ * 创建增项报价。
+ * @param {string} orderId
+ * @param {string} remark
+ */
+export function createQuotation(orderId, remark) {
   return request({
     url: '/api/quotations',
     method: 'POST',
@@ -215,13 +205,40 @@ export async function createQuotation(orderId, remark) {
   });
 }
 
-export async function refundOrder(orderId) {
-  if (shouldUseMock()) {
-    return { data: { orderId } };
-  }
+/**
+ * 发起退款。
+ * @param {string} orderId
+ */
+export function refundOrder(orderId) {
   return request({
     url: '/api/payments/wechat/refund',
     method: 'POST',
     data: { orderId },
+  });
+}
+
+/**
+ * 取消订单。
+ * @param {string} orderId
+ * @param {string} reason
+ */
+export function cancelOrder(orderId, reason) {
+  return request({
+    url: `/api/orders/${orderId}/cancel`,
+    method: 'POST',
+    data: { reason },
+  });
+}
+
+/**
+ * 催单。
+ * @param {string} orderId
+ * @param {string} remark
+ */
+export function urgeOrder(orderId, remark) {
+  return request({
+    url: `/api/orders/${orderId}/urge`,
+    method: 'POST',
+    data: { remark },
   });
 }

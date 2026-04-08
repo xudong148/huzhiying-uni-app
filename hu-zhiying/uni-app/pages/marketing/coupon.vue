@@ -1,10 +1,11 @@
 <template>
   <view class="page-shell">
+    <!-- 优惠券列表 -->
     <view v-for="item in coupons" :key="item.id" class="coupon-page__card">
       <view class="coupon-page__main">
         <view>
           <view class="coupon-page__title">{{ item.title }}</view>
-          <view class="coupon-page__desc">{{ item.threshold }} · 有效期至 {{ item.expireAt }}</view>
+          <view class="coupon-page__desc">{{ item.threshold }}，有效期至 {{ item.expireAt }}</view>
         </view>
         <view class="coupon-page__amount">
           <text class="coupon-page__symbol">¥</text>
@@ -17,6 +18,11 @@
 </template>
 
 <script setup>
+/**
+ * 优惠券中心页面。
+ * 1. 列表直接读取真实优惠券接口。
+ * 2. 页面仅做展示，不保留本地假数据。
+ */
 import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { getCouponList } from '../../api/user';
@@ -25,11 +31,12 @@ const coupons = ref([]);
 
 onShow(async () => {
   const res = await getCouponList();
-  coupons.value = res.data;
+  coupons.value = res.data || [];
 });
 </script>
 
 <style scoped>
+/* 卡片布局 */
 .coupon-page__card {
   overflow: hidden;
   border-radius: 32rpx;

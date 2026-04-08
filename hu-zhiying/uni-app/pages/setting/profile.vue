@@ -1,5 +1,6 @@
 <template>
   <view class="page-shell">
+    <!-- 资料编辑表单 -->
     <view class="card profile-page__section">
       <view class="profile-page__row">
         <text>昵称</text>
@@ -14,11 +15,17 @@
         <input v-model="profile.level" disabled />
       </view>
     </view>
+
     <button class="primary-btn profile-page__btn" :loading="submitting" @tap="save">保存资料</button>
   </view>
 </template>
 
 <script setup>
+/**
+ * 个人资料页。
+ * 1. 当前页只允许编辑昵称和手机号。
+ * 2. 提交成功后同步更新本地用户状态。
+ */
 import { reactive, ref } from 'vue';
 import { updateProfile } from '../../api/user';
 import { useUserStore } from '../../stores/user';
@@ -45,6 +52,7 @@ async function save() {
 </script>
 
 <style scoped>
+/* 表单区 */
 .profile-page__section {
   padding: 28rpx;
 }

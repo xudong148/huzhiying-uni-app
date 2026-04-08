@@ -1,44 +1,50 @@
 <template>
   <scroll-view scroll-y class="page-container" :show-scrollbar="false">
     <view class="home page-shell">
+      <!-- 顶部品牌区 -->
       <view class="home__hero">
         <view class="home__headline">一呼百应，专业到家</view>
         <view class="home__subline">维修、安装、保洁、商城一体化本地服务平台</view>
       </view>
 
+      <!-- 首页头部能力 -->
       <home-header
-        :location-name="`${location.current.city} · ${location.current.district}`"
+        :location-name="`${location.current.city} ${location.current.district}`"
         :notice="topNotice"
         :keywords="keywords"
         @location="goLocation"
         @search="goSearch"
       />
 
+      <!-- 快速下单 -->
       <view class="home__block">
         <express-card @tap="goCheckout"></express-card>
       </view>
 
+      <!-- 服务入口 -->
       <view class="section-title">
         <text class="section-title__text">核心服务入口</text>
         <text class="section-title__desc">维修、安装、清洗、保洁</text>
       </view>
       <kingkong-nav :list="categories" @select="goCategory"></kingkong-nav>
 
+      <!-- 会员权益 -->
       <view class="home__block">
         <vip-butler @tap="goCoupons"></vip-butler>
       </view>
 
+      <!-- 生态入口 -->
       <view class="section-title">
         <text class="section-title__text">生态便捷入口</text>
         <text class="section-title__desc">学堂、商城、社区联动</text>
       </view>
       <ecology-bento :list="ecologyList" @select="handleEcologySelect"></ecology-bento>
 
+      <!-- 推荐流 -->
       <view class="section-title home__recommend-title">
         <text class="section-title__text">热门推荐</text>
-        <text class="section-title__desc">猜你需要的服务和商品</text>
+        <text class="section-title__desc">猜你喜欢的服务和商品</text>
       </view>
-
       <view class="home__feed">
         <view
           v-for="item in feedList"
@@ -53,7 +59,7 @@
               <text class="tag">{{ item.tag }}</text>
               <text class="muted">已售 {{ item.sales }}</text>
             </view>
-            <price-format :value="item.price" suffix="起"></price-format>
+            <price-format :value="item.price" suffix="起" />
           </view>
         </view>
       </view>
@@ -64,6 +70,11 @@
 </template>
 
 <script setup>
+/**
+ * 首页。
+ * 1. 首页内容全部从真实接口读取。
+ * 2. 服务入口、推荐流和优惠入口都直接跳真实业务页。
+ */
 import { computed, onMounted, ref } from 'vue';
 import HomeHeader from '../../components/home-header.vue';
 import ExpressCard from '../../components/express-card.vue';
@@ -78,6 +89,7 @@ import { useLocationStore } from '../../stores/location';
 const appStore = useAppStore();
 const location = useLocationStore();
 
+// 首页生态卡片固定为平台入口，不参与实时配置。
 const ecologyList = [
   { id: 1, name: '小应学堂', desc: '师傅培训与故障案例', icon: '/static/icons/school.svg', color: '#2B5CFF' },
   { id: 2, name: '小应商城', desc: '五金耗材与安装套件', icon: '/static/icons/mall.svg', color: '#FF7D00' },
@@ -90,6 +102,7 @@ const feedList = ref([]);
 
 const topNotice = computed(() => appStore.topNotice?.title || '新客立减券已到账');
 
+// 拉取首页聚合数据并同步公共内容位。
 async function loadPage() {
   const res = await getHomeData();
   keywords.value = res.data.hotKeywords || [];
@@ -131,7 +144,9 @@ function goGoods(item) {
 }
 
 function goCheckout() {
-  uni.navigateTo({ url: `/pages/order/checkout?source=express&serviceItemId=201&title=${encodeURIComponent('空调上门维修')}` });
+  uni.navigateTo({
+    url: `/pages/order/checkout?source=express&serviceItemId=201&title=${encodeURIComponent('空调上门维修')}`,
+  });
 }
 
 onMounted(async () => {
@@ -141,6 +156,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* 页面主体 */
 .home {
   background:
     radial-gradient(circle at top right, rgba(138, 180, 248, 0.26), transparent 28%),
@@ -172,6 +188,7 @@ onMounted(async () => {
   margin-top: 28rpx;
 }
 
+/* 推荐流 */
 .home__feed {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

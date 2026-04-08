@@ -1,10 +1,12 @@
 <template>
   <view class="page-shell">
+    <!-- 页面头部 -->
     <view class="card master-dispatch__hero">
-      <view class="master-dispatch__title">听单中</view>
-      <view class="master-dispatch__desc">当前向你推送附近 {{ orders.length }} 个可接服务订单</view>
+      <view class="master-dispatch__title">听单大厅</view>
+      <view class="master-dispatch__desc">当前共为你推送 {{ orders.length }} 个可接服务订单</view>
     </view>
 
+    <!-- 抢单列表 -->
     <view v-for="item in orders" :key="item.id" class="card master-dispatch__card">
       <view class="master-dispatch__top">
         <view class="master-dispatch__name">{{ item.title }}</view>
@@ -20,11 +22,17 @@
       </view>
     </view>
 
+    <!-- 空状态 -->
     <view v-if="!orders.length" class="card master-dispatch__empty">暂无可抢订单，系统会持续为你推送。</view>
   </view>
 </template>
 
 <script setup>
+/**
+ * 师傅抢派单大厅。
+ * 1. 列表实时读取真实调度任务。
+ * 2. 抢单成功后直接跳转到履约工作台。
+ */
 import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { claimDispatchOrder, getDispatchOrders } from '../../api/master';
@@ -34,7 +42,7 @@ const orders = ref([]);
 
 async function loadOrders() {
   const res = await getDispatchOrders();
-  orders.value = res.data;
+  orders.value = res.data || [];
 }
 
 async function grab(item) {
@@ -54,6 +62,7 @@ onShow(loadOrders);
 </script>
 
 <style scoped>
+/* 页面头图与卡片 */
 .master-dispatch__hero,
 .master-dispatch__card {
   padding: 28rpx;

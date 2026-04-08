@@ -36,7 +36,7 @@ public class AdminSystemController {
 
     @GetMapping("/api/admin/system/roles/{id}")
     @Operation(summary = "查询角色详情")
-    public ApiResponse<AdminConfigDtos.RolePayload> role(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.RolePayload> role(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getRole(id));
     }
 
@@ -48,14 +48,14 @@ public class AdminSystemController {
 
     @PutMapping("/api/admin/system/roles/{id}")
     @Operation(summary = "更新角色")
-    public ApiResponse<AdminConfigDtos.RolePayload> updateRole(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.RolePayload> updateRole(@PathVariable("id") Long id,
                                                                @RequestBody AdminConfigDtos.RolePayload payload) {
         return ApiResponse.success(adminConfigService.saveRole(id, payload));
     }
 
     @DeleteMapping("/api/admin/system/roles/{id}")
     @Operation(summary = "删除角色")
-    public ApiResponse<Boolean> deleteRole(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteRole(@PathVariable("id") Long id) {
         adminConfigService.deleteRole(id);
         return ApiResponse.success(true);
     }
@@ -68,7 +68,7 @@ public class AdminSystemController {
 
     @GetMapping("/api/admin/system/menus/{id}")
     @Operation(summary = "查询菜单详情")
-    public ApiResponse<AdminConfigDtos.MenuPayload> menu(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.MenuPayload> menu(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getMenu(id));
     }
 
@@ -80,14 +80,14 @@ public class AdminSystemController {
 
     @PutMapping("/api/admin/system/menus/{id}")
     @Operation(summary = "更新菜单")
-    public ApiResponse<AdminConfigDtos.MenuPayload> updateMenu(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.MenuPayload> updateMenu(@PathVariable("id") Long id,
                                                                @RequestBody AdminConfigDtos.MenuPayload payload) {
         return ApiResponse.success(adminConfigService.saveMenu(id, payload));
     }
 
     @DeleteMapping("/api/admin/system/menus/{id}")
     @Operation(summary = "删除菜单")
-    public ApiResponse<Boolean> deleteMenu(@PathVariable Long id) {
+    public ApiResponse<Boolean> deleteMenu(@PathVariable("id") Long id) {
         adminConfigService.deleteMenu(id);
         return ApiResponse.success(true);
     }
@@ -100,7 +100,7 @@ public class AdminSystemController {
 
     @GetMapping("/api/admin/system/permissions/{id}")
     @Operation(summary = "查询权限点详情")
-    public ApiResponse<AdminConfigDtos.PermissionPayload> permission(@PathVariable Long id) {
+    public ApiResponse<AdminConfigDtos.PermissionPayload> permission(@PathVariable("id") Long id) {
         return ApiResponse.success(adminConfigService.getPermission(id));
     }
 
@@ -112,14 +112,14 @@ public class AdminSystemController {
 
     @PutMapping("/api/admin/system/permissions/{id}")
     @Operation(summary = "更新权限点")
-    public ApiResponse<AdminConfigDtos.PermissionPayload> updatePermission(@PathVariable Long id,
+    public ApiResponse<AdminConfigDtos.PermissionPayload> updatePermission(@PathVariable("id") Long id,
                                                                            @RequestBody AdminConfigDtos.PermissionPayload payload) {
         return ApiResponse.success(adminConfigService.savePermission(id, payload));
     }
 
     @DeleteMapping("/api/admin/system/permissions/{id}")
     @Operation(summary = "删除权限点")
-    public ApiResponse<Boolean> deletePermission(@PathVariable Long id) {
+    public ApiResponse<Boolean> deletePermission(@PathVariable("id") Long id) {
         adminConfigService.deletePermission(id);
         return ApiResponse.success(true);
     }

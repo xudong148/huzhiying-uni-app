@@ -37,6 +37,11 @@
 </template>
 
 <script setup>
+/**
+ * 后台通用布局。
+ * 1. 左侧导航与路由标题保持一一对应。
+ * 2. 登录态由用户 store 维护，退出后统一跳转登录页。
+ */
 import { useRoute, useRouter } from 'vue-router';
 import { useAdminUserStore } from '../stores/user';
 

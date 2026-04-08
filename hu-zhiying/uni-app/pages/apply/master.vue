@@ -1,5 +1,6 @@
 <template>
   <view class="page-shell">
+    <!-- 入驻表单 -->
     <view class="card apply-page__section">
       <view class="apply-page__row">
         <text>姓名</text>
@@ -28,6 +29,11 @@
 </template>
 
 <script setup>
+/**
+ * 师傅入驻页。
+ * 1. 当前页提交真实入驻申请接口。
+ * 2. 提交成功后切换到师傅端并跳转抢派单大厅。
+ */
 import { reactive, ref } from 'vue';
 import { applyMaster } from '../../api/master';
 import { useUserStore } from '../../stores/user';
@@ -74,6 +80,7 @@ async function submit() {
 </script>
 
 <style scoped>
+/* 表单布局 */
 .apply-page__section {
   padding: 28rpx;
 }

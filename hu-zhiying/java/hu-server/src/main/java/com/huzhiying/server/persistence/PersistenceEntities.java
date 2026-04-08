@@ -353,6 +353,8 @@ public final class PersistenceEntities {
         public BigDecimal amount;
         @Column(name = "transaction_time")
         public String transactionTime;
+        @Column(name = "status_text")
+        public String statusText;
 
         public WalletTransactionEntity() {}
     }
@@ -433,6 +435,8 @@ public final class PersistenceEntities {
         public String reasonText;
         @Column(name = "status_text")
         public String statusText;
+        @Column(name = "result_text")
+        public String resultText;
 
         public ArbitrationCaseEntity() {}
     }
@@ -559,5 +563,77 @@ public final class PersistenceEntities {
         public Boolean enabled;
 
         public DispatchZoneEntity() {}
+    }
+
+    @Entity(name = "MediaFileEntity")
+    @Table(name = "media_files")
+    public static class MediaFileEntity {
+        @Id
+        public Long id;
+        @Column(name = "biz_type")
+        public String bizType;
+        @Column(name = "biz_id")
+        public String bizId;
+        @Column(name = "original_name")
+        public String originalName;
+        @Column(name = "content_type")
+        public String contentType;
+        @Column(name = "size_bytes")
+        public Long sizeBytes;
+        @Column(name = "storage_path")
+        public String storagePath;
+        @Column(name = "access_url")
+        public String accessUrl;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+
+        public MediaFileEntity() {}
+    }
+
+    @Entity(name = "CommentEntity")
+    @Table(name = "comments")
+    public static class CommentEntity {
+        @Id
+        public Long id;
+        @Column(name = "service_item_id")
+        public Long serviceItemId;
+        @Column(name = "user_name")
+        public String userName;
+        public Integer score;
+        @Lob
+        @Column(name = "content_text")
+        public String contentText;
+        @Lob
+        @Column(name = "images_text")
+        public String imagesText;
+        @Lob
+        @Column(name = "tags_text")
+        public String tagsText;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+
+        public CommentEntity() {}
+    }
+
+    @Entity(name = "OrderTrackPointEntity")
+    @Table(name = "order_track_points")
+    public static class OrderTrackPointEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "order_id")
+        public String orderId;
+        @Column(name = "point_type")
+        public String pointType;
+        @Column(name = "label_text")
+        public String labelText;
+        @Column(name = "description_text")
+        public String descriptionText;
+        public Double latitude;
+        public Double longitude;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+
+        public OrderTrackPointEntity() {}
     }
 }

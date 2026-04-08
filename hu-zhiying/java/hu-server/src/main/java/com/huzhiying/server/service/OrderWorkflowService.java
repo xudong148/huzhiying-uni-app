@@ -58,7 +58,7 @@ public class OrderWorkflowService {
                 QuotationStatus.CONFIRMED,
                 quotation.remark()
         );
-        return new ServiceOrder(order.id(), order.title(), ServiceOrderStatus.IN_SERVICE, PaymentStatus.PAID,
+        return new ServiceOrder(order.id(), order.title(), ServiceOrderStatus.WAITING_SUPPLEMENT_PAYMENT, PaymentStatus.PARTIAL_PAID,
                 order.userName(), order.masterName(), order.appointment(), order.address(),
                 order.amount().add(quotation.totalAmount()), order.dispatchMode(), order.timeline(),
                 confirmed, order.eta());

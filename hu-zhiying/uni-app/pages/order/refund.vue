@@ -1,5 +1,6 @@
 <template>
   <view class="page-shell">
+    <!-- 售后原因 -->
     <view class="card order-refund__section">
       <view class="section-title">
         <text class="section-title__text">售后原因</text>
@@ -15,6 +16,7 @@
       </view>
     </view>
 
+    <!-- 补充说明 -->
     <view class="card order-refund__section">
       <view class="section-title">
         <text class="section-title__text">补充说明</text>
@@ -27,6 +29,10 @@
 </template>
 
 <script setup>
+/**
+ * 售后退款页。
+ * 当前提交直接走退款接口，原因和备注用于收集问题上下文。
+ */
 import { ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { refundOrder } from '../../api/order';
@@ -62,6 +68,7 @@ onLoad((options) => {
 </script>
 
 <style scoped>
+/* 区块与选项 */
 .order-refund__section {
   padding: 28rpx;
 }

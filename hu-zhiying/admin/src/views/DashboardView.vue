@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- 核心指标 -->
     <div class="page-panel">
       <h2 class="page-title">平台总览</h2>
       <p class="page-desc">实时查看 GMV、订单体量、在线师傅与异常预警。</p>
@@ -11,10 +12,11 @@
       </div>
     </div>
 
+    <!-- 风险提醒 -->
     <div class="page-panel dashboard-alert">
       <div>
         <h3 class="page-title">风险提醒</h3>
-        <p class="page-desc">当前有 {{ data.warning }} 条仲裁或退款异常待处理。</p>
+        <p class="page-desc">当前共有 {{ data.warning }} 条仲裁或退款异常待处理。</p>
       </div>
       <router-link class="dashboard-alert__link" to="/arbitration">进入仲裁中心</router-link>
     </div>
@@ -22,6 +24,10 @@
 </template>
 
 <script setup>
+/**
+ * 仪表盘页面。
+ * 展示后台核心经营指标与待处理风险。
+ */
 import { onMounted, reactive } from 'vue';
 import KpiCard from '../components/KpiCard.vue';
 import { fetchAdminDashboard } from '../api/request';
@@ -40,6 +46,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* 指标与提醒布局 */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

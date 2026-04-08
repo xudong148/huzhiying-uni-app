@@ -221,7 +221,7 @@ INSERT INTO users (id, nickname, mobile, role_code, avatar, level_name) VALUES
   (90001, '运营后台', '400-000-0000', 'ADMIN', '/static/user.png', '超级管理员');
 
 INSERT INTO addresses (id, user_id, tag_name, contact_name, mobile, detail_address, city_name, district_name, latitude, longitude, is_default) VALUES
-  (1, 10001, '家', '周女士', '138****5288', '上海市浦东新区张江高科园区 88 号 2 幢 1602', '上海', '浦东新区', 31.2253, 121.5443, TRUE),
+  (1, 10001, '家', '周女士', '138****5288', '上海市浦东新区张江高科技园区 88 号 12 幢 1602', '上海', '浦东新区', 31.2253, 121.5443, TRUE),
   (2, 10001, '公司', '周女士', '138****5288', '上海市徐汇区桂平路 410 号 10 楼', '上海', '徐汇区', 31.1692, 121.4191, FALSE);
 
 INSERT INTO master_profiles (id, user_id, real_name, skill_tags, service_area, deposit, credit_score, online, listening, max_distance_km, privacy_number) VALUES
@@ -233,20 +233,20 @@ INSERT INTO service_categories (id, name, icon, sort_order) VALUES
   (4, '保洁收纳', '/static/icons/cleaning.svg', 3);
 
 INSERT INTO service_items (id, category_id, name, subtitle, base_price, door_price, guide_price, warranty_text, guarantees_text, tags_text, image_urls, process_steps) VALUES
-  (201, 2, '空调不制冷上门维修', '基础检测 + 故障排查', 58.00, 30.00, '58 - 299', '90 天平台质保', '不修不收|迟到赔|实名认证|保证金先赔', '空调维修|快速上门', 'https://picsum.photos/960/720?random=211|https://picsum.photos/960/720?random=212|https://picsum.photos/960/720?random=213', '在线描述故障并预约上门时间|平台智能派单或师傅抢单|师傅上门检测并出具处理方案|增项需用户确认后施工|完工验收与电子报告归档'),
-  (301, 3, '智能锁标准安装', '含调试联网', 128.00, 0.00, '128 - 388', '30 天安装质保', '品牌认证|安装质保', '安装服务|配件自带', 'https://picsum.photos/960/720?random=301|https://picsum.photos/960/720?random=302', '确认门型与锁型|预约安装时间|现场开孔和调试|联网测试|交付讲解'),
-  (401, 4, '日常保洁 3 小时', '厨房 / 卫生间 / 客厅', 135.00, 0.00, '135 - 388', '服务完成后可追溯', '自带工具|平台背书', '保洁|高频服务', 'https://picsum.photos/960/720?random=401|https://picsum.photos/960/720?random=402', '确认保洁范围|师傅上门签到|分区作业|用户验收');
+  (201, 2, '空调不制冷上门维修', '基础检测 + 故障排查', 58.00, 30.00, '58 - 299', '90 天平台质保', '不修不收|迟到赔付|实名认证|保证金先赔', '空调维修|快速上门', '/seed-media/service-aircon.svg|/seed-media/service-aircon.svg|/seed-media/service-aircon.svg', '在线描述故障并预约上门时间|平台智能派单或师傅抢单|师傅上门检测并出具处理方案|增项需用户确认后施工|完工验收与电子报告归档'),
+  (301, 3, '智能锁标准安装', '含调试联网', 128.00, 0.00, '128 - 388', '30 天安装质保', '品牌认证|安装质保', '安装服务|配件自带', '/seed-media/service-lock.svg|/seed-media/service-lock.svg', '确认门型与锁型|预约安装时间|现场开孔和调试|联网测试|交付讲解'),
+  (401, 4, '日常保洁 3 小时', '厨房 / 卫生间 / 客厅', 135.00, 0.00, '135 - 388', '服务完成后可追溯', '自带工具|平台背书', '保洁|高频服务', '/seed-media/service-cleaning.svg|/seed-media/service-cleaning.svg', '确认保洁范围|师傅上门签到|分区作业|用户验收');
 
 INSERT INTO products (id, name, description_text, price, create_install_order, image_url) VALUES
-  (1001, '智能锁 Pro 套装', '支持购买后自动生成安装工单', 1699.00, TRUE, 'https://picsum.photos/960/720?random=501'),
-  (1002, '空调清洗年卡', '全年 2 次深度清洗', 499.00, FALSE, 'https://picsum.photos/960/720?random=502');
+  (1001, '智能锁 Pro 套装', '支持购买后自动生成安装工单', 1699.00, TRUE, '/seed-media/product-lock.svg'),
+  (1002, '空调清洗年卡', '全年 2 次深度清洗', 499.00, FALSE, '/seed-media/product-card.svg');
 
 INSERT INTO skus (id, product_id, name, price, stock) VALUES
-  (1, 1001, '黑色标准款', 1699.00, 36),
-  (2, 1002, '家庭版', 499.00, 88);
+  (1, 1001, '雅黑标准款', 1699.00, 36),
+  (2, 1002, '家庭卡', 499.00, 88);
 
 INSERT INTO service_orders (id, service_item_id, title, status, payment_status, user_id, address_id, master_user_id, appointment, amount, dispatch_mode, eta_text, description_text, emergency, night_service, created_at, updated_at) VALUES
-  ('SO20260408001', 201, '空调不制冷上门维修', 'PENDING_ACCEPT', 'PARTIAL_PAID', 10001, 1, NULL, '今天 14:00-16:00', 88.00, 'ROB', '26 分钟', '客厅空调制冷效果很差，外机有异响。', FALSE, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  ('SO20260408001', 201, '空调不制冷上门维修', 'PENDING_ACCEPT', 'PARTIAL_PAID', 10001, 1, NULL, '今天 14:00-16:00', 88.00, 'ROB', '26 分钟', '客厅空调制冷效果较差，外机有异响。', FALSE, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   ('SO20260407009', 301, '智能锁标准安装', 'WAITING_SUPPLEMENT_PAYMENT', 'PARTIAL_PAID', 10001, 1, 20001, '明天 09:00-11:00', 258.00, 'FORCE_ASSIGN', '15 分钟', '需要安装智能锁并完成联网调试。', FALSE, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO product_orders (id, product_id, title, status, payment_status, user_id, address_id, amount, create_install_order, install_service_order_id, created_at) VALUES
@@ -265,7 +265,7 @@ INSERT INTO work_step_records (order_id, step_key, label_text, description_text,
   ('SO20260407009', 'quotation', '增项报价', '现场门体厚度超出标准安装范围，等待用户确认', TRUE, CURRENT_TIMESTAMP);
 
 INSERT INTO quotations (id, order_id, total_amount, status, remark_text, created_at) VALUES
-  ('QT20260408001', 'SO20260407009', 170.00, 'PENDING_CONFIRM', '现场门体厚度超出标准安装范围，需新增配件和工时。', CURRENT_TIMESTAMP);
+  ('QT20260408001', 'SO20260407009', 170.00, 'PENDING_CONFIRM', '现场门体厚度超出标准安装范围，需要新增配件和工时。', CURRENT_TIMESTAMP);
 
 INSERT INTO quotation_items (quotation_id, name, amount) VALUES
   ('QT20260408001', '锁体加固件', 70.00),
@@ -288,7 +288,7 @@ INSERT INTO message_items (session_id, sender_code, message_type, content_text, 
   ('MS-001', 'user', 'text', '到楼下给我打电话，我下来接您。', '14:07');
 
 INSERT INTO banners (id, title, subtitle, image) VALUES
-  (1, '家电维修专场', '不修不收，90 天质保', 'banner-1');
+  (1, '家电维修专场', '不修不收，90 天质保', '/seed-media/banner-home.svg');
 
 INSERT INTO notices (id, title, level_code) VALUES
   (1, '夜间服务费：22:00 后自动加收 30%', 'warning'),

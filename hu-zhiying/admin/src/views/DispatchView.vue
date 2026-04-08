@@ -1,7 +1,10 @@
 <template>
   <div class="page-panel">
+    <!-- 页面标题 -->
     <h2 class="page-title">订单调度中心</h2>
     <p class="page-desc">查看派单状态、服务区域和当前师傅归属，支持一键强派。</p>
+
+    <!-- 调度表格 -->
     <el-table :data="rows">
       <el-table-column prop="id" label="订单号" min-width="180" />
       <el-table-column prop="type" label="类型" width="100" />
@@ -23,6 +26,11 @@
 </template>
 
 <script setup>
+/**
+ * 调度中心页面。
+ * 1. 列表与强派动作都走真实后台接口。
+ * 2. 通过 WebSocket 监听派单状态变化并刷新列表。
+ */
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { buildAdminWsUrl, fetchAdminDispatch, forceAssignDispatch } from '../api/request';
@@ -75,3 +83,7 @@ onMounted(async () => {
 
 onBeforeUnmount(closeSocket);
 </script>
+
+<style scoped>
+/* 当前页依赖全局表格样式，这里保留样式区块注释以统一页面结构。 */
+</style>
