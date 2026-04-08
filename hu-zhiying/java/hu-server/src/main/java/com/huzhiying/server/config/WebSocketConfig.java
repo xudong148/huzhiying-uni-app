@@ -10,10 +10,15 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
+    private final GenericTextHandler genericTextHandler;
+
+    public WebSocketConfig(GenericTextHandler genericTextHandler) {
+        this.genericTextHandler = genericTextHandler;
+    }
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new GenericTextHandler("chat"), "/ws/chat").setAllowedOriginPatterns("*");
-        registry.addHandler(new GenericTextHandler("dispatch"), "/ws/dispatch").setAllowedOriginPatterns("*");
-        registry.addHandler(new GenericTextHandler("orders"), "/ws/orders").setAllowedOriginPatterns("*");
+        registry.addHandler(genericTextHandler, "/ws/chat", "/ws/dispatch", "/ws/orders", "/ws/orders/*")
+                .setAllowedOriginPatterns("*");
     }
 }

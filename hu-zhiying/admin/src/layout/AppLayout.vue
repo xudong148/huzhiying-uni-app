@@ -19,9 +19,15 @@
       <el-header class="layout__header">
         <div>
           <div class="layout__title">{{ route.meta.title }}</div>
-          <div class="layout__subtitle">实时监控订单、履约、财务与仲裁</div>
+          <div class="layout__subtitle">统一处理调度、履约、财务、仲裁与运营配置</div>
         </div>
-        <el-tag type="primary">{{ store.profile.role }}</el-tag>
+        <div class="layout__actions">
+          <div class="layout__user">
+            <div class="layout__user-name">{{ store.profile.name }}</div>
+            <el-tag type="primary">{{ store.profile.role }}</el-tag>
+          </div>
+          <el-button plain @click="handleLogout">退出登录</el-button>
+        </div>
       </el-header>
       <el-main class="layout__main">
         <router-view />
@@ -31,11 +37,17 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAdminUserStore } from '../stores/user';
 
 const route = useRoute();
+const router = useRouter();
 const store = useAdminUserStore();
+
+function handleLogout() {
+  store.logout();
+  router.replace('/login');
+}
 </script>
 
 <style scoped>
@@ -72,6 +84,7 @@ const store = useAdminUserStore();
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
   height: 88px;
   padding: 0 32px;
   background: rgba(255, 255, 255, 0.72);
@@ -87,6 +100,24 @@ const store = useAdminUserStore();
   margin-top: 6px;
   font-size: 14px;
   color: #667085;
+}
+
+.layout__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.layout__user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.layout__user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #344054;
 }
 
 .layout__main {

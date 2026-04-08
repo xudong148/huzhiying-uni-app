@@ -1,238 +1,70 @@
 package com.huzhiying.server.service;
 
-import com.huzhiying.domain.enums.DomainEnums.DispatchMode;
-import com.huzhiying.domain.enums.DomainEnums.PaymentStatus;
-import com.huzhiying.domain.enums.DomainEnums.QuotationStatus;
 import com.huzhiying.domain.enums.DomainEnums.ServiceOrderStatus;
-import com.huzhiying.domain.model.DomainModels.Address;
-import com.huzhiying.domain.model.DomainModels.AuthToken;
-import com.huzhiying.domain.model.DomainModels.DispatchTask;
-import com.huzhiying.domain.model.DomainModels.MasterProfile;
-import com.huzhiying.domain.model.DomainModels.MemberLevel;
-import com.huzhiying.domain.model.DomainModels.MessageItem;
-import com.huzhiying.domain.model.DomainModels.MessageSession;
-import com.huzhiying.domain.model.DomainModels.ProductOrder;
-import com.huzhiying.domain.model.DomainModels.Quotation;
-import com.huzhiying.domain.model.DomainModels.QuotationItem;
-import com.huzhiying.domain.model.DomainModels.SearchDocument;
-import com.huzhiying.domain.model.DomainModels.ServiceOrder;
-import com.huzhiying.domain.model.DomainModels.WalletAccount;
-import com.huzhiying.domain.model.DomainModels.WalletTransaction;
-import com.huzhiying.domain.model.DomainModels.WorkStepRecord;
-import com.huzhiying.server.repository.DemoStateRepository;
-import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-@Service
+@org.springframework.stereotype.Service
 public class PlatformFacadeService {
 
-    private final DemoStateRepository repository;
-    private final PricingEngineService pricingEngineService;
-    private final OrderWorkflowService orderWorkflowService;
+    private final PlatformQueryService queryService;
+    private final PlatformCommandService commandService;
 
-    public PlatformFacadeService(DemoStateRepository repository, PricingEngineService pricingEngineService,
-                                 OrderWorkflowService orderWorkflowService) {
-        this.repository = repository;
-        this.pricingEngineService = pricingEngineService;
-        this.orderWorkflowService = orderWorkflowService;
+    public PlatformFacadeService(PlatformQueryService queryService, PlatformCommandService commandService) {
+        this.queryService = queryService;
+        this.commandService = commandService;
     }
 
-    public AuthToken login(String role) {
-        return new AuthToken("mock-token-" + role, "mock-refresh-" + role, role);
+    public Object login(String role) { return commandService.login(role); }
+    public Object categories() { return queryService.categories(); }
+    public Object services() { return queryService.services(); }
+    public Object serviceDetail(Long serviceItemId) { return queryService.serviceDetail(serviceItemId); }
+    public Object products() { return queryService.products(); }
+    public Object productDetail(Long productId) { return queryService.productDetail(productId); }
+    public Object search(String keyword) { return queryService.search(keyword); }
+    public Object currentUser() { return queryService.currentUser(); }
+    public Object saveProfile(String nickname, String mobile) { return commandService.saveProfile(nickname, mobile); }
+    public Object addresses() { return queryService.addresses(); }
+    public Object saveAddress(Long id, String tag, String name, String mobile, String detailAddress, boolean isDefault) {
+        return commandService.saveAddress(id, tag, name, mobile, detailAddress, isDefault);
     }
-
-    public List<?> categories() {
-        return repository.categories();
+    public Object deleteAddress(Long id) { return commandService.deleteAddress(id); }
+    public Object coupons() { return queryService.coupons(); }
+    public Object currentMember() { return queryService.currentMember(); }
+    public Object serviceOrders() { return queryService.serviceOrders(); }
+    public Object serviceOrder(String id) { return queryService.serviceOrder(id); }
+    public Object createServiceOrder(Long serviceItemId, String title, String appointment, Long addressId, String description, boolean emergency, boolean nightService) {
+        return commandService.createServiceOrder(serviceItemId, title, appointment, addressId, description, emergency, nightService);
     }
-
-    public List<?> services() {
-        return repository.categories().stream().flatMap(item -> item.services().stream()).toList();
+    public Object updateServiceOrderStatus(String id, ServiceOrderStatus status) { return commandService.updateServiceOrderStatus(id, status); }
+    public Object productOrders() { return queryService.productOrders(); }
+    public Object productOrder(String id) { return queryService.productOrder(id); }
+    public Object createProductOrder(Long productId, Long skuId, Long addressId) {
+        return commandService.createProductOrder(productId, skuId, addressId);
     }
-
-    public List<?> products() {
-        return repository.products();
+    public Object createQuotation(String orderId, String remark) { return commandService.createQuotation(orderId, remark); }
+    public Object confirmQuotation(String quotationId) { return commandService.confirmQuotation(quotationId); }
+    public Object dispatchTasks() { return queryService.dispatchTasks(); }
+    public Object claimTask(String id, String masterName) { return commandService.claimTask(id, masterName); }
+    public Object forceAssignTask(String id, String masterName) { return commandService.forceAssignTask(id, masterName); }
+    public Object applyMaster(String realName, String mobile, String skills, String area) { return commandService.applyMaster(realName, mobile, skills, area); }
+    public Object masterDashboard() { return queryService.masterDashboard(); }
+    public Object wallet() { return queryService.wallet(); }
+    public Object walletTransactions() { return queryService.walletTransactions(); }
+    public Object masterSettings() { return queryService.masterSettings(); }
+    public Object saveMasterSettings(boolean listening, String maxDistance, boolean privacyNumber) {
+        return commandService.saveMasterSettings(listening, maxDistance, privacyNumber);
     }
-
-    public List<SearchDocument> search(String keyword) {
-        return repository.searchDocuments().stream()
-                .filter(item -> keyword == null || keyword.isBlank() || item.title().contains(keyword) || item.summary().contains(keyword))
-                .toList();
-    }
-
-    public Map<String, Object> currentUser() {
-        return Map.of(
-                "profile", repository.users().get(0),
-                "banners", repository.banners(),
-                "notices", repository.notices()
-        );
-    }
-
-    public List<Address> addresses() {
-        return repository.addresses();
-    }
-
-    public List<?> coupons() {
-        return repository.coupons();
-    }
-
-    public MemberLevel currentMember() {
-        return repository.memberLevel();
-    }
-
-    public List<ServiceOrder> serviceOrders() {
-        return new ArrayList<>(repository.serviceOrders().values());
-    }
-
-    public ServiceOrder serviceOrder(String id) {
-        return repository.serviceOrders().get(id);
-    }
-
-    public ServiceOrder createServiceOrder(String title, String appointment, boolean emergency, boolean night) {
-        Address address = repository.addresses().get(0);
-        BigDecimal amount = pricingEngineService.estimate(BigDecimal.valueOf(58), BigDecimal.valueOf(30), emergency, night);
-        ServiceOrder order = new ServiceOrder("SO" + System.currentTimeMillis(), title, ServiceOrderStatus.PENDING_DISPATCH,
-                PaymentStatus.PARTIAL_PAID, "周女士", "待接单", appointment, address, amount, DispatchMode.ROB,
-                List.of(new WorkStepRecord("created", "订单创建", "用户完成预付款并提交工单", true, LocalDateTime.now())),
-                null, "30 分钟");
-        repository.serviceOrders().put(order.id(), order);
-        return order;
-    }
-
-    public ServiceOrder updateServiceOrderStatus(String id, ServiceOrderStatus status) {
-        ServiceOrder updated = orderWorkflowService.advance(serviceOrder(id), status);
-        repository.serviceOrders().put(id, updated);
-        return updated;
-    }
-
-    public Quotation createQuotation(String orderId, String remark) {
-        ServiceOrder order = serviceOrder(orderId);
-        Quotation quotation = new Quotation("QT-" + UUID.randomUUID().toString().substring(0, 8), orderId,
-                List.of(new QuotationItem("增项配件", BigDecimal.valueOf(88))),
-                BigDecimal.valueOf(88), QuotationStatus.PENDING_CONFIRM, remark);
-        ServiceOrder next = new ServiceOrder(order.id(), order.title(), ServiceOrderStatus.WAITING_SUPPLEMENT_PAYMENT,
-                PaymentStatus.PARTIAL_PAID, order.userName(), order.masterName(), order.appointment(),
-                order.address(), order.amount(), order.dispatchMode(), order.timeline(), quotation, order.eta());
-        repository.serviceOrders().put(orderId, next);
-        return quotation;
-    }
-
-    public ServiceOrder confirmQuotation(String quotationId) {
-        ServiceOrder order = repository.serviceOrders().values().stream()
-                .filter(item -> item.quotation() != null && quotationId.equals(item.quotation().id()))
-                .findFirst()
-                .orElseThrow();
-        ServiceOrder updated = orderWorkflowService.confirmQuotation(order);
-        repository.serviceOrders().put(order.id(), updated);
-        return updated;
-    }
-
-    public List<ProductOrder> productOrders() {
-        return new ArrayList<>(repository.productOrders().values());
-    }
-
-    public ProductOrder productOrder(String id) {
-        return repository.productOrders().get(id);
-    }
-
-    public List<DispatchTask> dispatchTasks() {
-        return new ArrayList<>(repository.dispatchTasks().values());
-    }
-
-    public DispatchTask claimTask(String id, String masterName) {
-        DispatchTask task = repository.dispatchTasks().get(id);
-        DispatchTask updated = new DispatchTask(task.id(), task.orderId(), task.title(), task.income(),
-                task.distance(), task.area(), task.mode(), masterName, task.tags());
-        repository.dispatchTasks().put(id, updated);
-        return updated;
-    }
-
-    public MasterProfile applyMaster(String realName, String mobile, String skills, String area) {
-        MasterProfile profile = new MasterProfile(System.currentTimeMillis(), realName + "(" + mobile + ")",
-                skills, area, BigDecimal.valueOf(3000), 100, false);
-        repository.masters().add(profile);
-        return profile;
-    }
-
-    public Map<String, Object> masterDashboard() {
-        return Map.of(
-                "dispatchCount", repository.dispatchTasks().size(),
-                "wallet", repository.walletAccount(),
-                "orders", repository.dispatchTasks().values()
-        );
-    }
-
-    public WalletAccount wallet() {
-        return repository.walletAccount();
-    }
-
-    public List<WalletTransaction> walletTransactions() {
-        return repository.walletTransactions();
-    }
-
-    public List<MessageSession> messageSessions() {
-        return repository.messageSessions();
-    }
-
-    public List<MessageItem> messageItems(String sessionId) {
-        return repository.messageItems().stream().filter(item -> sessionId.equals(item.sessionId())).toList();
-    }
-
-    public List<?> notices() {
-        return repository.notices();
-    }
-
-    public Map<String, Object> adminDashboard() {
-        BigDecimal gmv = repository.serviceOrders().values().stream().map(ServiceOrder::amount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .add(repository.productOrders().values().stream().map(ProductOrder::amount)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add));
-        return Map.of(
-                "gmv", gmv,
-                "serviceOrders", repository.serviceOrders().size(),
-                "productOrders", repository.productOrders().size(),
-                "onlineMasters", repository.masters().stream().filter(MasterProfile::online).count(),
-                "warning", repository.arbitrations().size()
-        );
-    }
-
-    public List<MasterProfile> masters() {
-        return repository.masters().stream()
-                .sorted(Comparator.comparing(MasterProfile::creditScore).reversed())
-                .toList();
-    }
-
-    public List<?> arbitrations() {
-        return repository.arbitrations();
-    }
-
-    public List<?> pricingRules() {
-        return repository.categories().stream()
-                .flatMap(item -> item.services().stream())
-                .map(service -> Map.of(
-                        "category", service.name(),
-                        "basePrice", service.basePrice(),
-                        "doorPrice", service.doorPrice(),
-                        "nightCoefficient", "夜间 +30%"
-                ))
-                .toList();
-    }
-
-    public Map<String, Object> createWechatPrepay(String orderId) {
-        return Map.of(
-                "orderId", orderId,
-                "appId", "demo-wx-appid",
-                "timeStamp", String.valueOf(System.currentTimeMillis() / 1000),
-                "nonceStr", UUID.randomUUID().toString().replace("-", ""),
-                "packageValue", "prepay_id=demo",
-                "signType", "RSA",
-                "paySign", "demo-sign"
-        );
-    }
+    public Object messageSessions() { return queryService.messageSessions(); }
+    public Object messageItems(String sessionId) { return queryService.messageItems(sessionId); }
+    public Object sendMessage(String sessionId, String senderCode, String content) { return commandService.sendMessage(sessionId, senderCode, content); }
+    public Object notices() { return queryService.notices(); }
+    public Object adminDashboard() { return queryService.adminDashboard(); }
+    public Object masters() { return queryService.masters(); }
+    public Object arbitrations() { return queryService.arbitrations(); }
+    public Object pricingRules() { return queryService.pricingRules(); }
+    public Object adminDispatchRows() { return queryService.adminDispatchRows(); }
+    public Object adminOrders() { return queryService.adminOrders(); }
+    public Object financeRows() { return queryService.financeRows(); }
+    public Object createWechatPrepay(String orderId) { return queryService.createWechatPrepay(orderId); }
+    public Object refundOrder(String orderId) { return commandService.refundOrder(orderId); }
+    public Object handleWechatCallback(String orderId) { return commandService.handleWechatCallback(orderId); }
 }

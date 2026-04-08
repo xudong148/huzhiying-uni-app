@@ -4,9 +4,37 @@ server:
 spring:
   application:
     name: huzhiying-platform
+  datasource:
+    url: ${HZY_DB_URL:jdbc:mysql://localhost:3306/huzhiying?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
+    username: ${HZY_DB_USERNAME:hzy}
+    password: ${HZY_DB_PASSWORD:hzy123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
     time-zone: Asia/Shanghai
     date-format: yyyy-MM-dd HH:mm:ss
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  data:
+    redis:
+      host: ${HZY_REDIS_HOST:localhost}
+      port: ${HZY_REDIS_PORT:6379}
+      timeout: 2s
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui/index.html
+    tags-sorter: alpha
+    operations-sorter: alpha
 
 management:
   endpoints:
@@ -17,12 +45,16 @@ management:
 hzy:
   app:
     name: 呼之应
+    runtime-mode: ${HZY_RUNTIME_MODE:live}
+    city-whitelist: ${HZY_CITY_WHITELIST:上海,杭州,苏州,南京}
   amap:
     enabled: true
     key: ${HZY_AMAP_KEY:}
   wechat:
-    pay-enabled: false
+    pay-enabled: ${HZY_WX_PAY_ENABLED:false}
     app-id: ${HZY_WX_APP_ID:}
     mch-id: ${HZY_WX_MCH_ID:}
+  redis:
+    enabled: ${HZY_REDIS_ENABLED:true}
   storage:
     provider: local

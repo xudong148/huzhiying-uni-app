@@ -5,7 +5,7 @@
         <image class="home-header__location-icon" src="/static/icons/location.svg" mode="aspectFit" />
         <view>
           <view class="home-header__city">{{ locationName }}</view>
-          <view class="home-header__desc">当前位置已用于智能派单</view>
+          <view class="home-header__desc">当前位置将用于智能派单与服务范围判断</view>
         </view>
       </view>
       <view class="home-header__notice">{{ notice }}</view>
@@ -29,7 +29,7 @@ defineProps({
   },
   notice: {
     type: String,
-    default: '新客领 80 元券包',
+    default: '新客最高可领 80 元券包',
   },
   keywords: {
     type: Array,

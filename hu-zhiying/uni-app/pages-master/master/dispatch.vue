@@ -2,7 +2,7 @@
   <view class="page-shell">
     <view class="card master-dispatch__hero">
       <view class="master-dispatch__title">听单中</view>
-      <view class="master-dispatch__desc">已为你匹配 20km 内的安装 / 维修订单</view>
+      <view class="master-dispatch__desc">当前向你推送附近 {{ orders.length }} 个可接服务订单</view>
     </view>
 
     <view v-for="item in orders" :key="item.id" class="card master-dispatch__card">
@@ -15,27 +15,42 @@
         <text v-for="tag in item.tags" :key="tag" class="tag">{{ tag }}</text>
       </view>
       <view class="master-dispatch__bottom">
-        <text class="master-dispatch__price">预计收入 ¥{{ item.income }}</text>
-        <button class="primary-btn master-dispatch__btn" @tap="grab(item)">立即抢单</button>
+        <text class="master-dispatch__price">预计收入 ¥{{ Number(item.income || 0).toFixed(2) }}</text>
+        <button class="primary-btn master-dispatch__btn" :loading="loadingTaskId === item.id" @tap="grab(item)">立即抢单</button>
       </view>
     </view>
+
+    <view v-if="!orders.length" class="card master-dispatch__empty">暂无可抢订单，系统会持续为你推送。</view>
   </view>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import { getDispatchOrders } from '../../api/master';
+import { ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
+import { claimDispatchOrder, getDispatchOrders } from '../../api/master';
 
+const loadingTaskId = ref('');
 const orders = ref([]);
 
-function grab(item) {
-  uni.showToast({ title: `已抢单：${item.title}`, icon: 'none' });
-}
-
-onMounted(async () => {
+async function loadOrders() {
   const res = await getDispatchOrders();
   orders.value = res.data;
-});
+}
+
+async function grab(item) {
+  loadingTaskId.value = item.id;
+  try {
+    await claimDispatchOrder(item.id, '张师傅');
+    uni.showToast({ title: `抢单成功：${item.title}`, icon: 'none' });
+    setTimeout(() => {
+      uni.navigateTo({ url: `/pages-master/master/workbench?orderId=${item.orderId}` });
+    }, 300);
+  } finally {
+    loadingTaskId.value = '';
+  }
+}
+
+onShow(loadOrders);
 </script>
 
 <style scoped>
@@ -99,5 +114,12 @@ onMounted(async () => {
 
 .master-dispatch__btn {
   width: 220rpx;
+}
+
+.master-dispatch__empty {
+  margin-top: 18rpx;
+  padding: 36rpx 28rpx;
+  text-align: center;
+  color: #667085;
 }
 </style>

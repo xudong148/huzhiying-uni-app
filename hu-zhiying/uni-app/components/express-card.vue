@@ -21,7 +21,7 @@ defineProps({
   },
   desc: {
     type: String,
-    default: '最快 30 分钟上门，支持语音/图片快捷派单',
+    default: '最快 30 分钟上门，支持语音、图片和快捷派单',
   },
 });
 

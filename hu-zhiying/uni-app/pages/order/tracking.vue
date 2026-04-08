@@ -1,7 +1,7 @@
 <template>
   <view class="page-shell">
     <view class="card tracking__map">
-      <view class="tracking__map-badge">ETA 26 分钟</view>
+      <view class="tracking__map-badge">ETA {{ order.eta || '待确认' }}</view>
       <view class="tracking__route"></view>
       <view class="tracking__point tracking__point--user">我</view>
       <view class="tracking__point tracking__point--master">师傅</view>
@@ -11,14 +11,27 @@
       <view class="section-title">
         <text class="section-title__text">履约节点</text>
       </view>
-      <view class="tracking__row"><text>出发时间</text><text>14:06</text></view>
-      <view class="tracking__row"><text>当前位置</text><text>张江路 311 号</text></view>
-      <view class="tracking__row"><text>预计到达</text><text>14:32</text></view>
+      <view class="tracking__row"><text>预约时间</text><text>{{ order.appointment || '待确认' }}</text></view>
+      <view class="tracking__row"><text>服务地址</text><text>{{ order.address || '待补充地址' }}</text></view>
+      <view class="tracking__row"><text>当前状态</text><text>{{ order.statusText || '处理中' }}</text></view>
     </view>
   </view>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
+import { getOrderDetail } from '../../api/order';
+
+const order = ref({});
+
+onLoad(async (options) => {
+  if (!options.id) {
+    return;
+  }
+  const res = await getOrderDetail(options.id);
+  order.value = res.data;
+});
 </script>
 
 <style scoped>
@@ -89,6 +102,7 @@
 .tracking__row {
   display: flex;
   justify-content: space-between;
+  gap: 16rpx;
   font-size: 26rpx;
 }
 

@@ -19,29 +19,46 @@
       <view class="section-title">
         <text class="section-title__text">补充说明</text>
       </view>
-      <textarea v-model="remark" class="order-refund__textarea" placeholder="请描述具体问题，支持平台客服快速仲裁"></textarea>
+      <textarea v-model="remark" class="order-refund__textarea" placeholder="请描述具体问题，方便平台客服快速处理"></textarea>
     </view>
 
-    <button class="primary-btn order-refund__btn" @tap="submitRefund">提交申请</button>
+    <button class="primary-btn order-refund__btn" :loading="submitting" @tap="submitRefund">提交申请</button>
   </view>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
+import { refundOrder } from '../../api/order';
 
 const reasons = ['乱收费', '服务未达标', '师傅未按时上门', '商品与描述不符'];
 const reason = ref(reasons[0]);
 const remark = ref('');
+const submitting = ref(false);
+const orderId = ref('');
 
-function submitRefund() {
-  uni.showToast({
-    title: '已提交售后申请',
-    icon: 'none',
-  });
-  setTimeout(() => {
-    uni.navigateBack();
-  }, 500);
+async function submitRefund() {
+  if (!orderId.value) {
+    return;
+  }
+  submitting.value = true;
+  try {
+    await refundOrder(orderId.value);
+    uni.showToast({
+      title: '售后申请已提交',
+      icon: 'none',
+    });
+    setTimeout(() => {
+      uni.navigateBack();
+    }, 500);
+  } finally {
+    submitting.value = false;
+  }
 }
+
+onLoad((options) => {
+  orderId.value = options.id || '';
+});
 </script>
 
 <style scoped>

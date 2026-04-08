@@ -23,12 +23,12 @@ public class PaymentController {
 
     @PostMapping("/api/payments/wechat/refund")
     public ApiResponse<?> refund(@RequestBody PaymentRequest request) {
-        return ApiResponse.success("退款已受理", java.util.Map.of("orderId", request.orderId(), "status", "ACCEPTED"));
+        return ApiResponse.success("退款已受理", platformFacadeService.refundOrder(request.orderId()));
     }
 
     @PostMapping("/api/payments/wechat/{orderId}/callback")
     public ApiResponse<?> callback(@PathVariable String orderId) {
-        return ApiResponse.success(java.util.Map.of("orderId", orderId, "status", "SUCCESS"));
+        return ApiResponse.success(platformFacadeService.handleWechatCallback(orderId));
     }
 
     public record PaymentRequest(String orderId) {}

@@ -11,24 +11,29 @@
       </view>
       <view class="apply-page__row">
         <text>技能方向</text>
-        <input v-model="form.skills" placeholder="如空调维修/智能锁安装" />
+        <input v-model="form.skills" placeholder="如空调维修、智能锁安装" />
       </view>
       <view class="apply-page__row">
         <text>服务区域</text>
-        <input v-model="form.area" placeholder="请输入常驻服务地址" />
+        <input v-model="form.area" placeholder="请输入常驻服务区域" />
       </view>
       <view class="apply-page__row apply-page__row--column">
         <text>资质说明</text>
-        <textarea v-model="form.remark" class="apply-page__textarea" placeholder="可补充从业年限、证书情况、工具配备情况"></textarea>
+        <textarea v-model="form.remark" class="apply-page__textarea" placeholder="可补充从业年限、证书情况和工具配备"></textarea>
       </view>
     </view>
 
-    <button class="primary-btn" @tap="submit">提交入驻申请</button>
+    <button class="primary-btn" :loading="submitting" @tap="submit">提交入驻申请</button>
   </view>
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import { applyMaster } from '../../api/master';
+import { useUserStore } from '../../stores/user';
+
+const userStore = useUserStore();
+const submitting = ref(false);
 
 const form = reactive({
   name: '',
@@ -38,8 +43,33 @@ const form = reactive({
   remark: '',
 });
 
-function submit() {
-  uni.showToast({ title: '申请已提交，等待审核', icon: 'none' });
+async function submit() {
+  if (!form.name || !form.mobile || !form.skills || !form.area) {
+    uni.showToast({ title: '请补全入驻信息', icon: 'none' });
+    return;
+  }
+
+  submitting.value = true;
+  try {
+    await applyMaster({
+      realName: form.name,
+      mobile: form.mobile,
+      skills: form.skills,
+      area: form.area,
+    });
+    userStore.switchRole('master');
+    userStore.updateProfile({
+      nickname: form.name,
+      mobile: form.mobile,
+      level: '认证工程师',
+    });
+    uni.showToast({ title: '申请已提交，已切换到师傅端', icon: 'none' });
+    setTimeout(() => {
+      uni.navigateTo({ url: '/pages-master/master/dispatch' });
+    }, 400);
+  } finally {
+    submitting.value = false;
+  }
 }
 </script>
 

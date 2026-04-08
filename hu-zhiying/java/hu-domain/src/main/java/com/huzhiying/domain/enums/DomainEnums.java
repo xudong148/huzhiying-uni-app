@@ -18,6 +18,8 @@ public interface DomainEnums {
         WAITING_SUPPLEMENT_PAYMENT,
         IN_SERVICE,
         COMPLETED,
+        CANCELLED,
+        REFUNDING,
         AFTER_SALES
     }
 

@@ -40,10 +40,15 @@ public class MasterController {
 
     @GetMapping("/api/master/settings")
     public ApiResponse<?> settings() {
-        return ApiResponse.success(java.util.Map.of(
-                "listening", true,
-                "maxDistance", "20km",
-                "privacyNumber", true
+        return ApiResponse.success(platformFacadeService.masterSettings());
+    }
+
+    @PostMapping("/api/master/settings")
+    public ApiResponse<?> saveSettings(@RequestBody SaveSettingsRequest request) {
+        return ApiResponse.success(platformFacadeService.saveMasterSettings(
+                request.listening(),
+                request.maxDistance(),
+                request.privacyNumber()
         ));
     }
 
@@ -57,10 +62,19 @@ public class MasterController {
         return ApiResponse.success(platformFacadeService.messageItems(sessionId));
     }
 
+    @PostMapping("/api/messages/{sessionId}/items")
+    public ApiResponse<?> send(@PathVariable String sessionId, @RequestBody SendMessageRequest request) {
+        return ApiResponse.success(platformFacadeService.sendMessage(sessionId, request.senderCode(), request.content()));
+    }
+
     @GetMapping("/api/notifications")
     public ApiResponse<?> notifications() {
         return ApiResponse.success(platformFacadeService.notices());
     }
 
     public record MasterApplyRequest(String realName, String mobile, String skills, String area) {}
+
+    public record SaveSettingsRequest(boolean listening, String maxDistance, boolean privacyNumber) {}
+
+    public record SendMessageRequest(String senderCode, String content) {}
 }

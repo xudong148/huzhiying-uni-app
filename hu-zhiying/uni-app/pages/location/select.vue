@@ -39,7 +39,7 @@ const cities = ref([]);
 
 async function relocate() {
   await location.locate();
-  uni.showToast({ title: '已更新定位', icon: 'none' });
+  uni.showToast({ title: '定位已更新', icon: 'none' });
 }
 
 function selectCity(item) {

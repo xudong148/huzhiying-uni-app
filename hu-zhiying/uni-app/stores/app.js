@@ -6,12 +6,12 @@ export const useAppStore = defineStore('app', () => {
   const noticeList = ref([
     {
       id: 1,
-      title: '夜间服务费 22:00 后自动加收 30%',
+      title: '夜间服务费：22:00 后自动加收 30%',
       level: 'warning',
     },
     {
       id: 2,
-      title: '新用户领取 80 元组合券包',
+      title: '新用户组合券已到账',
       level: 'promo',
     },
   ]);
@@ -33,10 +33,20 @@ export const useAppStore = defineStore('app', () => {
 
   const topNotice = computed(() => noticeList.value[0] || null);
 
+  function setAppContent(payload = {}) {
+    if (Array.isArray(payload.notices)) {
+      noticeList.value = payload.notices;
+    }
+    if (Array.isArray(payload.banners)) {
+      bannerList.value = payload.banners;
+    }
+  }
+
   return {
     unreadCount,
     noticeList,
     bannerList,
     topNotice,
+    setAppContent,
   };
 });

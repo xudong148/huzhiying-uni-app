@@ -47,7 +47,8 @@ public interface DomainModels {
                         DispatchMode dispatchMode, List<WorkStepRecord> timeline, Quotation quotation, String eta) {}
 
     record ProductOrder(String id, String title, ProductOrderStatus status, PaymentStatus paymentStatus,
-                        String userName, Address address, BigDecimal amount, boolean createInstallOrder) {}
+                        String userName, Address address, BigDecimal amount, boolean createInstallOrder,
+                        String installServiceOrderId) {}
 
     record DispatchTask(String id, String orderId, String title, BigDecimal income, String distance, String area,
                         DispatchMode mode, String currentMaster, List<String> tags) {}

@@ -1,11 +1,11 @@
 <template>
   <div class="page-panel">
     <h2 class="page-title">内容运营</h2>
-    <p class="page-desc">轮播、公告、协议与活动内容统一管理。</p>
+    <p class="page-desc">首页 Banner、公告和活动位仍保留 mock 配置入口。</p>
     <el-table :data="rows">
-      <el-table-column prop="name" label="内容名称" />
-      <el-table-column prop="type" label="类型" />
-      <el-table-column prop="status" label="状态" />
+      <el-table-column prop="name" label="内容名称" min-width="220" />
+      <el-table-column prop="type" label="类型" width="120" />
+      <el-table-column prop="status" label="状态" width="120" />
     </el-table>
   </div>
 </template>

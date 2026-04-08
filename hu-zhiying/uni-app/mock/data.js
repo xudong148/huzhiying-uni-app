@@ -33,7 +33,7 @@ export const categoryTree = [
       {
         title: '故障快修',
         list: [
-          { id: 201, name: '空调不制冷', icon: '/static/icons/screwdriver.svg', price: 58 },
+          { id: 201, name: '空调不制冷上门维修', icon: '/static/icons/screwdriver.svg', price: 58 },
           { id: 202, name: '热水器不出热水', icon: '/static/icons/screwdriver.svg', price: 69 },
           { id: 203, name: '冰箱不制冷', icon: '/static/icons/screwdriver.svg', price: 88 },
         ],
@@ -101,7 +101,7 @@ export const ecologyEntries = [
   {
     id: 2,
     name: '小应商城',
-    desc: '五金耗材与安装套餐',
+    desc: '五金耗材与安装套件',
     icon: '/static/icons/mall.svg',
     color: '#FF7D00',
   },
@@ -151,8 +151,8 @@ export const recommendationList = [
 
 export const goodsDetail = {
   id: 201,
-  title: '空调不制冷 上门维修',
-  subtitle: '基础检测 + 故障排查 + 维保建议',
+  title: '空调不制冷上门维修',
+  subtitle: '基础检测 + 故障排查 + 维修建议',
   basePrice: 58,
   doorPrice: 30,
   guidePrice: '58 - 299',
@@ -168,14 +168,14 @@ export const goodsDetail = {
     '平台智能派单或师傅抢单',
     '师傅上门检测并出具处理方案',
     '如有增项需经用户确认后施工',
-    '完工验收与电子报告归档',
+    '完工验收并归档电子服务报告',
   ],
   comments: [
     {
       id: 1,
       user: '赵女士',
       score: 5,
-      content: '响应很快，到场前电话确认，增项也讲得很清楚。',
+      content: '响应很快，到场前会电话确认，增项报价也说得很清楚。',
       images: ['https://picsum.photos/360/240?random=214'],
       date: '2026-04-06',
     },
@@ -224,8 +224,8 @@ export const orderList = [
   {
     id: 'SO20260408001',
     type: 'service',
-    title: '空调不制冷 上门维修',
-    status: '待接单',
+    title: '空调不制冷上门维修',
+    status: 'PENDING_ACCEPT',
     statusText: '附近师傅正在抢单',
     appointment: '今天 14:00-16:00',
     address: '浦东新区张江高科园区 88 号',
@@ -236,7 +236,7 @@ export const orderList = [
     id: 'SO20260407009',
     type: 'service',
     title: '智能锁安装',
-    status: '待补款',
+    status: 'WAITING_SUPPLEMENT_PAYMENT',
     statusText: '师傅已提交增项报价',
     appointment: '明天 09:00-11:00',
     address: '徐汇区桂平路 410 号',
@@ -247,7 +247,7 @@ export const orderList = [
     id: 'PO20260406018',
     type: 'product',
     title: '智能锁 Pro 套装',
-    status: '待发货',
+    status: 'PENDING_SHIPMENT',
     statusText: '仓库已打单待出库',
     appointment: '预计后天送达',
     address: '浦东新区张江高科园区 88 号',
@@ -260,14 +260,14 @@ export const orderTimeline = [
   { key: 'created', label: '订单创建', desc: '用户已完成预付款并提交故障描述', done: true },
   { key: 'dispatch', label: '派单中', desc: '系统已推送给 20km 内匹配师傅', done: true },
   { key: 'accepted', label: '师傅接单', desc: '张师傅已接单并准备出发', done: true },
-  { key: 'arrival', label: '上门检测', desc: '等待师傅到达并提交检测结果', done: false },
+  { key: 'arrival', label: '上门检测', desc: '等待师傅到场并提交检测结果', done: false },
   { key: 'finish', label: '服务完成', desc: '完工后生成电子服务报告', done: false },
 ];
 
 export const quotationDetail = {
   id: 'QT20260408001',
   orderId: 'SO20260407009',
-  total: 170,
+  totalAmount: 170,
   items: [
     { id: 1, name: '锁体加固件', amount: 70 },
     { id: 2, name: '门体加厚打磨', amount: 100 },
@@ -280,14 +280,14 @@ export const couponList = [
     id: 1,
     title: '新用户上门立减券',
     amount: 30,
-    threshold: '满 99 元可用',
+    threshold: '满99元可用',
     expireAt: '2026-04-30',
   },
   {
     id: 2,
     title: '家电清洗专享券',
     amount: 50,
-    threshold: '满 199 元可用',
+    threshold: '满199元可用',
     expireAt: '2026-05-20',
   },
 ];
@@ -301,11 +301,11 @@ export const chatMessages = [
 export const masterOrders = [
   {
     id: 'DISP-001',
-    title: '空调不制冷 上门维修',
+    title: '空调不制冷上门维修',
     income: 168,
     distance: '3.2km',
     address: '浦东新区张江高科园区',
-    tags: ['空调维修', '预估 60 分钟'],
+    tags: ['空调维修', '预计 60 分钟'],
   },
   {
     id: 'DISP-002',

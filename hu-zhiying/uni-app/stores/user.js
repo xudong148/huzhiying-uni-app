@@ -11,18 +11,22 @@ function loadUserState() {
   }
 }
 
+function defaultProfile() {
+  return {
+    id: 10001,
+    nickname: '周女士',
+    mobile: '138****5288',
+    avatar: '/static/user.png',
+    level: 'SVIP 预备用户',
+  };
+}
+
 export const useUserStore = defineStore('user', () => {
   const initial = loadUserState();
   const token = ref(initial.token || '');
   const refreshToken = ref(initial.refreshToken || '');
   const role = ref(initial.role || 'user');
-  const profile = ref(initial.profile || {
-    id: 10001,
-    nickname: '周女士',
-    mobile: '138****5288',
-    avatar: '/static/user.png',
-    level: 'SVIP预备用户',
-  });
+  const profile = ref(initial.profile || defaultProfile());
 
   const isLoggedIn = computed(() => Boolean(token.value));
 
@@ -60,6 +64,7 @@ export const useUserStore = defineStore('user', () => {
     token.value = '';
     refreshToken.value = '';
     role.value = 'user';
+    profile.value = defaultProfile();
     persist();
   }
 

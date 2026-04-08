@@ -1,23 +1,42 @@
 <template>
   <div class="login-page">
     <div class="login-card">
-      <h1>呼之应后台</h1>
-      <p>订单调度、履约监控、财务与仲裁统一工作台</p>
-      <el-button type="primary" size="large" @click="handleLogin">进入后台</el-button>
+      <div class="login-card__eyebrow">Dispatch Console</div>
+      <h1>呼之应运营后台</h1>
+      <p>订单调度、履约监控、财务结算与仲裁处理统一工作台。</p>
+      <el-button type="primary" size="large" :loading="loading" @click="handleLogin">进入后台</el-button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import { loginAsAdmin } from '../api/request';
 import { useAdminUserStore } from '../stores/user';
 
 const router = useRouter();
 const store = useAdminUserStore();
+const loading = ref(false);
 
-function handleLogin() {
-  store.login();
-  router.push('/dashboard');
+async function handleLogin() {
+  loading.value = true;
+  try {
+    const session = await loginAsAdmin();
+    store.login({
+      ...session,
+      profile: {
+        name: '呼之应运营后台',
+        role: '超级管理员',
+      },
+    });
+    router.replace('/dashboard');
+  } catch (error) {
+    ElMessage.error(error.message || '登录失败');
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 
@@ -27,19 +46,36 @@ function handleLogin() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #edf2ff 0%, #f4f6f9 50%, #ffeccd 100%);
+  background:
+    radial-gradient(circle at top left, rgba(43, 92, 255, 0.18), transparent 36%),
+    radial-gradient(circle at bottom right, rgba(255, 194, 102, 0.28), transparent 32%),
+    linear-gradient(135deg, #edf2ff 0%, #f4f6f9 50%, #fff8e9 100%);
 }
 
 .login-card {
-  width: 420px;
+  width: 440px;
   padding: 40px;
   border-radius: 32px;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
 }
 
+.login-card__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(43, 92, 255, 0.1);
+  color: #2b5cff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .login-card h1 {
-  margin: 0;
+  margin: 18px 0 0;
   font-size: 36px;
 }
 

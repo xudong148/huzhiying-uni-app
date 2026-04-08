@@ -103,7 +103,7 @@ public final class DemoDataFactory {
         Map<String, ProductOrder> productOrders = new LinkedHashMap<>();
         productOrders.put("PO20260406018", new ProductOrder("PO20260406018", "智能锁 Pro 套装",
                 ProductOrderStatus.PENDING_SHIPMENT, PaymentStatus.PAID,
-                "林先生", defaultAddress, BigDecimal.valueOf(1699), true));
+                "林先生", defaultAddress, BigDecimal.valueOf(1699), true, "SO20260407009"));
 
         Map<String, DispatchTask> dispatchTasks = new LinkedHashMap<>();
         dispatchTasks.put("DISP-001", new DispatchTask("DISP-001", "SO20260408001", airRepair.name(),

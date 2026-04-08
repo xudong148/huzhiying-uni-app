@@ -44,27 +44,38 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { getCategoryTree } from '../../api/service';
 
 const categories = ref([]);
 const activeIndex = ref(0);
 
-const activeCategory = computed(() => categories.value[activeIndex.value] || { subs: [], groups: [] });
+const activeCategory = computed(() => categories.value[activeIndex.value] || {
+  name: '暂无类目',
+  icon: '/static/icons/screwdriver.svg',
+  subs: [],
+  groups: [],
+});
 
 function goGoods(id) {
   uni.navigateTo({ url: `/pages/goods/detail?id=${id}` });
 }
 
+function handleCategorySelected(id) {
+  const index = categories.value.findIndex((item) => item.id === id);
+  if (index >= 0) {
+    activeIndex.value = index;
+  }
+}
+
 onMounted(async () => {
   const res = await getCategoryTree();
   categories.value = res.data;
-  uni.$on('category-selected', (id) => {
-    const index = categories.value.findIndex((item) => item.id === id);
-    if (index >= 0) {
-      activeIndex.value = index;
-    }
-  });
+  uni.$on('category-selected', handleCategorySelected);
+});
+
+onUnmounted(() => {
+  uni.$off('category-selected', handleCategorySelected);
 });
 </script>
 

@@ -2,8 +2,8 @@
   <view class="page-shell">
     <view class="card master-wallet__hero">
       <view class="master-wallet__label">可提现余额</view>
-      <view class="master-wallet__balance">¥{{ wallet.balance }}</view>
-      <view class="master-wallet__meta">冻结保证金 ¥{{ wallet.frozen }} · 今日收入 ¥{{ wallet.todayIncome }}</view>
+      <view class="master-wallet__balance">¥{{ Number(wallet.balance || 0).toFixed(2) }}</view>
+      <view class="master-wallet__meta">冻结保证金 ¥{{ Number(wallet.frozen || 0).toFixed(2) }} · 今日收入 ¥{{ Number(wallet.todayIncome || 0).toFixed(2) }}</view>
     </view>
 
     <view class="card master-wallet__section">
@@ -15,8 +15,8 @@
           <view class="master-wallet__row-title">{{ item.title }}</view>
           <view class="muted">{{ item.time }}</view>
         </view>
-        <view class="master-wallet__row-amount" :class="{ 'master-wallet__row-amount--minus': item.amount < 0 }">
-          {{ item.amount > 0 ? '+' : '' }}{{ item.amount }}
+        <view class="master-wallet__row-amount" :class="{ 'master-wallet__row-amount--minus': Number(item.amount) < 0 }">
+          {{ Number(item.amount) > 0 ? '+' : '' }}{{ Number(item.amount).toFixed(2) }}
         </view>
       </view>
     </view>
@@ -24,14 +24,15 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import { getWalletData } from '../../api/master';
 
 const wallet = ref({
   transactions: [],
 });
 
-onMounted(async () => {
+onShow(async () => {
   const res = await getWalletData();
   wallet.value = res.data;
 });

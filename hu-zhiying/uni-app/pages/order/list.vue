@@ -3,22 +3,22 @@
     <view class="order-list__tabs">
       <view
         v-for="tab in tabs"
-        :key="tab"
+        :key="tab.label"
         class="order-list__tab"
-        :class="{ 'order-list__tab--active': activeTab === tab }"
-        @tap="activeTab = tab"
+        :class="{ 'order-list__tab--active': activeTab === tab.value }"
+        @tap="activeTab = tab.value"
       >
-        {{ tab }}
+        {{ tab.label }}
       </view>
     </view>
 
-    <view v-for="item in orders" :key="item.id" class="card order-list__card pressable" @tap="goDetail(item.id)">
+    <view v-for="item in filteredOrders" :key="item.id" class="card order-list__card pressable" @tap="goDetail(item.id)">
       <view class="order-list__top">
         <view class="order-list__title">{{ item.title }}</view>
-        <text class="chip">{{ item.status }}</text>
+        <text class="chip">{{ item.statusText }}</text>
       </view>
-      <view class="order-list__desc">{{ item.statusText }}</view>
-      <view class="order-list__meta">预约：{{ item.appointment }}</view>
+      <view class="order-list__desc">{{ item.type === 'product' ? '商城订单' : '上门服务订单' }}</view>
+      <view class="order-list__meta">预约：{{ item.appointment || '待确认' }}</view>
       <view class="order-list__meta">地址：{{ item.address }}</view>
       <view class="order-list__bottom">
         <view class="order-list__tags">
@@ -27,26 +27,54 @@
         <price-format :value="item.price"></price-format>
       </view>
     </view>
+
+    <view v-if="!filteredOrders.length" class="card order-list__empty">当前没有符合条件的订单</view>
   </view>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import PriceFormat from '../../components/price-format.vue';
 import { getOrderList } from '../../api/order';
 
-const tabs = ['全部', '待付款', '进行中', '待评价', '售后'];
-const activeTab = ref('全部');
+const tabs = [
+  { label: '全部', value: 'all' },
+  { label: '待接单', value: 'pending' },
+  { label: '施工中', value: 'service' },
+  { label: '待补款', value: 'quote' },
+  { label: '售后中', value: 'afterSales' },
+];
+
+const activeTab = ref('all');
 const orders = ref([]);
+
+const filteredOrders = computed(() => {
+  if (activeTab.value === 'all') {
+    return orders.value;
+  }
+  if (activeTab.value === 'pending') {
+    return orders.value.filter((item) => ['PENDING_DISPATCH', 'PENDING_ACCEPT'].includes(item.status));
+  }
+  if (activeTab.value === 'service') {
+    return orders.value.filter((item) => ['ON_THE_WAY', 'ARRIVED', 'IN_SERVICE'].includes(item.status));
+  }
+  if (activeTab.value === 'quote') {
+    return orders.value.filter((item) => item.status === 'WAITING_SUPPLEMENT_PAYMENT');
+  }
+  return orders.value.filter((item) => ['REFUNDING', 'CANCELLED', 'AFTER_SALES'].includes(item.status));
+});
 
 function goDetail(id) {
   uni.navigateTo({ url: `/pages/order/detail?id=${id}` });
 }
 
-onMounted(async () => {
+async function loadOrders() {
   const res = await getOrderList();
   orders.value = res.data;
-});
+}
+
+onShow(loadOrders);
 </script>
 
 <style scoped>
@@ -54,6 +82,7 @@ onMounted(async () => {
   display: flex;
   gap: 12rpx;
   margin-bottom: 20rpx;
+  overflow-x: auto;
 }
 
 .order-list__tab {
@@ -63,6 +92,7 @@ onMounted(async () => {
   color: #667085;
   font-size: 24rpx;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .order-list__tab--active {
@@ -107,5 +137,11 @@ onMounted(async () => {
   display: flex;
   gap: 10rpx;
   flex-wrap: wrap;
+}
+
+.order-list__empty {
+  padding: 40rpx 28rpx;
+  color: #667085;
+  text-align: center;
 }
 </style>

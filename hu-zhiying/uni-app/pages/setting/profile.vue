@@ -11,25 +11,36 @@
       </view>
       <view class="profile-page__row">
         <text>会员等级</text>
-        <input v-model="profile.level" />
+        <input v-model="profile.level" disabled />
       </view>
     </view>
-    <button class="primary-btn profile-page__btn" @tap="save">保存</button>
+    <button class="primary-btn profile-page__btn" :loading="submitting" @tap="save">保存资料</button>
   </view>
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import { updateProfile } from '../../api/user';
 import { useUserStore } from '../../stores/user';
 
 const user = useUserStore();
+const submitting = ref(false);
 const profile = reactive({
   ...user.profile,
 });
 
-function save() {
-  user.updateProfile(profile);
-  uni.showToast({ title: '资料已更新', icon: 'none' });
+async function save() {
+  submitting.value = true;
+  try {
+    await updateProfile({
+      nickname: profile.nickname,
+      mobile: profile.mobile,
+    });
+    user.updateProfile(profile);
+    uni.showToast({ title: '资料已更新', icon: 'none' });
+  } finally {
+    submitting.value = false;
+  }
 }
 </script>
 

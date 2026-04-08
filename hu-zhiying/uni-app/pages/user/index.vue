@@ -42,7 +42,7 @@
       <view v-if="user.role === 'master'" class="card user-page__section">
         <view class="section-title">
           <text class="section-title__text">师傅工作台</text>
-          <text class="section-title__desc">弱网离线打卡已启用</text>
+          <text class="section-title__desc">弱网离线打卡能力已启用</text>
         </view>
         <view class="user-page__master-links">
           <view class="chip" @tap="goMaster('/pages-master/master/dispatch')">抢派单大厅</view>
@@ -62,7 +62,6 @@ import { computed } from 'vue';
 import { useUserStore } from '../../stores/user';
 
 const user = useUserStore();
-
 const roleLabel = computed(() => (user.role === 'master' ? '切到用户端' : '切到师傅端'));
 
 function toggleRole() {

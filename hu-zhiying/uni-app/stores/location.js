@@ -10,7 +10,7 @@ const DEFAULT_CITY = {
 };
 
 export const useLocationStore = defineStore('location', () => {
-  const amapKey = 'b7b0f19106ac788dd2d001ce141dfffe';
+  const amapKey = uni.getStorageSync('hzy-amap-key') || 'b7b0f19106ac788dd2d001ce141dfffe';
   const current = ref({
     ...DEFAULT_CITY,
   });
@@ -29,7 +29,7 @@ export const useLocationStore = defineStore('location', () => {
           };
 
           try {
-            const geoRes = await uni.request({
+            const [error, geoRes] = await uni.request({
               url: 'https://restapi.amap.com/v3/geocode/regeo',
               data: {
                 key: amapKey,
@@ -37,12 +37,15 @@ export const useLocationStore = defineStore('location', () => {
                 extensions: 'base',
               },
             });
-            const component = geoRes.data?.regeocode?.addressComponent || {};
-            next.city = component.city || component.province || DEFAULT_CITY.city;
-            next.district = component.district || DEFAULT_CITY.district;
-            next.address = geoRes.data?.regeocode?.formatted_address || DEFAULT_CITY.address;
+
+            if (!error) {
+              const component = geoRes.data?.regeocode?.addressComponent || {};
+              next.city = component.city || component.province || DEFAULT_CITY.city;
+              next.district = component.district || DEFAULT_CITY.district;
+              next.address = geoRes.data?.regeocode?.formatted_address || DEFAULT_CITY.address;
+            }
           } catch (error) {
-            console.log('地图反查失败', error);
+            console.log('地理反查失败', error);
           }
 
           current.value = next;

@@ -17,12 +17,13 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import { getCouponList } from '../../api/user';
 
 const coupons = ref([]);
 
-onMounted(async () => {
+onShow(async () => {
   const res = await getCouponList();
   coupons.value = res.data;
 });

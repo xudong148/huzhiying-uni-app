@@ -29,7 +29,7 @@ public class DispatchController {
 
     @PostMapping("/api/dispatch/tasks/{id}/force-assign")
     public ApiResponse<?> forceAssign(@PathVariable String id, @RequestBody ClaimRequest request) {
-        return ApiResponse.success("已强派", platformFacadeService.claimTask(id, request.masterName()));
+        return ApiResponse.success("已强派", platformFacadeService.forceAssignTask(id, request.masterName()));
     }
 
     public record ClaimRequest(String masterName) {}

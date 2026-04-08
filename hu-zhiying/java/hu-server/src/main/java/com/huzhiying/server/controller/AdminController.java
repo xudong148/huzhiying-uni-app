@@ -19,6 +19,16 @@ public class AdminController {
         return ApiResponse.success(platformFacadeService.adminDashboard());
     }
 
+    @GetMapping("/api/admin/dispatch")
+    public ApiResponse<?> dispatch() {
+        return ApiResponse.success(platformFacadeService.adminDispatchRows());
+    }
+
+    @GetMapping("/api/admin/orders")
+    public ApiResponse<?> orders() {
+        return ApiResponse.success(platformFacadeService.adminOrders());
+    }
+
     @GetMapping("/api/admin/masters")
     public ApiResponse<?> masters() {
         return ApiResponse.success(platformFacadeService.masters());
@@ -32,5 +42,10 @@ public class AdminController {
     @GetMapping("/api/admin/pricing")
     public ApiResponse<?> pricing() {
         return ApiResponse.success(platformFacadeService.pricingRules());
+    }
+
+    @GetMapping("/api/admin/finance")
+    public ApiResponse<?> finance() {
+        return ApiResponse.success(platformFacadeService.financeRows());
     }
 }

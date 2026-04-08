@@ -3,7 +3,7 @@ package com.huzhiying.server.controller;
 import com.huzhiying.domain.dto.ApiResponse;
 import com.huzhiying.server.service.PlatformFacadeService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,9 +26,19 @@ public class CatalogController {
         return ApiResponse.success(platformFacadeService.services());
     }
 
+    @GetMapping("/api/services/{id}")
+    public ApiResponse<?> serviceDetail(@PathVariable Long id) {
+        return ApiResponse.success(platformFacadeService.serviceDetail(id));
+    }
+
     @GetMapping("/api/products")
     public ApiResponse<?> products() {
         return ApiResponse.success(platformFacadeService.products());
+    }
+
+    @GetMapping("/api/products/{id}")
+    public ApiResponse<?> productDetail(@PathVariable Long id) {
+        return ApiResponse.success(platformFacadeService.productDetail(id));
     }
 
     @GetMapping("/api/search")

@@ -1,6 +1,11 @@
 <template>
   <view class="page-shell">
-    <view v-for="item in list" :key="item.id" class="card address-page__card pressable" @tap="goEdit(item.id)">
+    <view
+      v-for="item in list"
+      :key="item.id"
+      class="card address-page__card pressable"
+      @tap="handleTap(item)"
+    >
       <view class="address-page__top">
         <view class="address-page__tag">{{ item.tag }}</view>
         <text class="chip" v-if="item.default">默认</text>
@@ -14,20 +19,37 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
+import { onLoad, onShow } from '@dcloudio/uni-app';
 import { getAddressList } from '../../api/user';
 
 const list = ref([]);
+const selectMode = ref(false);
 
 function goEdit(id = '') {
   const suffix = id ? `?id=${id}` : '';
   uni.navigateTo({ url: `/pages/setting/address-edit${suffix}` });
 }
 
-onMounted(async () => {
+function handleTap(item) {
+  if (selectMode.value) {
+    uni.setStorageSync('hzy-selected-address-id', item.id);
+    uni.navigateBack();
+    return;
+  }
+  goEdit(item.id);
+}
+
+async function loadAddresses() {
   const res = await getAddressList();
   list.value = res.data;
+}
+
+onLoad((options) => {
+  selectMode.value = options.select === '1';
 });
+
+onShow(loadAddresses);
 </script>
 
 <style scoped>

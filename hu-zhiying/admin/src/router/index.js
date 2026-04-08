@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { getAdminSession } from '../api/request';
 import LoginView from '../views/LoginView.vue';
 import AppLayout from '../layout/AppLayout.vue';
 import DashboardView from '../views/DashboardView.vue';
@@ -39,6 +40,17 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to) => {
+  const hasToken = Boolean(getAdminSession().token);
+  if (to.path !== '/login' && !hasToken) {
+    return '/login';
+  }
+  if (to.path === '/login' && hasToken) {
+    return '/dashboard';
+  }
+  return true;
 });
 
 export default router;
