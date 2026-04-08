@@ -1,0 +1,6268 @@
+<!--
+  文档说明：
+  1. 当前文件为 全量接口文档，由 scripts/export-openapi-markdown.mjs 自动生成。
+  2. 数据源地址：http://localhost:8080/v3/api-docs。
+  3. 字段表会展开请求参数、请求体和响应体，便于前后端对照联调。
+-->
+
+# 全量接口文档
+
+## 基本信息
+
+- 文档标题：`呼之应开放接口`
+- 文档版本：`v1`
+- 分组：`all`
+- 接口数量：`133`
+- OpenAPI 地址：`http://localhost:8080/v3/api-docs`
+
+## 鉴权约定
+
+- `bearerAuth`，类型：http，协议：bearer，格式：JWT
+
+## 接口目录
+
+- [GET /api/addresses](#get-api-addresses)
+- [POST /api/addresses](#post-api-addresses)
+- [DELETE /api/addresses/{id}](#delete-api-addresses-id)
+- [GET /api/admin/arbitrations](#get-api-admin-arbitrations)
+- [GET /api/admin/catalog/categories](#get-api-admin-catalog-categories)
+- [POST /api/admin/catalog/categories](#post-api-admin-catalog-categories)
+- [DELETE /api/admin/catalog/categories/{id}](#delete-api-admin-catalog-categories-id)
+- [GET /api/admin/catalog/categories/{id}](#get-api-admin-catalog-categories-id)
+- [PUT /api/admin/catalog/categories/{id}](#put-api-admin-catalog-categories-id)
+- [GET /api/admin/catalog/products](#get-api-admin-catalog-products)
+- [POST /api/admin/catalog/products](#post-api-admin-catalog-products)
+- [DELETE /api/admin/catalog/products/{id}](#delete-api-admin-catalog-products-id)
+- [GET /api/admin/catalog/products/{id}](#get-api-admin-catalog-products-id)
+- [PUT /api/admin/catalog/products/{id}](#put-api-admin-catalog-products-id)
+- [GET /api/admin/catalog/service-items](#get-api-admin-catalog-service-items)
+- [POST /api/admin/catalog/service-items](#post-api-admin-catalog-service-items)
+- [DELETE /api/admin/catalog/service-items/{id}](#delete-api-admin-catalog-service-items-id)
+- [GET /api/admin/catalog/service-items/{id}](#get-api-admin-catalog-service-items-id)
+- [PUT /api/admin/catalog/service-items/{id}](#put-api-admin-catalog-service-items-id)
+- [GET /api/admin/catalog/skus](#get-api-admin-catalog-skus)
+- [POST /api/admin/catalog/skus](#post-api-admin-catalog-skus)
+- [DELETE /api/admin/catalog/skus/{id}](#delete-api-admin-catalog-skus-id)
+- [GET /api/admin/catalog/skus/{id}](#get-api-admin-catalog-skus-id)
+- [PUT /api/admin/catalog/skus/{id}](#put-api-admin-catalog-skus-id)
+- [GET /api/admin/content/agreements](#get-api-admin-content-agreements)
+- [POST /api/admin/content/agreements](#post-api-admin-content-agreements)
+- [DELETE /api/admin/content/agreements/{id}](#delete-api-admin-content-agreements-id)
+- [GET /api/admin/content/agreements/{id}](#get-api-admin-content-agreements-id)
+- [PUT /api/admin/content/agreements/{id}](#put-api-admin-content-agreements-id)
+- [GET /api/admin/content/banners](#get-api-admin-content-banners)
+- [POST /api/admin/content/banners](#post-api-admin-content-banners)
+- [DELETE /api/admin/content/banners/{id}](#delete-api-admin-content-banners-id)
+- [GET /api/admin/content/banners/{id}](#get-api-admin-content-banners-id)
+- [PUT /api/admin/content/banners/{id}](#put-api-admin-content-banners-id)
+- [GET /api/admin/content/notices](#get-api-admin-content-notices)
+- [POST /api/admin/content/notices](#post-api-admin-content-notices)
+- [DELETE /api/admin/content/notices/{id}](#delete-api-admin-content-notices-id)
+- [GET /api/admin/content/notices/{id}](#get-api-admin-content-notices-id)
+- [PUT /api/admin/content/notices/{id}](#put-api-admin-content-notices-id)
+- [GET /api/admin/dashboard](#get-api-admin-dashboard)
+- [GET /api/admin/dispatch](#get-api-admin-dispatch)
+- [GET /api/admin/dispatch/zones](#get-api-admin-dispatch-zones)
+- [POST /api/admin/dispatch/zones](#post-api-admin-dispatch-zones)
+- [DELETE /api/admin/dispatch/zones/{id}](#delete-api-admin-dispatch-zones-id)
+- [GET /api/admin/dispatch/zones/{id}](#get-api-admin-dispatch-zones-id)
+- [PUT /api/admin/dispatch/zones/{id}](#put-api-admin-dispatch-zones-id)
+- [GET /api/admin/finance](#get-api-admin-finance)
+- [GET /api/admin/marketing/coupons](#get-api-admin-marketing-coupons)
+- [POST /api/admin/marketing/coupons](#post-api-admin-marketing-coupons)
+- [DELETE /api/admin/marketing/coupons/{id}](#delete-api-admin-marketing-coupons-id)
+- [GET /api/admin/marketing/coupons/{id}](#get-api-admin-marketing-coupons-id)
+- [PUT /api/admin/marketing/coupons/{id}](#put-api-admin-marketing-coupons-id)
+- [GET /api/admin/marketing/member-levels](#get-api-admin-marketing-member-levels)
+- [POST /api/admin/marketing/member-levels](#post-api-admin-marketing-member-levels)
+- [DELETE /api/admin/marketing/member-levels/{id}](#delete-api-admin-marketing-member-levels-id)
+- [GET /api/admin/marketing/member-levels/{id}](#get-api-admin-marketing-member-levels-id)
+- [PUT /api/admin/marketing/member-levels/{id}](#put-api-admin-marketing-member-levels-id)
+- [GET /api/admin/masters](#get-api-admin-masters)
+- [GET /api/admin/orders](#get-api-admin-orders)
+- [GET /api/admin/pricing](#get-api-admin-pricing)
+- [GET /api/admin/pricing/rules](#get-api-admin-pricing-rules)
+- [POST /api/admin/pricing/rules](#post-api-admin-pricing-rules)
+- [DELETE /api/admin/pricing/rules/{id}](#delete-api-admin-pricing-rules-id)
+- [GET /api/admin/pricing/rules/{id}](#get-api-admin-pricing-rules-id)
+- [PUT /api/admin/pricing/rules/{id}](#put-api-admin-pricing-rules-id)
+- [GET /api/admin/system/menus](#get-api-admin-system-menus)
+- [POST /api/admin/system/menus](#post-api-admin-system-menus)
+- [DELETE /api/admin/system/menus/{id}](#delete-api-admin-system-menus-id)
+- [GET /api/admin/system/menus/{id}](#get-api-admin-system-menus-id)
+- [PUT /api/admin/system/menus/{id}](#put-api-admin-system-menus-id)
+- [GET /api/admin/system/permissions](#get-api-admin-system-permissions)
+- [POST /api/admin/system/permissions](#post-api-admin-system-permissions)
+- [DELETE /api/admin/system/permissions/{id}](#delete-api-admin-system-permissions-id)
+- [GET /api/admin/system/permissions/{id}](#get-api-admin-system-permissions-id)
+- [PUT /api/admin/system/permissions/{id}](#put-api-admin-system-permissions-id)
+- [GET /api/admin/system/roles](#get-api-admin-system-roles)
+- [POST /api/admin/system/roles](#post-api-admin-system-roles)
+- [DELETE /api/admin/system/roles/{id}](#delete-api-admin-system-roles-id)
+- [GET /api/admin/system/roles/{id}](#get-api-admin-system-roles-id)
+- [PUT /api/admin/system/roles/{id}](#put-api-admin-system-roles-id)
+- [POST /api/auth/refresh](#post-api-auth-refresh)
+- [POST /api/auth/sms-login](#post-api-auth-sms-login)
+- [POST /api/auth/wechat-login](#post-api-auth-wechat-login)
+- [GET /api/categories](#get-api-categories)
+- [GET /api/coupons](#get-api-coupons)
+- [GET /api/dispatch/tasks](#get-api-dispatch-tasks)
+- [POST /api/dispatch/tasks/{id}/claim](#post-api-dispatch-tasks-id-claim)
+- [POST /api/dispatch/tasks/{id}/force-assign](#post-api-dispatch-tasks-id-force-assign)
+- [GET /api/files/{id}](#get-api-files-id)
+- [GET /api/files/{id}/content](#get-api-files-id-content)
+- [POST /api/files/upload](#post-api-files-upload)
+- [POST /api/map/eta](#post-api-map-eta)
+- [POST /api/map/geofence/check](#post-api-map-geofence-check)
+- [POST /api/map/regeo](#post-api-map-regeo)
+- [GET /api/map/service-cities](#get-api-map-service-cities)
+- [POST /api/master/apply](#post-api-master-apply)
+- [GET /api/master/dashboard](#get-api-master-dashboard)
+- [POST /api/master/orders/{id}/after-work-media](#post-api-master-orders-id-after-work-media)
+- [POST /api/master/orders/{id}/before-work-media](#post-api-master-orders-id-before-work-media)
+- [POST /api/master/orders/{id}/check-in](#post-api-master-orders-id-check-in)
+- [GET /api/master/settings](#get-api-master-settings)
+- [POST /api/master/settings](#post-api-master-settings)
+- [GET /api/master/wallet](#get-api-master-wallet)
+- [GET /api/members/current](#get-api-members-current)
+- [GET /api/messages/{sessionId}/items](#get-api-messages-sessionid-items)
+- [POST /api/messages/{sessionId}/items](#post-api-messages-sessionid-items)
+- [GET /api/messages/sessions](#get-api-messages-sessions)
+- [GET /api/notifications](#get-api-notifications)
+- [POST /api/orders/{id}/cancel](#post-api-orders-id-cancel)
+- [GET /api/orders/{id}/tracking](#get-api-orders-id-tracking)
+- [POST /api/orders/{id}/urge](#post-api-orders-id-urge)
+- [POST /api/payments/wechat/{orderId}/callback](#post-api-payments-wechat-orderid-callback)
+- [POST /api/payments/wechat/prepay](#post-api-payments-wechat-prepay)
+- [POST /api/payments/wechat/refund](#post-api-payments-wechat-refund)
+- [GET /api/product-orders](#get-api-product-orders)
+- [POST /api/product-orders](#post-api-product-orders)
+- [GET /api/product-orders/{id}](#get-api-product-orders-id)
+- [GET /api/products](#get-api-products)
+- [GET /api/products/{id}](#get-api-products-id)
+- [POST /api/quotations](#post-api-quotations)
+- [POST /api/quotations/{quotationId}/confirm](#post-api-quotations-quotationid-confirm)
+- [GET /api/search](#get-api-search)
+- [GET /api/service-orders](#get-api-service-orders)
+- [POST /api/service-orders](#post-api-service-orders)
+- [GET /api/service-orders/{id}](#get-api-service-orders-id)
+- [POST /api/service-orders/{id}/status](#post-api-service-orders-id-status)
+- [GET /api/service-orders/time-slots](#get-api-service-orders-time-slots)
+- [GET /api/services](#get-api-services)
+- [GET /api/services/{id}](#get-api-services-id)
+- [GET /api/services/{id}/comments](#get-api-services-id-comments)
+- [GET /api/users/me](#get-api-users-me)
+- [PUT /api/users/me](#put-api-users-me)
+- [GET /swagger-ui/index.html](#get-swagger-ui-index-html)
+
+## GET /api/addresses
+
+- 标题：查询地址列表
+- 标签：user
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/addresses` |
+| OperationId | `addresses` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/addresses
+
+- 标题：保存地址
+- 标签：user
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/addresses` |
+| OperationId | `saveAddress` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | - |
+| `tag` | `string` | 否 | - |
+| `name` | `string` | 否 | - |
+| `mobile` | `string` | 否 | - |
+| `detailAddress` | `string` | 否 | - |
+| `isDefault` | `boolean` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## DELETE /api/addresses/{id}
+
+- 标题：删除地址
+- 标签：user
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/addresses/{id}` |
+| OperationId | `deleteAddress` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/arbitrations
+
+- 标题：查询仲裁工单列表
+- 标签：admin-dashboard
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/arbitrations` |
+| OperationId | `arbitrations` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/catalog/categories
+
+- 标题：查询服务类目列表
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/catalog/categories` |
+| OperationId | `categories_1` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<ServiceCategoryPayload>` | 否 | - |
+| `data` | `array<ServiceCategoryPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].name` | `string` | 否 | 类目名称 |
+| `data[].icon` | `string` | 否 | 图标地址 |
+| `data[].sortOrder` | `integer` | 否 | 排序值 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/catalog/categories
+
+- 标题：新增服务类目
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/catalog/categories` |
+| OperationId | `createCategory` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `name` | `string` | 否 | 类目名称 |
+| `icon` | `string` | 否 | 图标地址 |
+| `sortOrder` | `integer` | 否 | 排序值 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `ServiceCategoryPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 类目名称 |
+| `data.icon` | `string` | 否 | 图标地址 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/catalog/categories/{id}
+
+- 标题：删除服务类目
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/catalog/categories/{id}` |
+| OperationId | `deleteCategory` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/catalog/categories/{id}
+
+- 标题：查询服务类目详情
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/catalog/categories/{id}` |
+| OperationId | `category` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `ServiceCategoryPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 类目名称 |
+| `data.icon` | `string` | 否 | 图标地址 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/catalog/categories/{id}
+
+- 标题：更新服务类目
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/catalog/categories/{id}` |
+| OperationId | `updateCategory` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `name` | `string` | 否 | 类目名称 |
+| `icon` | `string` | 否 | 图标地址 |
+| `sortOrder` | `integer` | 否 | 排序值 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `ServiceCategoryPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 类目名称 |
+| `data.icon` | `string` | 否 | 图标地址 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/catalog/products
+
+- 标题：查询商品列表
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/catalog/products` |
+| OperationId | `products_1` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<ProductPayload>` | 否 | - |
+| `data` | `array<ProductPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].name` | `string` | 否 | 商品名称 |
+| `data[].descriptionText` | `string` | 否 | 商品描述 |
+| `data[].price` | `number` | 否 | 商品价格 |
+| `data[].createInstallOrder` | `boolean` | 否 | 是否自动生成安装工单 |
+| `data[].imageUrl` | `string` | 否 | 商品图片 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/catalog/products
+
+- 标题：新增商品
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/catalog/products` |
+| OperationId | `createProduct` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `name` | `string` | 否 | 商品名称 |
+| `descriptionText` | `string` | 否 | 商品描述 |
+| `price` | `number` | 否 | 商品价格 |
+| `createInstallOrder` | `boolean` | 否 | 是否自动生成安装工单 |
+| `imageUrl` | `string` | 否 | 商品图片 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `ProductPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 商品名称 |
+| `data.descriptionText` | `string` | 否 | 商品描述 |
+| `data.price` | `number` | 否 | 商品价格 |
+| `data.createInstallOrder` | `boolean` | 否 | 是否自动生成安装工单 |
+| `data.imageUrl` | `string` | 否 | 商品图片 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/catalog/products/{id}
+
+- 标题：删除商品
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/catalog/products/{id}` |
+| OperationId | `deleteProduct` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/catalog/products/{id}
+
+- 标题：查询商品详情
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/catalog/products/{id}` |
+| OperationId | `product` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `ProductPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 商品名称 |
+| `data.descriptionText` | `string` | 否 | 商品描述 |
+| `data.price` | `number` | 否 | 商品价格 |
+| `data.createInstallOrder` | `boolean` | 否 | 是否自动生成安装工单 |
+| `data.imageUrl` | `string` | 否 | 商品图片 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/catalog/products/{id}
+
+- 标题：更新商品
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/catalog/products/{id}` |
+| OperationId | `updateProduct` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `name` | `string` | 否 | 商品名称 |
+| `descriptionText` | `string` | 否 | 商品描述 |
+| `price` | `number` | 否 | 商品价格 |
+| `createInstallOrder` | `boolean` | 否 | 是否自动生成安装工单 |
+| `imageUrl` | `string` | 否 | 商品图片 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `ProductPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 商品名称 |
+| `data.descriptionText` | `string` | 否 | 商品描述 |
+| `data.price` | `number` | 否 | 商品价格 |
+| `data.createInstallOrder` | `boolean` | 否 | 是否自动生成安装工单 |
+| `data.imageUrl` | `string` | 否 | 商品图片 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/catalog/service-items
+
+- 标题：查询服务项列表
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/catalog/service-items` |
+| OperationId | `serviceItems` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<ServiceItemPayload>` | 否 | - |
+| `data` | `array<ServiceItemPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].categoryId` | `integer` | 否 | 所属类目 ID |
+| `data[].name` | `string` | 否 | 服务名称 |
+| `data[].subtitle` | `string` | 否 | 副标题 |
+| `data[].basePrice` | `number` | 否 | 基础价 |
+| `data[].doorPrice` | `number` | 否 | 上门费 |
+| `data[].guidePrice` | `string` | 否 | 指导价 |
+| `data[].warrantyText` | `string` | 否 | 质保说明 |
+| `data[].guaranteesText` | `string` | 否 | 保障说明 |
+| `data[].tagsText` | `string` | 否 | 标签说明 |
+| `data[].imageUrls` | `string` | 否 | 图片地址，使用 \| 分隔 |
+| `data[].processSteps` | `string` | 否 | 流程步骤，使用 \| 分隔 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/catalog/service-items
+
+- 标题：新增服务项
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/catalog/service-items` |
+| OperationId | `createServiceItem` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `categoryId` | `integer` | 否 | 所属类目 ID |
+| `name` | `string` | 否 | 服务名称 |
+| `subtitle` | `string` | 否 | 副标题 |
+| `basePrice` | `number` | 否 | 基础价 |
+| `doorPrice` | `number` | 否 | 上门费 |
+| `guidePrice` | `string` | 否 | 指导价 |
+| `warrantyText` | `string` | 否 | 质保说明 |
+| `guaranteesText` | `string` | 否 | 保障说明 |
+| `tagsText` | `string` | 否 | 标签说明 |
+| `imageUrls` | `string` | 否 | 图片地址，使用 \| 分隔 |
+| `processSteps` | `string` | 否 | 流程步骤，使用 \| 分隔 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `ServiceItemPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.categoryId` | `integer` | 否 | 所属类目 ID |
+| `data.name` | `string` | 否 | 服务名称 |
+| `data.subtitle` | `string` | 否 | 副标题 |
+| `data.basePrice` | `number` | 否 | 基础价 |
+| `data.doorPrice` | `number` | 否 | 上门费 |
+| `data.guidePrice` | `string` | 否 | 指导价 |
+| `data.warrantyText` | `string` | 否 | 质保说明 |
+| `data.guaranteesText` | `string` | 否 | 保障说明 |
+| `data.tagsText` | `string` | 否 | 标签说明 |
+| `data.imageUrls` | `string` | 否 | 图片地址，使用 \| 分隔 |
+| `data.processSteps` | `string` | 否 | 流程步骤，使用 \| 分隔 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/catalog/service-items/{id}
+
+- 标题：删除服务项
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/catalog/service-items/{id}` |
+| OperationId | `deleteServiceItem` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/catalog/service-items/{id}
+
+- 标题：查询服务项详情
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/catalog/service-items/{id}` |
+| OperationId | `serviceItem` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `ServiceItemPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.categoryId` | `integer` | 否 | 所属类目 ID |
+| `data.name` | `string` | 否 | 服务名称 |
+| `data.subtitle` | `string` | 否 | 副标题 |
+| `data.basePrice` | `number` | 否 | 基础价 |
+| `data.doorPrice` | `number` | 否 | 上门费 |
+| `data.guidePrice` | `string` | 否 | 指导价 |
+| `data.warrantyText` | `string` | 否 | 质保说明 |
+| `data.guaranteesText` | `string` | 否 | 保障说明 |
+| `data.tagsText` | `string` | 否 | 标签说明 |
+| `data.imageUrls` | `string` | 否 | 图片地址，使用 \| 分隔 |
+| `data.processSteps` | `string` | 否 | 流程步骤，使用 \| 分隔 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/catalog/service-items/{id}
+
+- 标题：更新服务项
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/catalog/service-items/{id}` |
+| OperationId | `updateServiceItem` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `categoryId` | `integer` | 否 | 所属类目 ID |
+| `name` | `string` | 否 | 服务名称 |
+| `subtitle` | `string` | 否 | 副标题 |
+| `basePrice` | `number` | 否 | 基础价 |
+| `doorPrice` | `number` | 否 | 上门费 |
+| `guidePrice` | `string` | 否 | 指导价 |
+| `warrantyText` | `string` | 否 | 质保说明 |
+| `guaranteesText` | `string` | 否 | 保障说明 |
+| `tagsText` | `string` | 否 | 标签说明 |
+| `imageUrls` | `string` | 否 | 图片地址，使用 \| 分隔 |
+| `processSteps` | `string` | 否 | 流程步骤，使用 \| 分隔 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `ServiceItemPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.categoryId` | `integer` | 否 | 所属类目 ID |
+| `data.name` | `string` | 否 | 服务名称 |
+| `data.subtitle` | `string` | 否 | 副标题 |
+| `data.basePrice` | `number` | 否 | 基础价 |
+| `data.doorPrice` | `number` | 否 | 上门费 |
+| `data.guidePrice` | `string` | 否 | 指导价 |
+| `data.warrantyText` | `string` | 否 | 质保说明 |
+| `data.guaranteesText` | `string` | 否 | 保障说明 |
+| `data.tagsText` | `string` | 否 | 标签说明 |
+| `data.imageUrls` | `string` | 否 | 图片地址，使用 \| 分隔 |
+| `data.processSteps` | `string` | 否 | 流程步骤，使用 \| 分隔 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/catalog/skus
+
+- 标题：查询 SKU 列表
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/catalog/skus` |
+| OperationId | `skus` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<SkuPayload>` | 否 | - |
+| `data` | `array<SkuPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].productId` | `integer` | 否 | 所属商品 ID |
+| `data[].name` | `string` | 否 | SKU 名称 |
+| `data[].price` | `number` | 否 | 价格 |
+| `data[].stock` | `integer` | 否 | 库存 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/catalog/skus
+
+- 标题：新增 SKU
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/catalog/skus` |
+| OperationId | `createSku` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `productId` | `integer` | 否 | 所属商品 ID |
+| `name` | `string` | 否 | SKU 名称 |
+| `price` | `number` | 否 | 价格 |
+| `stock` | `integer` | 否 | 库存 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `SkuPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.productId` | `integer` | 否 | 所属商品 ID |
+| `data.name` | `string` | 否 | SKU 名称 |
+| `data.price` | `number` | 否 | 价格 |
+| `data.stock` | `integer` | 否 | 库存 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/catalog/skus/{id}
+
+- 标题：删除 SKU
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/catalog/skus/{id}` |
+| OperationId | `deleteSku` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/catalog/skus/{id}
+
+- 标题：查询 SKU 详情
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/catalog/skus/{id}` |
+| OperationId | `sku` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `SkuPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.productId` | `integer` | 否 | 所属商品 ID |
+| `data.name` | `string` | 否 | SKU 名称 |
+| `data.price` | `number` | 否 | 价格 |
+| `data.stock` | `integer` | 否 | 库存 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/catalog/skus/{id}
+
+- 标题：更新 SKU
+- 标签：admin-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/catalog/skus/{id}` |
+| OperationId | `updateSku` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `productId` | `integer` | 否 | 所属商品 ID |
+| `name` | `string` | 否 | SKU 名称 |
+| `price` | `number` | 否 | 价格 |
+| `stock` | `integer` | 否 | 库存 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `SkuPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.productId` | `integer` | 否 | 所属商品 ID |
+| `data.name` | `string` | 否 | SKU 名称 |
+| `data.price` | `number` | 否 | 价格 |
+| `data.stock` | `integer` | 否 | 库存 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/content/agreements
+
+- 标题：查询协议列表
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/content/agreements` |
+| OperationId | `agreements` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<AgreementPayload>` | 否 | - |
+| `data` | `array<AgreementPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].title` | `string` | 否 | 协议标题 |
+| `data[].version` | `string` | 否 | 版本号 |
+| `data[].content` | `string` | 否 | 正文内容 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/content/agreements
+
+- 标题：新增协议
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/content/agreements` |
+| OperationId | `createAgreement` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `title` | `string` | 否 | 协议标题 |
+| `version` | `string` | 否 | 版本号 |
+| `content` | `string` | 否 | 正文内容 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `AgreementPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 协议标题 |
+| `data.version` | `string` | 否 | 版本号 |
+| `data.content` | `string` | 否 | 正文内容 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/content/agreements/{id}
+
+- 标题：删除协议
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/content/agreements/{id}` |
+| OperationId | `deleteAgreement` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/content/agreements/{id}
+
+- 标题：查询协议详情
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/content/agreements/{id}` |
+| OperationId | `agreement` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `AgreementPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 协议标题 |
+| `data.version` | `string` | 否 | 版本号 |
+| `data.content` | `string` | 否 | 正文内容 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/content/agreements/{id}
+
+- 标题：更新协议
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/content/agreements/{id}` |
+| OperationId | `updateAgreement` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `title` | `string` | 否 | 协议标题 |
+| `version` | `string` | 否 | 版本号 |
+| `content` | `string` | 否 | 正文内容 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `AgreementPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 协议标题 |
+| `data.version` | `string` | 否 | 版本号 |
+| `data.content` | `string` | 否 | 正文内容 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/content/banners
+
+- 标题：查询 Banner 列表
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/content/banners` |
+| OperationId | `banners` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<BannerPayload>` | 否 | - |
+| `data` | `array<BannerPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].title` | `string` | 否 | 标题 |
+| `data[].subtitle` | `string` | 否 | 副标题 |
+| `data[].image` | `string` | 否 | 图片地址 |
+| `data[].link` | `string` | 否 | 跳转链接 |
+| `data[].sortOrder` | `integer` | 否 | 排序值 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/content/banners
+
+- 标题：新增 Banner
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/content/banners` |
+| OperationId | `createBanner` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `title` | `string` | 否 | 标题 |
+| `subtitle` | `string` | 否 | 副标题 |
+| `image` | `string` | 否 | 图片地址 |
+| `link` | `string` | 否 | 跳转链接 |
+| `sortOrder` | `integer` | 否 | 排序值 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `BannerPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 标题 |
+| `data.subtitle` | `string` | 否 | 副标题 |
+| `data.image` | `string` | 否 | 图片地址 |
+| `data.link` | `string` | 否 | 跳转链接 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/content/banners/{id}
+
+- 标题：删除 Banner
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/content/banners/{id}` |
+| OperationId | `deleteBanner` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/content/banners/{id}
+
+- 标题：查询 Banner 详情
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/content/banners/{id}` |
+| OperationId | `banner` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `BannerPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 标题 |
+| `data.subtitle` | `string` | 否 | 副标题 |
+| `data.image` | `string` | 否 | 图片地址 |
+| `data.link` | `string` | 否 | 跳转链接 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/content/banners/{id}
+
+- 标题：更新 Banner
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/content/banners/{id}` |
+| OperationId | `updateBanner` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `title` | `string` | 否 | 标题 |
+| `subtitle` | `string` | 否 | 副标题 |
+| `image` | `string` | 否 | 图片地址 |
+| `link` | `string` | 否 | 跳转链接 |
+| `sortOrder` | `integer` | 否 | 排序值 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `BannerPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 标题 |
+| `data.subtitle` | `string` | 否 | 副标题 |
+| `data.image` | `string` | 否 | 图片地址 |
+| `data.link` | `string` | 否 | 跳转链接 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/content/notices
+
+- 标题：查询公告列表
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/content/notices` |
+| OperationId | `notices` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<NoticePayload>` | 否 | - |
+| `data` | `array<NoticePayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].title` | `string` | 否 | 公告标题 |
+| `data[].content` | `string` | 否 | 公告内容 |
+| `data[].levelCode` | `string` | 否 | 级别 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/content/notices
+
+- 标题：新增公告
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/content/notices` |
+| OperationId | `createNotice` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `title` | `string` | 否 | 公告标题 |
+| `content` | `string` | 否 | 公告内容 |
+| `levelCode` | `string` | 否 | 级别 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `NoticePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 公告标题 |
+| `data.content` | `string` | 否 | 公告内容 |
+| `data.levelCode` | `string` | 否 | 级别 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/content/notices/{id}
+
+- 标题：删除公告
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/content/notices/{id}` |
+| OperationId | `deleteNotice` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/content/notices/{id}
+
+- 标题：查询公告详情
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/content/notices/{id}` |
+| OperationId | `notice` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `NoticePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 公告标题 |
+| `data.content` | `string` | 否 | 公告内容 |
+| `data.levelCode` | `string` | 否 | 级别 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/content/notices/{id}
+
+- 标题：更新公告
+- 标签：admin-content
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/content/notices/{id}` |
+| OperationId | `updateNotice` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `title` | `string` | 否 | 公告标题 |
+| `content` | `string` | 否 | 公告内容 |
+| `levelCode` | `string` | 否 | 级别 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `NoticePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 公告标题 |
+| `data.content` | `string` | 否 | 公告内容 |
+| `data.levelCode` | `string` | 否 | 级别 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/dashboard
+
+- 标题：查询后台仪表盘
+- 标签：admin-dashboard
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/dashboard` |
+| OperationId | `dashboard_1` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/dispatch
+
+- 标题：查询后台调度列表
+- 标签：admin-dashboard
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/dispatch` |
+| OperationId | `dispatch` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/dispatch/zones
+
+- 标题：查询服务区域列表
+- 标签：admin-pricing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/dispatch/zones` |
+| OperationId | `dispatchZones` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<DispatchZonePayload>` | 否 | - |
+| `data` | `array<DispatchZonePayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].cityName` | `string` | 否 | 城市名称 |
+| `data[].districtName` | `string` | 否 | 区县名称 |
+| `data[].sortOrder` | `integer` | 否 | 排序值 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/dispatch/zones
+
+- 标题：新增服务区域
+- 标签：admin-pricing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/dispatch/zones` |
+| OperationId | `createDispatchZone` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `cityName` | `string` | 否 | 城市名称 |
+| `districtName` | `string` | 否 | 区县名称 |
+| `sortOrder` | `integer` | 否 | 排序值 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `DispatchZonePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.cityName` | `string` | 否 | 城市名称 |
+| `data.districtName` | `string` | 否 | 区县名称 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/dispatch/zones/{id}
+
+- 标题：删除服务区域
+- 标签：admin-pricing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/dispatch/zones/{id}` |
+| OperationId | `deleteDispatchZone` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/dispatch/zones/{id}
+
+- 标题：查询服务区域详情
+- 标签：admin-pricing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/dispatch/zones/{id}` |
+| OperationId | `dispatchZone` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `DispatchZonePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.cityName` | `string` | 否 | 城市名称 |
+| `data.districtName` | `string` | 否 | 区县名称 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/dispatch/zones/{id}
+
+- 标题：更新服务区域
+- 标签：admin-pricing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/dispatch/zones/{id}` |
+| OperationId | `updateDispatchZone` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `cityName` | `string` | 否 | 城市名称 |
+| `districtName` | `string` | 否 | 区县名称 |
+| `sortOrder` | `integer` | 否 | 排序值 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `DispatchZonePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.cityName` | `string` | 否 | 城市名称 |
+| `data.districtName` | `string` | 否 | 区县名称 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/finance
+
+- 标题：查询财务列表
+- 标签：admin-dashboard
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/finance` |
+| OperationId | `finance` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/marketing/coupons
+
+- 标题：查询优惠券列表
+- 标签：admin-marketing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/marketing/coupons` |
+| OperationId | `coupons_1` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<CouponPayload>` | 否 | - |
+| `data` | `array<CouponPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].title` | `string` | 否 | 优惠券标题 |
+| `data[].amount` | `number` | 否 | 面额 |
+| `data[].thresholdText` | `string` | 否 | 门槛说明 |
+| `data[].expireAt` | `string` | 否 | 过期时间 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/marketing/coupons
+
+- 标题：新增优惠券
+- 标签：admin-marketing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/marketing/coupons` |
+| OperationId | `createCoupon` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `title` | `string` | 否 | 优惠券标题 |
+| `amount` | `number` | 否 | 面额 |
+| `thresholdText` | `string` | 否 | 门槛说明 |
+| `expireAt` | `string` | 否 | 过期时间 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `CouponPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 优惠券标题 |
+| `data.amount` | `number` | 否 | 面额 |
+| `data.thresholdText` | `string` | 否 | 门槛说明 |
+| `data.expireAt` | `string` | 否 | 过期时间 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/marketing/coupons/{id}
+
+- 标题：删除优惠券
+- 标签：admin-marketing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/marketing/coupons/{id}` |
+| OperationId | `deleteCoupon` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/marketing/coupons/{id}
+
+- 标题：查询优惠券详情
+- 标签：admin-marketing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/marketing/coupons/{id}` |
+| OperationId | `coupon` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `CouponPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 优惠券标题 |
+| `data.amount` | `number` | 否 | 面额 |
+| `data.thresholdText` | `string` | 否 | 门槛说明 |
+| `data.expireAt` | `string` | 否 | 过期时间 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/marketing/coupons/{id}
+
+- 标题：更新优惠券
+- 标签：admin-marketing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/marketing/coupons/{id}` |
+| OperationId | `updateCoupon` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `title` | `string` | 否 | 优惠券标题 |
+| `amount` | `number` | 否 | 面额 |
+| `thresholdText` | `string` | 否 | 门槛说明 |
+| `expireAt` | `string` | 否 | 过期时间 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `CouponPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.title` | `string` | 否 | 优惠券标题 |
+| `data.amount` | `number` | 否 | 面额 |
+| `data.thresholdText` | `string` | 否 | 门槛说明 |
+| `data.expireAt` | `string` | 否 | 过期时间 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/marketing/member-levels
+
+- 标题：查询会员等级列表
+- 标签：admin-marketing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/marketing/member-levels` |
+| OperationId | `memberLevels` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<MemberLevelPayload>` | 否 | - |
+| `data` | `array<MemberLevelPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].name` | `string` | 否 | 等级名称 |
+| `data[].benefitText` | `string` | 否 | 权益说明 |
+| `data[].pointsRequired` | `integer` | 否 | 所需积分 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/marketing/member-levels
+
+- 标题：新增会员等级
+- 标签：admin-marketing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/marketing/member-levels` |
+| OperationId | `createMemberLevel` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `name` | `string` | 否 | 等级名称 |
+| `benefitText` | `string` | 否 | 权益说明 |
+| `pointsRequired` | `integer` | 否 | 所需积分 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `MemberLevelPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 等级名称 |
+| `data.benefitText` | `string` | 否 | 权益说明 |
+| `data.pointsRequired` | `integer` | 否 | 所需积分 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/marketing/member-levels/{id}
+
+- 标题：删除会员等级
+- 标签：admin-marketing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/marketing/member-levels/{id}` |
+| OperationId | `deleteMemberLevel` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/marketing/member-levels/{id}
+
+- 标题：查询会员等级详情
+- 标签：admin-marketing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/marketing/member-levels/{id}` |
+| OperationId | `memberLevel` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `MemberLevelPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 等级名称 |
+| `data.benefitText` | `string` | 否 | 权益说明 |
+| `data.pointsRequired` | `integer` | 否 | 所需积分 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/marketing/member-levels/{id}
+
+- 标题：更新会员等级
+- 标签：admin-marketing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/marketing/member-levels/{id}` |
+| OperationId | `updateMemberLevel` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `name` | `string` | 否 | 等级名称 |
+| `benefitText` | `string` | 否 | 权益说明 |
+| `pointsRequired` | `integer` | 否 | 所需积分 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `MemberLevelPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 等级名称 |
+| `data.benefitText` | `string` | 否 | 权益说明 |
+| `data.pointsRequired` | `integer` | 否 | 所需积分 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/masters
+
+- 标题：查询师傅管理列表
+- 标签：admin-dashboard
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/masters` |
+| OperationId | `masters` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/orders
+
+- 标题：查询后台订单列表
+- 标签：admin-dashboard
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/orders` |
+| OperationId | `orders` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/pricing
+
+- 标题：查询定价概览
+- 标签：admin-dashboard
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/pricing` |
+| OperationId | `pricing` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/pricing/rules
+
+- 标题：查询定价规则列表
+- 标签：admin-pricing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/pricing/rules` |
+| OperationId | `pricingRules` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<PricingRulePayload>` | 否 | - |
+| `data` | `array<PricingRulePayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].categoryId` | `integer` | 否 | 类目 ID |
+| `data[].label` | `string` | 否 | 规则名称 |
+| `data[].basePrice` | `number` | 否 | 基础价 |
+| `data[].coefficient` | `string` | 否 | 系数说明 |
+| `data[].guidePrice` | `string` | 否 | 指导价说明 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/pricing/rules
+
+- 标题：新增定价规则
+- 标签：admin-pricing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/pricing/rules` |
+| OperationId | `createPricingRule` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `categoryId` | `integer` | 否 | 类目 ID |
+| `label` | `string` | 否 | 规则名称 |
+| `basePrice` | `number` | 否 | 基础价 |
+| `coefficient` | `string` | 否 | 系数说明 |
+| `guidePrice` | `string` | 否 | 指导价说明 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `PricingRulePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.categoryId` | `integer` | 否 | 类目 ID |
+| `data.label` | `string` | 否 | 规则名称 |
+| `data.basePrice` | `number` | 否 | 基础价 |
+| `data.coefficient` | `string` | 否 | 系数说明 |
+| `data.guidePrice` | `string` | 否 | 指导价说明 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/pricing/rules/{id}
+
+- 标题：删除定价规则
+- 标签：admin-pricing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/pricing/rules/{id}` |
+| OperationId | `deletePricingRule` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/pricing/rules/{id}
+
+- 标题：查询定价规则详情
+- 标签：admin-pricing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/pricing/rules/{id}` |
+| OperationId | `pricingRule` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `PricingRulePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.categoryId` | `integer` | 否 | 类目 ID |
+| `data.label` | `string` | 否 | 规则名称 |
+| `data.basePrice` | `number` | 否 | 基础价 |
+| `data.coefficient` | `string` | 否 | 系数说明 |
+| `data.guidePrice` | `string` | 否 | 指导价说明 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/pricing/rules/{id}
+
+- 标题：更新定价规则
+- 标签：admin-pricing
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/pricing/rules/{id}` |
+| OperationId | `updatePricingRule` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `categoryId` | `integer` | 否 | 类目 ID |
+| `label` | `string` | 否 | 规则名称 |
+| `basePrice` | `number` | 否 | 基础价 |
+| `coefficient` | `string` | 否 | 系数说明 |
+| `guidePrice` | `string` | 否 | 指导价说明 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `PricingRulePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.categoryId` | `integer` | 否 | 类目 ID |
+| `data.label` | `string` | 否 | 规则名称 |
+| `data.basePrice` | `number` | 否 | 基础价 |
+| `data.coefficient` | `string` | 否 | 系数说明 |
+| `data.guidePrice` | `string` | 否 | 指导价说明 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/system/menus
+
+- 标题：查询菜单列表
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/system/menus` |
+| OperationId | `menus` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<MenuPayload>` | 否 | - |
+| `data` | `array<MenuPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].name` | `string` | 否 | 菜单名称 |
+| `data[].path` | `string` | 否 | 路由路径 |
+| `data[].icon` | `string` | 否 | 图标 |
+| `data[].sortOrder` | `integer` | 否 | 排序值 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/system/menus
+
+- 标题：新增菜单
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/system/menus` |
+| OperationId | `createMenu` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `name` | `string` | 否 | 菜单名称 |
+| `path` | `string` | 否 | 路由路径 |
+| `icon` | `string` | 否 | 图标 |
+| `sortOrder` | `integer` | 否 | 排序值 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `MenuPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 菜单名称 |
+| `data.path` | `string` | 否 | 路由路径 |
+| `data.icon` | `string` | 否 | 图标 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/system/menus/{id}
+
+- 标题：删除菜单
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/system/menus/{id}` |
+| OperationId | `deleteMenu` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/system/menus/{id}
+
+- 标题：查询菜单详情
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/system/menus/{id}` |
+| OperationId | `menu` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `MenuPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 菜单名称 |
+| `data.path` | `string` | 否 | 路由路径 |
+| `data.icon` | `string` | 否 | 图标 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/system/menus/{id}
+
+- 标题：更新菜单
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/system/menus/{id}` |
+| OperationId | `updateMenu` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `name` | `string` | 否 | 菜单名称 |
+| `path` | `string` | 否 | 路由路径 |
+| `icon` | `string` | 否 | 图标 |
+| `sortOrder` | `integer` | 否 | 排序值 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `MenuPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.name` | `string` | 否 | 菜单名称 |
+| `data.path` | `string` | 否 | 路由路径 |
+| `data.icon` | `string` | 否 | 图标 |
+| `data.sortOrder` | `integer` | 否 | 排序值 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/system/permissions
+
+- 标题：查询权限点列表
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/system/permissions` |
+| OperationId | `permissions` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<PermissionPayload>` | 否 | - |
+| `data` | `array<PermissionPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].code` | `string` | 否 | 权限编码 |
+| `data[].name` | `string` | 否 | 权限名称 |
+| `data[].description` | `string` | 否 | 描述 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/system/permissions
+
+- 标题：新增权限点
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/system/permissions` |
+| OperationId | `createPermission` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `code` | `string` | 否 | 权限编码 |
+| `name` | `string` | 否 | 权限名称 |
+| `description` | `string` | 否 | 描述 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `PermissionPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.code` | `string` | 否 | 权限编码 |
+| `data.name` | `string` | 否 | 权限名称 |
+| `data.description` | `string` | 否 | 描述 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/system/permissions/{id}
+
+- 标题：删除权限点
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/system/permissions/{id}` |
+| OperationId | `deletePermission` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/system/permissions/{id}
+
+- 标题：查询权限点详情
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/system/permissions/{id}` |
+| OperationId | `permission` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `PermissionPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.code` | `string` | 否 | 权限编码 |
+| `data.name` | `string` | 否 | 权限名称 |
+| `data.description` | `string` | 否 | 描述 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/system/permissions/{id}
+
+- 标题：更新权限点
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/system/permissions/{id}` |
+| OperationId | `updatePermission` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `code` | `string` | 否 | 权限编码 |
+| `name` | `string` | 否 | 权限名称 |
+| `description` | `string` | 否 | 描述 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `PermissionPayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.code` | `string` | 否 | 权限编码 |
+| `data.name` | `string` | 否 | 权限名称 |
+| `data.description` | `string` | 否 | 描述 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## GET /api/admin/system/roles
+
+- 标题：查询角色列表
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/system/roles` |
+| OperationId | `roles` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<RolePayload>` | 否 | - |
+| `data` | `array<RolePayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 主键 ID |
+| `data[].code` | `string` | 否 | 角色编码 |
+| `data[].name` | `string` | 否 | 角色名称 |
+| `data[].description` | `string` | 否 | 描述 |
+| `data[].enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/admin/system/roles
+
+- 标题：新增角色
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/system/roles` |
+| OperationId | `createRole` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `code` | `string` | 否 | 角色编码 |
+| `name` | `string` | 否 | 角色名称 |
+| `description` | `string` | 否 | 描述 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `RolePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.code` | `string` | 否 | 角色编码 |
+| `data.name` | `string` | 否 | 角色名称 |
+| `data.description` | `string` | 否 | 描述 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## DELETE /api/admin/system/roles/{id}
+
+- 标题：删除角色
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `DELETE` |
+| 路径 | `/api/admin/system/roles/{id}` |
+| OperationId | `deleteRole` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `boolean` | 否 | - |
+
+## GET /api/admin/system/roles/{id}
+
+- 标题：查询角色详情
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/system/roles/{id}` |
+| OperationId | `role` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `RolePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.code` | `string` | 否 | 角色编码 |
+| `data.name` | `string` | 否 | 角色名称 |
+| `data.description` | `string` | 否 | 描述 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## PUT /api/admin/system/roles/{id}
+
+- 标题：更新角色
+- 标签：admin-system
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/system/roles/{id}` |
+| OperationId | `updateRole` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `integer` | 否 | 主键 ID |
+| `code` | `string` | 否 | 角色编码 |
+| `name` | `string` | 否 | 角色名称 |
+| `description` | `string` | 否 | 描述 |
+| `enabled` | `boolean` | 否 | 是否启用 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `RolePayload` | 否 | - |
+| `data.id` | `integer` | 否 | 主键 ID |
+| `data.code` | `string` | 否 | 角色编码 |
+| `data.name` | `string` | 否 | 角色名称 |
+| `data.description` | `string` | 否 | 描述 |
+| `data.enabled` | `boolean` | 否 | 是否启用 |
+
+## POST /api/auth/refresh
+
+- 标题：刷新登录态
+- 标签：auth
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/auth/refresh` |
+| OperationId | `refresh` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `refreshToken` | `string` | 是 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/auth/sms-login
+
+- 标题：短信登录
+- 标签：auth
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/auth/sms-login` |
+| OperationId | `smsLogin` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `role` | `string` | 是 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/auth/wechat-login
+
+- 标题：微信登录
+- 标签：auth
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/auth/wechat-login` |
+| OperationId | `wechatLogin` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `role` | `string` | 是 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/categories
+
+- 标题：查询服务类目
+- 标签：mobile-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/categories` |
+| OperationId | `categories` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/coupons
+
+- 标题：查询优惠券列表
+- 标签：user
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/coupons` |
+| OperationId | `coupons` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/dispatch/tasks
+
+- 标题：查询派单任务
+- 标签：dispatch
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/dispatch/tasks` |
+| OperationId | `tasks` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/dispatch/tasks/{id}/claim
+
+- 标题：师傅抢单
+- 标签：dispatch
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/dispatch/tasks/{id}/claim` |
+| OperationId | `claim` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `masterName` | `string` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/dispatch/tasks/{id}/force-assign
+
+- 标题：后台强派
+- 标签：dispatch
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/dispatch/tasks/{id}/force-assign` |
+| OperationId | `forceAssign` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `masterName` | `string` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/files/{id}
+
+- 标题：查询文件元数据
+- 标签：file
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/files/{id}` |
+| OperationId | `file` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/files/{id}/content
+
+- 标题：下载文件内容
+- 标签：file
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/files/{id}/content` |
+| OperationId | `fileContent` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+- 无可展开字段。
+
+## POST /api/files/upload
+
+- 标题：上传文件
+- 标签：file
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/files/upload` |
+| OperationId | `upload` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `bizType` | query | 否 | `string` | - |
+| `bizId` | query | 否 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `multipart/form-data`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `file` | `string` | 是 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/map/eta
+
+- 标题：查询预计到达时间
+- 标签：map
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/map/eta` |
+| OperationId | `eta` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `orderId` | `string` | 否 | 订单 ID |
+| `latitude` | `number` | 否 | 纬度 |
+| `longitude` | `number` | 否 | 经度 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `EtaPayload` | 否 | - |
+| `data.eta` | `string` | 否 | 预计到达时间 |
+| `data.distance` | `string` | 否 | 路程说明 |
+
+## POST /api/map/geofence/check
+
+- 标题：校验地址是否在服务范围
+- 标签：map
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/map/geofence/check` |
+| OperationId | `geofenceCheck` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `city` | `string` | 否 | 城市名称 |
+| `district` | `string` | 否 | 区县名称 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `GeofenceCheckPayload` | 否 | - |
+| `data.serviceable` | `boolean` | 否 | 是否可服务 |
+| `data.matchedZone` | `string` | 否 | 命中的区域说明 |
+
+## POST /api/map/regeo
+
+- 标题：逆地理解析
+- 标签：map
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/map/regeo` |
+| OperationId | `reverseGeocode` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `latitude` | `number` | 否 | 纬度 |
+| `longitude` | `number` | 否 | 经度 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `RegeoPayload` | 否 | - |
+| `data.city` | `string` | 否 | 城市名称 |
+| `data.district` | `string` | 否 | 区县名称 |
+| `data.address` | `string` | 否 | 详细地址 |
+| `data.serviceable` | `boolean` | 否 | 是否可服务 |
+
+## GET /api/map/service-cities
+
+- 标题：查询可服务城市与区域列表
+- 标签：map
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/map/service-cities` |
+| OperationId | `serviceCities` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<ServiceCityPayload>` | 否 | - |
+| `data` | `array<ServiceCityPayload>` | 否 | - |
+| `data[].id` | `integer` | 否 | 区域主键 ID |
+| `data[].name` | `string` | 否 | 城市名称 |
+| `data[].district` | `string` | 否 | 区县名称 |
+| `data[].hot` | `boolean` | 否 | 是否热门城市 |
+
+## POST /api/master/apply
+
+- 标题：提交师傅入驻申请
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/master/apply` |
+| OperationId | `apply` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `realName` | `string` | 否 | - |
+| `mobile` | `string` | 否 | - |
+| `skills` | `string` | 否 | - |
+| `area` | `string` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/master/dashboard
+
+- 标题：查询师傅工作台
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/master/dashboard` |
+| OperationId | `dashboard` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/master/orders/{id}/after-work-media
+
+- 标题：上传完工媒体
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/master/orders/{id}/after-work-media` |
+| OperationId | `afterWorkMedia` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `fileIds` | `array<integer>` | 否 | - |
+| `fileIds` | `array<integer>` | 否 | - |
+| `note` | `string` | 否 | 补充说明 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/master/orders/{id}/before-work-media
+
+- 标题：上传施工前媒体
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/master/orders/{id}/before-work-media` |
+| OperationId | `beforeWorkMedia` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `fileIds` | `array<integer>` | 否 | - |
+| `fileIds` | `array<integer>` | 否 | - |
+| `note` | `string` | 否 | 补充说明 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/master/orders/{id}/check-in
+
+- 标题：师傅到场签到
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/master/orders/{id}/check-in` |
+| OperationId | `checkIn` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `latitude` | `number` | 否 | 纬度 |
+| `longitude` | `number` | 否 | 经度 |
+| `accuracy` | `number` | 否 | 定位精度，单位米 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/master/settings
+
+- 标题：查询师傅设置
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/master/settings` |
+| OperationId | `settings` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/master/settings
+
+- 标题：保存师傅设置
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/master/settings` |
+| OperationId | `saveSettings` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `listening` | `boolean` | 否 | - |
+| `maxDistance` | `string` | 否 | - |
+| `privacyNumber` | `boolean` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/master/wallet
+
+- 标题：查询师傅钱包
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/master/wallet` |
+| OperationId | `wallet` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/members/current
+
+- 标题：查询当前会员等级
+- 标签：user
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/members/current` |
+| OperationId | `member` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/messages/{sessionId}/items
+
+- 标题：查询聊天消息
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/messages/{sessionId}/items` |
+| OperationId | `items` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `sessionId` | path | 是 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/messages/{sessionId}/items
+
+- 标题：发送聊天消息
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/messages/{sessionId}/items` |
+| OperationId | `send` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `sessionId` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `senderCode` | `string` | 否 | 发送方编码 |
+| `messageType` | `string` | 否 | 消息类型 |
+| `content` | `string` | 否 | 消息内容，文本消息为文案，图片/语音消息为文件 URL |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/messages/sessions
+
+- 标题：查询聊天会话
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/messages/sessions` |
+| OperationId | `sessions` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/notifications
+
+- 标题：查询通知中心
+- 标签：master
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/notifications` |
+| OperationId | `notifications` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/orders/{id}/cancel
+
+- 标题：取消订单
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/orders/{id}/cancel` |
+| OperationId | `cancel` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `reason` | `string` | 否 | 取消原因 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/orders/{id}/tracking
+
+- 标题：查询订单轨迹
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/orders/{id}/tracking` |
+| OperationId | `tracking` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/orders/{id}/urge
+
+- 标题：催单
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/orders/{id}/urge` |
+| OperationId | `urge` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `remark` | `string` | 否 | 催单备注 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/payments/wechat/{orderId}/callback
+
+- 标题：接收微信支付回调
+- 标签：payment
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/payments/wechat/{orderId}/callback` |
+| OperationId | `callback` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `orderId` | path | 是 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/payments/wechat/prepay
+
+- 标题：创建微信预支付单
+- 标签：payment
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/payments/wechat/prepay` |
+| OperationId | `prepay` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `orderId` | `string` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `WechatPrepayPayload` | 否 | - |
+| `data.orderId` | `string` | 否 | 订单号 |
+| `data.appId` | `string` | 否 | 微信应用 ID |
+| `data.timeStamp` | `string` | 否 | 时间戳 |
+| `data.nonceStr` | `string` | 否 | 随机串 |
+| `data.packageValue` | `string` | 否 | 微信支付 package 字段 |
+| `data.signType` | `string` | 否 | 签名算法 |
+| `data.paySign` | `string` | 否 | 支付签名 |
+| `data.payEnabled` | `boolean` | 否 | 是否已启用真实支付能力 |
+| `data.message` | `string` | 否 | 提示文案 |
+
+## POST /api/payments/wechat/refund
+
+- 标题：发起微信退款
+- 标签：payment
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/payments/wechat/refund` |
+| OperationId | `refund` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `orderId` | `string` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/product-orders
+
+- 标题：查询商品订单列表
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/product-orders` |
+| OperationId | `productOrders` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/product-orders
+
+- 标题：创建商品订单
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/product-orders` |
+| OperationId | `createProductOrder` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `productId` | `integer` | 否 | - |
+| `skuId` | `integer` | 否 | - |
+| `addressId` | `integer` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/product-orders/{id}
+
+- 标题：查询商品订单详情
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/product-orders/{id}` |
+| OperationId | `productOrder` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/products
+
+- 标题：查询商品列表
+- 标签：mobile-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/products` |
+| OperationId | `products` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/products/{id}
+
+- 标题：查询商品详情
+- 标签：mobile-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/products/{id}` |
+| OperationId | `productDetail` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/quotations
+
+- 标题：创建增项报价
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/quotations` |
+| OperationId | `createQuotation` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `orderId` | `string` | 否 | - |
+| `remark` | `string` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/quotations/{quotationId}/confirm
+
+- 标题：确认增项报价
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/quotations/{quotationId}/confirm` |
+| OperationId | `confirmQuotation` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `quotationId` | path | 是 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/search
+
+- 标题：搜索服务与商品
+- 标签：mobile-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/search` |
+| OperationId | `search` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `keyword` | query | 否 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/service-orders
+
+- 标题：查询服务订单列表
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/service-orders` |
+| OperationId | `serviceOrders` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/service-orders
+
+- 标题：创建服务订单
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/service-orders` |
+| OperationId | `createServiceOrder` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `serviceItemId` | `integer` | 否 | - |
+| `title` | `string` | 否 | - |
+| `appointment` | `string` | 否 | - |
+| `addressId` | `integer` | 否 | - |
+| `description` | `string` | 否 | - |
+| `emergency` | `boolean` | 否 | - |
+| `nightService` | `boolean` | 否 | - |
+| `evidenceFileIds` | `array<integer>` | 否 | - |
+| `evidenceFileIds` | `array<integer>` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/service-orders/{id}
+
+- 标题：查询服务订单详情
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/service-orders/{id}` |
+| OperationId | `serviceOrder` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/service-orders/{id}/status
+
+- 标题：更新服务订单状态
+- 标签：mobile-order
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/service-orders/{id}/status` |
+| OperationId | `updateServiceOrderStatus` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `status` | `string` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/service-orders/time-slots
+
+- 标题：查询预约时段列表
+- 标签：map
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/service-orders/time-slots` |
+| OperationId | `timeSlots` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `array<TimeSlotPayload>` | 否 | - |
+| `data` | `array<TimeSlotPayload>` | 否 | - |
+| `data[].value` | `string` | 否 | 时段值 |
+
+## GET /api/services
+
+- 标题：查询服务列表
+- 标签：mobile-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/services` |
+| OperationId | `services` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/services/{id}
+
+- 标题：查询服务详情
+- 标签：mobile-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/services/{id}` |
+| OperationId | `serviceDetail` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/services/{id}/comments
+
+- 标题：查询服务评价列表
+- 标签：mobile-catalog
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/services/{id}/comments` |
+| OperationId | `serviceComments` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/users/me
+
+- 标题：查询当前用户信息
+- 标签：user
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/users/me` |
+| OperationId | `me` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## PUT /api/users/me
+
+- 标题：更新用户资料
+- 标签：user
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/users/me` |
+| OperationId | `updateProfile` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `nickname` | `string` | 否 | - |
+| `mobile` | `string` | 否 | - |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /swagger-ui/index.html
+
+- 标题：未填写
+- 标签：open-api-portal-controller
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/swagger-ui/index.html` |
+| OperationId | `redirectToKnife4j` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+- 无显式参数。
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- 无结构化响应体。
