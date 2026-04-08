@@ -134,6 +134,7 @@ public class PlatformDomainSupport {
         transactionEntity.title = title;
         transactionEntity.amount = settlementAmount;
         transactionEntity.transactionTime = "刚刚";
+        transactionEntity.statusText = "待结算";
         platformRepository.saveWalletTransaction(transactionEntity);
     }
 
@@ -176,6 +177,16 @@ public class PlatformDomainSupport {
         };
     }
 
+    public String paymentStatusLabel(PaymentStatus status) {
+        return switch (status) {
+            case UNPAID -> "未支付";
+            case PARTIAL_PAID -> "已预付";
+            case PAID -> "已支付";
+            case REFUNDING -> "退款中";
+            case REFUNDED -> "已退款";
+        };
+    }
+
     public String mapTaskStatus(String taskStatus) {
         if (taskStatus == null) {
             return "待接单";
@@ -184,6 +195,7 @@ public class PlatformDomainSupport {
             case "CLAIMED" -> "已抢单";
             case "FORCE_ASSIGNED" -> "已强派";
             case "ASSIGNED" -> "待上门";
+            case "PENDING" -> "抢单中";
             default -> "抢单中";
         };
     }

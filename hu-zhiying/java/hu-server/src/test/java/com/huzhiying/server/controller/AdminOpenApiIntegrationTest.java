@@ -28,7 +28,10 @@ class AdminOpenApiIntegrationTest {
         mockMvc.perform(get("/v3/api-docs/admin"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paths").exists())
-                .andExpect(jsonPath("$.paths['/api/admin/content/banners']").exists());
+                .andExpect(jsonPath("$.paths['/api/admin/content/banners']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/dispatch/{taskId}']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/orders/{orderId}']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/masters/{userId}']").exists());
     }
 
     @Test

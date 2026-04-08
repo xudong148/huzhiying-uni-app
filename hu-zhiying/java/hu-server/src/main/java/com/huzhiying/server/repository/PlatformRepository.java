@@ -334,6 +334,10 @@ public class PlatformRepository {
         return query.getResultList().stream().findFirst();
     }
 
+    public Optional<WalletAccountEntity> findWalletAccount(Long id) {
+        return Optional.ofNullable(entityManager.find(WalletAccountEntity.class, id));
+    }
+
     public WalletAccountEntity saveWalletAccount(WalletAccountEntity entity) {
         return entityManager.merge(entity);
     }
@@ -410,6 +414,10 @@ public class PlatformRepository {
 
     public Optional<ArbitrationCaseEntity> findArbitration(String id) {
         return Optional.ofNullable(entityManager.find(ArbitrationCaseEntity.class, id));
+    }
+
+    public ArbitrationCaseEntity saveArbitration(ArbitrationCaseEntity entity) {
+        return entityManager.merge(entity);
     }
 
     public List<CouponEntity> listCoupons() {

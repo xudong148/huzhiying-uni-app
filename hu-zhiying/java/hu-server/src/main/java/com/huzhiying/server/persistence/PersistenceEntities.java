@@ -88,6 +88,7 @@ public final class PersistenceEntities {
         public Integer maxDistanceKm;
         @Column(name = "privacy_number")
         public Boolean privacyNumber;
+        public Boolean enabled;
 
         public MasterProfileEntity() {}
     }

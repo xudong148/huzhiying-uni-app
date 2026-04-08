@@ -279,6 +279,7 @@ public class PlatformCommandService {
         profile.listening = true;
         profile.maxDistanceKm = 20;
         profile.privacyNumber = true;
+        profile.enabled = true;
         platformRepository.saveMasterProfile(profile);
         WalletAccountEntity wallet = new WalletAccountEntity();
         wallet.id = platformRepository.nextLongId("WalletAccountEntity", "id", 0L);

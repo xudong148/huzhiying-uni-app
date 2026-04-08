@@ -12,7 +12,7 @@
 - 文档标题：`呼之应开放接口`
 - 文档版本：`v1`
 - 分组：`all`
-- 接口数量：`133`
+- 接口数量：`148`
 - OpenAPI 地址：`http://localhost:8080/v3/api-docs`
 
 ## 鉴权约定
@@ -25,6 +25,8 @@
 - [POST /api/addresses](#post-api-addresses)
 - [DELETE /api/addresses/{id}](#delete-api-addresses-id)
 - [GET /api/admin/arbitrations](#get-api-admin-arbitrations)
+- [GET /api/admin/arbitrations/{id}](#get-api-admin-arbitrations-id)
+- [POST /api/admin/arbitrations/{id}/resolve](#post-api-admin-arbitrations-id-resolve)
 - [GET /api/admin/catalog/categories](#get-api-admin-catalog-categories)
 - [POST /api/admin/catalog/categories](#post-api-admin-catalog-categories)
 - [DELETE /api/admin/catalog/categories/{id}](#delete-api-admin-catalog-categories-id)
@@ -62,12 +64,17 @@
 - [PUT /api/admin/content/notices/{id}](#put-api-admin-content-notices-id)
 - [GET /api/admin/dashboard](#get-api-admin-dashboard)
 - [GET /api/admin/dispatch](#get-api-admin-dispatch)
+- [GET /api/admin/dispatch/{taskId}](#get-api-admin-dispatch-taskid)
+- [POST /api/admin/dispatch/{taskId}/assign](#post-api-admin-dispatch-taskid-assign)
+- [POST /api/admin/dispatch/{taskId}/cancel-order](#post-api-admin-dispatch-taskid-cancel-order)
 - [GET /api/admin/dispatch/zones](#get-api-admin-dispatch-zones)
 - [POST /api/admin/dispatch/zones](#post-api-admin-dispatch-zones)
 - [DELETE /api/admin/dispatch/zones/{id}](#delete-api-admin-dispatch-zones-id)
 - [GET /api/admin/dispatch/zones/{id}](#get-api-admin-dispatch-zones-id)
 - [PUT /api/admin/dispatch/zones/{id}](#put-api-admin-dispatch-zones-id)
 - [GET /api/admin/finance](#get-api-admin-finance)
+- [GET /api/admin/finance/{billNo}](#get-api-admin-finance-billno)
+- [POST /api/admin/finance/{billNo}/approve](#post-api-admin-finance-billno-approve)
 - [GET /api/admin/marketing/coupons](#get-api-admin-marketing-coupons)
 - [POST /api/admin/marketing/coupons](#post-api-admin-marketing-coupons)
 - [DELETE /api/admin/marketing/coupons/{id}](#delete-api-admin-marketing-coupons-id)
@@ -79,7 +86,15 @@
 - [GET /api/admin/marketing/member-levels/{id}](#get-api-admin-marketing-member-levels-id)
 - [PUT /api/admin/marketing/member-levels/{id}](#put-api-admin-marketing-member-levels-id)
 - [GET /api/admin/masters](#get-api-admin-masters)
+- [GET /api/admin/masters/{userId}](#get-api-admin-masters-userid)
+- [PUT /api/admin/masters/{userId}](#put-api-admin-masters-userid)
+- [POST /api/admin/masters/{userId}/credit-score](#post-api-admin-masters-userid-credit-score)
+- [POST /api/admin/masters/{userId}/disable](#post-api-admin-masters-userid-disable)
+- [POST /api/admin/masters/{userId}/enable](#post-api-admin-masters-userid-enable)
 - [GET /api/admin/orders](#get-api-admin-orders)
+- [GET /api/admin/orders/{orderId}](#get-api-admin-orders-orderid)
+- [POST /api/admin/orders/{orderId}/cancel](#post-api-admin-orders-orderid-cancel)
+- [POST /api/admin/orders/{orderId}/refund](#post-api-admin-orders-orderid-refund)
 - [GET /api/admin/pricing](#get-api-admin-pricing)
 - [GET /api/admin/pricing/rules](#get-api-admin-pricing-rules)
 - [POST /api/admin/pricing/rules](#post-api-admin-pricing-rules)
@@ -306,6 +321,95 @@
 ### 请求体
 
 - 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/arbitrations/{id}
+
+- 标题：查询仲裁详情
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/arbitrations/{id}` |
+| OperationId | `arbitrationDetail` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/arbitrations/{id}/resolve
+
+- 标题：提交仲裁裁决
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/arbitrations/{id}/resolve` |
+| OperationId | `resolveArbitration` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `statusText` | `string` | 是 | 裁决后的状态文案 |
+| `resultText` | `string` | 是 | 裁决结果说明 |
 
 ### 响应体
 
@@ -2139,6 +2243,142 @@
 | `data` | `object` | 否 | - |
 | `data` | `object` | 否 | - |
 
+## GET /api/admin/dispatch/{taskId}
+
+- 标题：查询调度任务详情
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/dispatch/{taskId}` |
+| OperationId | `dispatchDetail` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `taskId` | path | 是 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/dispatch/{taskId}/assign
+
+- 标题：后台指派师傅
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/dispatch/{taskId}/assign` |
+| OperationId | `assignDispatch` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `taskId` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `masterUserId` | `integer` | 否 | 目标师傅用户 ID |
+| `masterName` | `string` | 否 | 目标师傅姓名，和 masterUserId 二选一即可 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/dispatch/{taskId}/cancel-order
+
+- 标题：后台从调度中心取消订单
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/dispatch/{taskId}/cancel-order` |
+| OperationId | `cancelDispatchOrder` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `taskId` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `reason` | `string` | 否 | 原因或备注 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
 ## GET /api/admin/dispatch/zones
 
 - 标题：查询服务区域列表
@@ -2397,6 +2637,94 @@
 ### 请求体
 
 - 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/finance/{billNo}
+
+- 标题：查询财务单详情
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/finance/{billNo}` |
+| OperationId | `financeDetail` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `billNo` | path | 是 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/finance/{billNo}/approve
+
+- 标题：审核财务单
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/finance/{billNo}/approve` |
+| OperationId | `approveFinance` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `billNo` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `remark` | `string` | 否 | 审核备注 |
 
 ### 响应体
 
@@ -2934,6 +3262,234 @@
 | `data` | `object` | 否 | - |
 | `data` | `object` | 否 | - |
 
+## GET /api/admin/masters/{userId}
+
+- 标题：查询师傅详情
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/masters/{userId}` |
+| OperationId | `masterDetail` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `userId` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## PUT /api/admin/masters/{userId}
+
+- 标题：更新师傅资料
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `PUT` |
+| 路径 | `/api/admin/masters/{userId}` |
+| OperationId | `updateMaster` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `userId` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `realName` | `string` | 否 | 师傅姓名 |
+| `mobile` | `string` | 否 | 手机号 |
+| `skillTags` | `array<string>` | 否 | - |
+| `skillTags` | `array<string>` | 否 | - |
+| `serviceAreas` | `array<string>` | 否 | - |
+| `serviceAreas` | `array<string>` | 否 | - |
+| `deposit` | `number` | 否 | 保证金 |
+| `online` | `boolean` | 否 | 是否在线 |
+| `listening` | `boolean` | 否 | 是否启用听单 |
+| `maxDistanceKm` | `integer` | 否 | 最大接单距离，单位 km |
+| `privacyNumber` | `boolean` | 否 | 是否启用隐私号 |
+| `enabled` | `boolean` | 否 | 是否启用该师傅 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/masters/{userId}/credit-score
+
+- 标题：调整师傅信用分
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/masters/{userId}/credit-score` |
+| OperationId | `updateCreditScore` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `userId` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `creditScore` | `integer` | 否 | 最新信用分 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/masters/{userId}/disable
+
+- 标题：停用师傅
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/masters/{userId}/disable` |
+| OperationId | `disableMaster` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `userId` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/masters/{userId}/enable
+
+- 标题：启用师傅
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/masters/{userId}/enable` |
+| OperationId | `enableMaster` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `userId` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
 ## GET /api/admin/orders
 
 - 标题：查询后台订单列表
@@ -2955,6 +3511,141 @@
 ### 请求体
 
 - 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/orders/{orderId}
+
+- 标题：查询订单详情
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `GET` |
+| 路径 | `/api/admin/orders/{orderId}` |
+| OperationId | `orderDetail` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `orderId` | path | 是 | `string` | - |
+
+### 请求体
+
+- 无请求体。
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/orders/{orderId}/cancel
+
+- 标题：后台取消订单
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/orders/{orderId}/cancel` |
+| OperationId | `cancelOrder` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `orderId` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `reason` | `string` | 否 | 原因或备注 |
+
+### 响应体
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type：`*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/orders/{orderId}/refund
+
+- 标题：后台发起或审核退款
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 内容 |
+| --- | --- |
+| 方法 | `POST` |
+| 路径 | `/api/admin/orders/{orderId}/refund` |
+| OperationId | `refundOrder` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / Query 参数
+
+| 名称 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `orderId` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `reason` | `string` | 否 | 原因或备注 |
 
 ### 响应体
 

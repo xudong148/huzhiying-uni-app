@@ -277,3 +277,132 @@ export async function updateCrudItem(resource, id, payload) {
 export async function deleteCrudItem(resource, id) {
   return (await rawRequest({ url: `${resource}/${id}`, method: 'DELETE' })).data;
 }
+
+/**
+ * 查询调度详情。
+ */
+export async function fetchDispatchDetail(taskId) {
+  return (await rawRequest({ url: `/api/admin/dispatch/${taskId}` })).data;
+}
+
+/**
+ * 后台指派师傅。
+ */
+export async function assignDispatchTask(taskId, payload) {
+  return (await rawRequest({ url: `/api/admin/dispatch/${taskId}/assign`, method: 'POST', data: payload })).data;
+}
+
+/**
+ * 从调度中心强制取消订单。
+ */
+export async function cancelDispatchOrder(taskId, reason) {
+  return (await rawRequest({
+    url: `/api/admin/dispatch/${taskId}/cancel-order`,
+    method: 'POST',
+    data: { reason },
+  })).data;
+}
+
+/**
+ * 查询后台订单详情。
+ */
+export async function fetchAdminOrderDetail(orderId) {
+  return (await rawRequest({ url: `/api/admin/orders/${orderId}` })).data;
+}
+
+/**
+ * 后台取消服务订单。
+ */
+export async function cancelAdminOrder(orderId, reason) {
+  return (await rawRequest({
+    url: `/api/admin/orders/${orderId}/cancel`,
+    method: 'POST',
+    data: { reason },
+  })).data;
+}
+
+/**
+ * 后台发起或审核退款。
+ */
+export async function refundAdminOrder(orderId, reason) {
+  return (await rawRequest({
+    url: `/api/admin/orders/${orderId}/refund`,
+    method: 'POST',
+    data: { reason },
+  })).data;
+}
+
+/**
+ * 查询师傅详情。
+ */
+export async function fetchAdminMasterDetail(userId) {
+  return (await rawRequest({ url: `/api/admin/masters/${userId}` })).data;
+}
+
+/**
+ * 更新师傅资料。
+ */
+export async function updateAdminMaster(userId, payload) {
+  return (await rawRequest({ url: `/api/admin/masters/${userId}`, method: 'PUT', data: payload })).data;
+}
+
+/**
+ * 启用师傅。
+ */
+export async function enableAdminMaster(userId) {
+  return (await rawRequest({ url: `/api/admin/masters/${userId}/enable`, method: 'POST' })).data;
+}
+
+/**
+ * 停用师傅。
+ */
+export async function disableAdminMaster(userId) {
+  return (await rawRequest({ url: `/api/admin/masters/${userId}/disable`, method: 'POST' })).data;
+}
+
+/**
+ * 调整师傅信用分。
+ */
+export async function updateAdminMasterCredit(userId, creditScore) {
+  return (await rawRequest({
+    url: `/api/admin/masters/${userId}/credit-score`,
+    method: 'POST',
+    data: { creditScore },
+  })).data;
+}
+
+/**
+ * 查询财务单详情。
+ */
+export async function fetchFinanceDetail(billNo) {
+  return (await rawRequest({ url: `/api/admin/finance/${billNo}` })).data;
+}
+
+/**
+ * 审核财务单。
+ */
+export async function approveFinanceBill(billNo, remark) {
+  return (await rawRequest({
+    url: `/api/admin/finance/${billNo}/approve`,
+    method: 'POST',
+    data: { remark },
+  })).data;
+}
+
+/**
+ * 查询仲裁详情。
+ */
+export async function fetchArbitrationDetail(id) {
+  return (await rawRequest({ url: `/api/admin/arbitrations/${id}` })).data;
+}
+
+/**
+ * 提交仲裁裁决。
+ */
+export async function resolveArbitrationCase(id, payload) {
+  return (await rawRequest({
+    url: `/api/admin/arbitrations/${id}/resolve`,
+    method: 'POST',
+    data: payload,
+  })).data;
+}
