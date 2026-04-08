@@ -2443,3 +2443,221 @@ Unconditional classes:
 2026-04-08T17:03:08.356+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json]
 2026-04-08T17:03:08.360+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{123, 34, 111, 112, 101, 110, 97, 112, 105, 34, 58, 34, 51, 46, 48, 46, 49, 34, 44, 34, 105, 110, 10 (truncated)...]
 2026-04-08T17:03:08.364+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.313+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/index.html", parameters={}
+2026-04-08T17:03:11.314+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.huzhiying.server.controller.OpenApiPortalController#redirectToKnife4j()
+2026-04-08T17:03:11.318+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json, application/*+json, application/yaml]
+2026-04-08T17:03:11.318+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+2026-04-08T17:03:11.318+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 302 FOUND
+2026-04-08T17:03:11.321+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/doc.html", parameters={}
+2026-04-08T17:03:11.324+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-04-08T17:03:11.327+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.338+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/webjars/css/app.8a48e86b.css", parameters={}
+2026-04-08T17:03:11.338+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/webjars/css/chunk-vendors.f24a310a.css", parameters={}
+2026-04-08T17:03:11.339+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.339+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.339+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/app.b0c0d7df.js", parameters={}
+2026-04-08T17:03:11.339+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/webjars/css/chunk-75464e7e.8fb93ba5.css", parameters={}
+2026-04-08T17:03:11.339+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-vendors.d51cf6f8.js", parameters={}
+2026-04-08T17:03:11.340+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.340+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/webjars/css/chunk-d7d5f59c.a9ffbfcb.css", parameters={}
+2026-04-08T17:03:11.340+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.340+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.341+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.342+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.343+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.343+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.344+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-069eb437.355c4fb0.js", parameters={}
+2026-04-08T17:03:11.346+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.346+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.346+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.346+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-0d102d5a.b2bddffc.js", parameters={}
+2026-04-08T17:03:11.347+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-0fd67716.d57e2c41.js", parameters={}
+2026-04-08T17:03:11.348+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.348+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.348+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.349+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.350+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-260d712a.390177fe.js", parameters={}
+2026-04-08T17:03:11.351+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.352+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-2d0af44e.392afcd6.js", parameters={}
+2026-04-08T17:03:11.352+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.353+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.354+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-2d0bd799.eb48b7f1.js", parameters={}
+2026-04-08T17:03:11.354+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.355+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-2d0da532.591ad7fc.js", parameters={}
+2026-04-08T17:03:11.355+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.355+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.356+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.356+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.357+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-3ec4aaa8.a79d19f8.js", parameters={}
+2026-04-08T17:03:11.357+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-3b888a65.8737ce4f.js", parameters={}
+2026-04-08T17:03:11.357+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.358+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.359+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.360+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-589faee0.5bfd1708.js", parameters={}
+2026-04-08T17:03:11.360+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-735c675c.5b409314.js", parameters={}
+2026-04-08T17:03:11.360+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.361+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.361+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.362+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.362+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.363+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-75464e7e.b130271b.js", parameters={}
+2026-04-08T17:03:11.364+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-adb9e944.2c7f24fe.js", parameters={}
+2026-04-08T17:03:11.364+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.365+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.366+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.366+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-d7d5f59c.e61130f3.js", parameters={}
+2026-04-08T17:03:11.366+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.367+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:03:11.368+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.368+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.372+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.479+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/v3/api-docs/swagger-config", parameters={}
+2026-04-08T17:03:11.480+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.ui.SwaggerConfigResource#openapiJson(HttpServletRequest)
+2026-04-08T17:03:11.487+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json]
+2026-04-08T17:03:11.488+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [{configUrl=/v3/api-docs/swagger-config, oauth2RedirectUrl=http://localhost:8080/swagger-ui/oauth2-re (truncated)...]
+2026-04-08T17:03:11.493+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:11.496+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/v3/api-docs/admin", parameters={}
+2026-04-08T17:03:11.497+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource#openapiJson(HttpServletRequest, String, String, Locale)
+2026-04-08T17:03:11.777+08:00  INFO 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 279 ms
+2026-04-08T17:03:11.779+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json]
+2026-04-08T17:03:11.782+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{123, 34, 111, 112, 101, 110, 97, 112, 105, 34, 58, 34, 51, 46, 48, 46, 49, 34, 44, 34, 105, 110, 10 (truncated)...]
+2026-04-08T17:03:11.783+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:17.790+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/doc.html", parameters={}
+2026-04-08T17:03:17.791+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-04-08T17:03:17.792+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:17.871+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/swagger-ui/index.html", parameters={}
+2026-04-08T17:03:17.871+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.huzhiying.server.controller.OpenApiPortalController#redirectToKnife4j()
+2026-04-08T17:03:17.872+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-04-08T17:03:17.872+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+2026-04-08T17:03:17.872+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 302 FOUND
+2026-04-08T17:03:17.933+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/v3/api-docs/admin", parameters={}
+2026-04-08T17:03:17.934+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource#openapiJson(HttpServletRequest, String, String, Locale)
+2026-04-08T17:03:17.938+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json]
+2026-04-08T17:03:17.940+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [{123, 34, 111, 112, 101, 110, 97, 112, 105, 34, 58, 34, 51, 46, 48, 46, 49, 34, 44, 34, 105, 110, 10 (truncated)...]
+2026-04-08T17:03:17.941+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:03:40.909+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : HEAD "/swagger-ui/index.html", parameters={}
+2026-04-08T17:03:40.910+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.huzhiying.server.controller.OpenApiPortalController#redirectToKnife4j()
+2026-04-08T17:03:40.910+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-04-08T17:03:40.911+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Nothing to write: null body
+2026-04-08T17:03:40.911+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 302 FOUND
+2026-04-08T17:05:21.576+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : HEAD "/doc.html", parameters={}
+2026-04-08T17:05:21.578+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-04-08T17:05:21.579+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:07:34.590+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/doc.html", parameters={}
+2026-04-08T17:07:34.593+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-04-08T17:07:34.594+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.608+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/webjars/css/app.8a48e86b.css", parameters={}
+2026-04-08T17:07:34.609+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.610+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.612+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/webjars/css/chunk-vendors.f24a310a.css", parameters={}
+2026-04-08T17:07:34.612+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/app.b0c0d7df.js", parameters={}
+2026-04-08T17:07:34.612+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-vendors.d51cf6f8.js", parameters={}
+2026-04-08T17:07:34.612+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/webjars/css/chunk-75464e7e.8fb93ba5.css", parameters={}
+2026-04-08T17:07:34.613+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.613+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.613+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.613+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.613+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/webjars/css/chunk-d7d5f59c.a9ffbfcb.css", parameters={}
+2026-04-08T17:07:34.614+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.614+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.614+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.614+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.614+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.615+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-069eb437.355c4fb0.js", parameters={}
+2026-04-08T17:07:34.616+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.616+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.617+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.618+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-0d102d5a.b2bddffc.js", parameters={}
+2026-04-08T17:07:34.618+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-0fd67716.d57e2c41.js", parameters={}
+2026-04-08T17:07:34.618+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-260d712a.390177fe.js", parameters={}
+2026-04-08T17:07:34.619+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.619+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.619+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.619+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-2d0af44e.392afcd6.js", parameters={}
+2026-04-08T17:07:34.620+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-2d0bd799.eb48b7f1.js", parameters={}
+2026-04-08T17:07:34.620+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.620+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.620+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.620+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.620+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.621+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.621+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.625+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-2d0da532.591ad7fc.js", parameters={}
+2026-04-08T17:07:34.625+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-589faee0.5bfd1708.js", parameters={}
+2026-04-08T17:07:34.625+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-3b888a65.8737ce4f.js", parameters={}
+2026-04-08T17:07:34.625+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-3ec4aaa8.a79d19f8.js", parameters={}
+2026-04-08T17:07:34.626+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-735c675c.5b409314.js", parameters={}
+2026-04-08T17:07:34.626+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.626+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.626+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.626+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.627+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.626+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.627+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.627+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.627+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-75464e7e.b130271b.js", parameters={}
+2026-04-08T17:07:34.627+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.628+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.628+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.629+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-adb9e944.2c7f24fe.js", parameters={}
+2026-04-08T17:07:34.629+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.630+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.630+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-d7d5f59c.e61130f3.js", parameters={}
+2026-04-08T17:07:34.631+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.631+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:07:34.632+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:07:34.750+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/v3/api-docs/swagger-config", parameters={}
+2026-04-08T17:07:34.751+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.ui.SwaggerConfigResource#openapiJson(HttpServletRequest)
+2026-04-08T17:07:34.751+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json]
+2026-04-08T17:07:34.752+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [{configUrl=/v3/api-docs/swagger-config, oauth2RedirectUrl=http://localhost:8080/swagger-ui/oauth2-re (truncated)...]
+2026-04-08T17:07:34.752+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:07:34.774+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/v3/api-docs/admin", parameters={}
+2026-04-08T17:07:34.775+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource#openapiJson(HttpServletRequest, String, String, Locale)
+2026-04-08T17:07:34.778+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json]
+2026-04-08T17:07:34.781+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [{123, 34, 111, 112, 101, 110, 97, 112, 105, 34, 58, 34, 51, 46, 48, 46, 49, 34, 44, 34, 105, 110, 10 (truncated)...]
+2026-04-08T17:07:34.782+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:09:50.987+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/v3/api-docs/admin", parameters={}
+2026-04-08T17:09:50.989+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource#openapiJson(HttpServletRequest, String, String, Locale)
+2026-04-08T17:09:50.993+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json;q=0.8', given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7] and supported [application/json]
+2026-04-08T17:09:50.995+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{123, 34, 111, 112, 101, 110, 97, 112, 105, 34, 58, 34, 51, 46, 48, 46, 49, 34, 44, 34, 105, 110, 10 (truncated)...]
+2026-04-08T17:09:50.996+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:09:55.367+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/v3/api-docs/swagger-config", parameters={}
+2026-04-08T17:09:55.368+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.ui.SwaggerConfigResource#openapiJson(HttpServletRequest)
+2026-04-08T17:09:55.369+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json]
+2026-04-08T17:09:55.369+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{configUrl=/v3/api-docs/swagger-config, oauth2RedirectUrl=http://localhost:8080/swagger-ui/oauth2-re (truncated)...]
+2026-04-08T17:09:55.370+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:09:55.373+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/v3/api-docs/admin", parameters={}
+2026-04-08T17:09:55.375+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource#openapiJson(HttpServletRequest, String, String, Locale)
+2026-04-08T17:09:55.377+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json]
+2026-04-08T17:09:55.380+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [{123, 34, 111, 112, 101, 110, 97, 112, 105, 34, 58, 34, 51, 46, 48, 46, 49, 34, 44, 34, 105, 110, 10 (truncated)...]
+2026-04-08T17:09:55.381+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-04-08T17:09:57.383+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/webjars/css/chunk-d7d5f59c.a9ffbfcb.css", parameters={}
+2026-04-08T17:09:57.383+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-d7d5f59c.e61130f3.js", parameters={}
+2026-04-08T17:09:57.384+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:09:57.384+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/webjars/css/chunk-75464e7e.8fb93ba5.css", parameters={}
+2026-04-08T17:09:57.384+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-069eb437.355c4fb0.js", parameters={}
+2026-04-08T17:09:57.384+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-adb9e944.2c7f24fe.js", parameters={}
+2026-04-08T17:09:57.384+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:09:57.384+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-75464e7e.b130271b.js", parameters={}
+2026-04-08T17:09:57.384+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:09:57.384+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:09:57.384+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:09:57.385+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:09:57.385+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:09:57.385+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:09:57.385+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:09:57.385+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:09:57.386+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:09:57.386+08:00 DEBUG 20848 --- [huzhiying-platform] [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:09:57.410+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-3b888a65.8737ce4f.js", parameters={}
+2026-04-08T17:09:57.410+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-2d0af44e.392afcd6.js", parameters={}
+2026-04-08T17:09:57.410+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-3ec4aaa8.a79d19f8.js", parameters={}
+2026-04-08T17:09:57.411+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:09:57.412+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:09:57.412+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:09:57.412+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:09:57.412+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:09:57.414+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
+2026-04-08T17:09:57.417+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/webjars/js/chunk-2d0bd799.eb48b7f1.js", parameters={}
+2026-04-08T17:09:57.418+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/webjars/]]
+2026-04-08T17:09:57.419+08:00 DEBUG 20848 --- [huzhiying-platform] [nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 304 NOT_MODIFIED
