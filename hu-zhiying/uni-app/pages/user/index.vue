@@ -4,10 +4,10 @@
       <!-- 用户头部 -->
       <view class="user-page__profile">
         <view class="user-page__profile-main">
-          <image class="user-page__avatar" :src="user.profile.avatar" mode="aspectFill" />
+          <image class="user-page__avatar" :src="displayProfile.avatar" mode="aspectFill" />
           <view>
-            <view class="user-page__name">{{ user.profile.nickname }}</view>
-            <view class="user-page__desc">{{ user.profile.level }}</view>
+            <view class="user-page__name">{{ displayProfile.nickname }}</view>
+            <view class="user-page__desc">{{ displayProfile.level }}</view>
           </view>
         </view>
         <view class="user-page__actions">
@@ -62,18 +62,45 @@
 
 <script setup>
 /**
- * 用户中心。
- * 1. 用户端和师傅端共用同一资料页，通过角色切换展示快捷入口。
- * 2. 所有导航都落到当前真实业务页面，不再保留原型页链接。
+ * 用户中心
+ * 1. 资料只显示真实登录用户返回的数据，缺失时展示通用空态。
+ * 2. 角色切换会重新走登录接口，避免只切 UI 不切 token。
  */
 import { computed } from 'vue';
+import { getCurrentUser, loginWithRole } from '../../api/user';
 import { useUserStore } from '../../stores/user';
 
 const user = useUserStore();
+
+const displayProfile = computed(() => ({
+  avatar: user.profile.avatar || '/static/user.png',
+  nickname: user.profile.nickname || '未命名账号',
+  level: user.profile.level || '暂无等级信息',
+}));
+
 const roleLabel = computed(() => (user.role === 'master' ? '切到用户端' : '切到师傅端'));
 
-function toggleRole() {
-  user.switchRole(user.role === 'master' ? 'user' : 'master');
+async function relogin(role) {
+  const authRes = await loginWithRole(role);
+  const profileRes = await getCurrentUser();
+
+  user.login({
+    token: authRes.data.token,
+    refreshToken: authRes.data.refreshToken,
+    role,
+    profile: {
+      ...(profileRes.data?.profile || {}),
+      avatar: profileRes.data?.profile?.avatar || '/static/user.png',
+      nickname: profileRes.data?.profile?.nickname || '未命名账号',
+      level: profileRes.data?.profile?.level || '',
+    },
+  });
+}
+
+async function toggleRole() {
+  const targetRole = user.role === 'master' ? 'user' : 'master';
+  await relogin(targetRole);
+  uni.showToast({ title: targetRole === 'master' ? '已切换到师傅端' : '已切换到用户端', icon: 'none' });
 }
 
 function goProfile() {

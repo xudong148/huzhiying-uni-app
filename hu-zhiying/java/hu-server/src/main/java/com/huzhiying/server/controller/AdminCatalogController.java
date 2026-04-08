@@ -5,6 +5,7 @@ import com.huzhiying.server.dto.AdminConfigDtos;
 import com.huzhiying.server.service.AdminConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @Tag(name = "admin-catalog", description = "后台类目、服务项、商品和 SKU 配置")
-public class AdminCatalogController {
+public class AdminCatalogController extends AdminConfigControllerSupport {
 
     private final AdminConfigService adminConfigService;
 
@@ -42,14 +43,14 @@ public class AdminCatalogController {
 
     @PostMapping("/api/admin/catalog/categories")
     @Operation(summary = "新增服务类目")
-    public ApiResponse<AdminConfigDtos.ServiceCategoryPayload> createCategory(@RequestBody AdminConfigDtos.ServiceCategoryPayload payload) {
+    public ApiResponse<AdminConfigDtos.ServiceCategoryPayload> createCategory(@Valid @RequestBody AdminConfigDtos.ServiceCategoryPayload payload) {
         return ApiResponse.success(adminConfigService.saveCategory(null, payload));
     }
 
     @PutMapping("/api/admin/catalog/categories/{id}")
     @Operation(summary = "更新服务类目")
     public ApiResponse<AdminConfigDtos.ServiceCategoryPayload> updateCategory(@PathVariable("id") Long id,
-                                                                              @RequestBody AdminConfigDtos.ServiceCategoryPayload payload) {
+                                                                              @Valid @RequestBody AdminConfigDtos.ServiceCategoryPayload payload) {
         return ApiResponse.success(adminConfigService.saveCategory(id, payload));
     }
 
@@ -74,14 +75,14 @@ public class AdminCatalogController {
 
     @PostMapping("/api/admin/catalog/service-items")
     @Operation(summary = "新增服务项")
-    public ApiResponse<AdminConfigDtos.ServiceItemPayload> createServiceItem(@RequestBody AdminConfigDtos.ServiceItemPayload payload) {
+    public ApiResponse<AdminConfigDtos.ServiceItemPayload> createServiceItem(@Valid @RequestBody AdminConfigDtos.ServiceItemPayload payload) {
         return ApiResponse.success(adminConfigService.saveServiceItem(null, payload));
     }
 
     @PutMapping("/api/admin/catalog/service-items/{id}")
     @Operation(summary = "更新服务项")
     public ApiResponse<AdminConfigDtos.ServiceItemPayload> updateServiceItem(@PathVariable("id") Long id,
-                                                                             @RequestBody AdminConfigDtos.ServiceItemPayload payload) {
+                                                                             @Valid @RequestBody AdminConfigDtos.ServiceItemPayload payload) {
         return ApiResponse.success(adminConfigService.saveServiceItem(id, payload));
     }
 
@@ -106,14 +107,14 @@ public class AdminCatalogController {
 
     @PostMapping("/api/admin/catalog/products")
     @Operation(summary = "新增商品")
-    public ApiResponse<AdminConfigDtos.ProductPayload> createProduct(@RequestBody AdminConfigDtos.ProductPayload payload) {
+    public ApiResponse<AdminConfigDtos.ProductPayload> createProduct(@Valid @RequestBody AdminConfigDtos.ProductPayload payload) {
         return ApiResponse.success(adminConfigService.saveProduct(null, payload));
     }
 
     @PutMapping("/api/admin/catalog/products/{id}")
     @Operation(summary = "更新商品")
     public ApiResponse<AdminConfigDtos.ProductPayload> updateProduct(@PathVariable("id") Long id,
-                                                                     @RequestBody AdminConfigDtos.ProductPayload payload) {
+                                                                     @Valid @RequestBody AdminConfigDtos.ProductPayload payload) {
         return ApiResponse.success(adminConfigService.saveProduct(id, payload));
     }
 
@@ -138,14 +139,14 @@ public class AdminCatalogController {
 
     @PostMapping("/api/admin/catalog/skus")
     @Operation(summary = "新增 SKU")
-    public ApiResponse<AdminConfigDtos.SkuPayload> createSku(@RequestBody AdminConfigDtos.SkuPayload payload) {
+    public ApiResponse<AdminConfigDtos.SkuPayload> createSku(@Valid @RequestBody AdminConfigDtos.SkuPayload payload) {
         return ApiResponse.success(adminConfigService.saveSku(null, payload));
     }
 
     @PutMapping("/api/admin/catalog/skus/{id}")
     @Operation(summary = "更新 SKU")
     public ApiResponse<AdminConfigDtos.SkuPayload> updateSku(@PathVariable("id") Long id,
-                                                             @RequestBody AdminConfigDtos.SkuPayload payload) {
+                                                             @Valid @RequestBody AdminConfigDtos.SkuPayload payload) {
         return ApiResponse.success(adminConfigService.saveSku(id, payload));
     }
 

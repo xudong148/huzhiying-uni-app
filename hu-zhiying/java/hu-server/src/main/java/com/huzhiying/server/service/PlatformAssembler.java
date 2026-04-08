@@ -26,6 +26,7 @@ import com.huzhiying.domain.model.DomainModels.WorkStepRecord;
 import com.huzhiying.server.persistence.PersistenceEntities.AddressEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ArbitrationCaseEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.BannerEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.CommentEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.CouponEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.DispatchTaskEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MasterProfileEntity;
@@ -81,19 +82,42 @@ public class PlatformAssembler {
     }
 
     public Address toAddress(AddressEntity entity) {
-        return new Address(entity.id, entity.tagName, entity.contactName, entity.mobile, entity.detailAddress,
-                entity.latitude, entity.longitude, Boolean.TRUE.equals(entity.isDefault));
+        return new Address(
+                entity.id,
+                entity.tagName,
+                entity.contactName,
+                entity.mobile,
+                entity.detailAddress,
+                entity.latitude,
+                entity.longitude,
+                Boolean.TRUE.equals(entity.isDefault)
+        );
     }
 
     public MasterProfile toMasterProfile(MasterProfileEntity entity, UserEntity userEntity) {
         String displayName = entity.realName != null && !entity.realName.isBlank() ? entity.realName : userEntity.nickname;
-        return new MasterProfile(entity.userId, displayName, entity.skillTags, entity.serviceArea,
-                entity.deposit, entity.creditScore, Boolean.TRUE.equals(entity.online));
+        return new MasterProfile(
+                entity.userId,
+                displayName,
+                entity.skillTags,
+                entity.serviceArea,
+                entity.deposit,
+                entity.creditScore,
+                Boolean.TRUE.equals(entity.online)
+        );
     }
 
     public ServiceItem toServiceItem(ServiceItemEntity entity) {
-        return new ServiceItem(entity.id, entity.categoryId, entity.name, entity.subtitle, entity.basePrice,
-                entity.doorPrice, splitList(entity.guaranteesText), splitList(entity.tagsText));
+        return new ServiceItem(
+                entity.id,
+                entity.categoryId,
+                entity.name,
+                entity.subtitle,
+                entity.basePrice,
+                entity.doorPrice,
+                splitList(entity.guaranteesText),
+                splitList(entity.tagsText)
+        );
     }
 
     public ServiceCategory toServiceCategory(ServiceCategoryEntity entity, List<ServiceItem> services) {
@@ -101,12 +125,28 @@ public class PlatformAssembler {
     }
 
     public Sku toSku(SkuEntity entity) {
-        return new Sku(entity.id, entity.productId, entity.name, entity.price, entity.stock);
+        return new Sku(
+                entity.id,
+                entity.productId,
+                entity.name,
+                entity.price,
+                entity.tagPrice,
+                entity.discountPrice,
+                entity.stock
+        );
     }
 
     public Product toProduct(ProductEntity entity, List<Sku> skus) {
-        return new Product(entity.id, entity.name, entity.descriptionText, entity.price, skus,
-                Boolean.TRUE.equals(entity.createInstallOrder));
+        return new Product(
+                entity.id,
+                entity.name,
+                entity.descriptionText,
+                entity.price,
+                entity.tagPrice,
+                entity.discountPrice,
+                skus,
+                Boolean.TRUE.equals(entity.createInstallOrder)
+        );
     }
 
     public SearchDocument toSearchDocument(String id, String type, String title, String summary, BigDecimal price, String icon) {
@@ -114,8 +154,13 @@ public class PlatformAssembler {
     }
 
     public WorkStepRecord toWorkStepRecord(WorkStepRecordEntity entity) {
-        return new WorkStepRecord(entity.stepKey, entity.labelText, entity.descriptionText,
-                Boolean.TRUE.equals(entity.done), entity.stepTime);
+        return new WorkStepRecord(
+                entity.stepKey,
+                entity.labelText,
+                entity.descriptionText,
+                Boolean.TRUE.equals(entity.done),
+                entity.stepTime
+        );
     }
 
     public QuotationItem toQuotationItem(QuotationItemEntity entity) {
@@ -128,22 +173,49 @@ public class PlatformAssembler {
 
     public ServiceOrder toServiceOrder(ServiceOrderEntity entity, Address address, UserEntity userEntity,
                                        UserEntity masterEntity, List<WorkStepRecord> timeline, Quotation quotation) {
-        return new ServiceOrder(entity.id, entity.title, entity.status, entity.paymentStatus,
+        return new ServiceOrder(
+                entity.id,
+                entity.title,
+                entity.status,
+                entity.paymentStatus,
                 userEntity == null ? "" : userEntity.nickname,
                 masterEntity == null ? "待接单" : masterEntity.nickname,
-                entity.appointment, address, entity.amount, entity.dispatchMode, timeline, quotation, entity.etaText);
+                entity.appointment,
+                address,
+                entity.amount,
+                entity.dispatchMode,
+                timeline,
+                quotation,
+                entity.etaText
+        );
     }
 
     public ProductOrder toProductOrder(ProductOrderEntity entity, Address address, UserEntity userEntity) {
-        return new ProductOrder(entity.id, entity.title, entity.status, entity.paymentStatus,
-                userEntity == null ? "" : userEntity.nickname, address, entity.amount,
-                Boolean.TRUE.equals(entity.createInstallOrder), entity.installServiceOrderId);
+        return new ProductOrder(
+                entity.id,
+                entity.title,
+                entity.status,
+                entity.paymentStatus,
+                userEntity == null ? "" : userEntity.nickname,
+                address,
+                entity.amount,
+                Boolean.TRUE.equals(entity.createInstallOrder),
+                entity.installServiceOrderId
+        );
     }
 
     public DispatchTask toDispatchTask(DispatchTaskEntity entity, UserEntity masterEntity) {
-        return new DispatchTask(entity.id, entity.orderId, entity.title, entity.income, entity.distanceText,
-                entity.areaText, entity.dispatchMode, masterEntity == null ? "待接单" : masterEntity.nickname,
-                splitList(entity.tagsText));
+        return new DispatchTask(
+                entity.id,
+                entity.orderId,
+                entity.title,
+                entity.income,
+                entity.distanceText,
+                entity.areaText,
+                entity.dispatchMode,
+                masterEntity == null ? "待接单" : masterEntity.nickname,
+                splitList(entity.tagsText)
+        );
     }
 
     public Coupon toCoupon(CouponEntity entity) {

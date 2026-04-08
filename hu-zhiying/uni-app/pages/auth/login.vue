@@ -3,43 +3,50 @@
     <!-- 欢迎信息 -->
     <view class="login-page__hero">
       <view class="login-page__headline">欢迎来到呼之应</view>
-      <view class="login-page__subline">微信授权、验证码登录和师傅端切换共用同一套鉴权体系。</view>
+      <view class="login-page__subline">用户端与师傅端共用同一套登录体系，登录后按真实接口回填资料。</view>
     </view>
 
     <!-- 登录操作 -->
     <view class="card login-page__card">
       <button class="primary-btn" @tap="loginAs('user')">微信一键登录</button>
       <button class="secondary-btn login-page__btn" @tap="loginAs('user')">手机号验证码登录</button>
-      <button class="secondary-btn login-page__btn" @tap="loginAs('master')">切换到师傅端</button>
+      <button class="secondary-btn login-page__btn" @tap="loginAs('master')">登录师傅端</button>
     </view>
   </view>
 </template>
 
 <script setup>
 /**
- * 登录页。
- * 1. 用户与师傅端共用同一套登录接口。
- * 2. 登录成功后立即回拉当前用户资料并写入 Pinia。
+ * 登录页
+ * 1. 登录成功后立即拉取当前用户资料，避免前端拼示例身份。
+ * 2. 资料缺失时使用通用空态，不再补造示例身份。
  */
 import { getCurrentUser, loginWithRole } from '../../api/user';
 import { useUserStore } from '../../stores/user';
 
 const user = useUserStore();
 
+function normalizeProfile(payload) {
+  const profile = payload || {};
+  return {
+    id: profile.id ?? null,
+    nickname: profile.nickname || '未命名账号',
+    mobile: profile.mobile || '',
+    avatar: profile.avatar || '/static/user.png',
+    level: profile.level || '',
+    role: profile.role || '',
+  };
+}
+
 async function loginAs(role) {
   const authRes = await loginWithRole(role);
   const profileRes = await getCurrentUser();
-  const profile = {
-    ...(profileRes.data?.profile || user.profile),
-    nickname: role === 'master' ? '张师傅' : (profileRes.data?.profile?.nickname || '周女士'),
-    level: role === 'master' ? '认证工程师' : (profileRes.data?.profile?.level || 'SVIP 预备用户'),
-  };
 
   user.login({
     token: authRes.data.token,
     refreshToken: authRes.data.refreshToken,
     role,
-    profile,
+    profile: normalizeProfile(profileRes.data?.profile),
   });
 
   uni.showToast({ title: '登录成功', icon: 'none' });

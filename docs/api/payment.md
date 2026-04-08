@@ -1,23 +1,23 @@
 <!--
-  文档说明：
-  1. 当前文件为 支付接口文档，由 scripts/export-openapi-markdown.mjs 自动生成。
-  2. 数据源地址：http://localhost:8080/v3/api-docs/payment。
-  3. 字段表会展开请求参数、请求体和响应体，便于前后端对照联调。
+  支付接口文档，由 scripts/export-openapi-markdown.mjs 自动生成。
+  1. OpenAPI 来源：http://localhost:8080/v3/api-docs/payment
+  2. 下文展开展示参数、请求体和响应字段，便于联调查阅。
+  3. 接口契约变更后请重新执行导出脚本。
 -->
 
 # 支付接口文档
 
 ## 基本信息
 
-- 文档标题：`呼之应开放接口`
-- 文档版本：`v1`
+- 文档标题：`呼之应开放接口文档`
+- 版本：`v1`
 - 分组：`payment`
 - 接口数量：`3`
 - OpenAPI 地址：`http://localhost:8080/v3/api-docs/payment`
 
-## 鉴权约定
+## 鉴权说明
 
-- `bearerAuth`，类型：http，协议：bearer，格式：JWT
+- `bearerAuth`, 类型: http, 方案: bearer, 格式: JWT
 
 ## 接口目录
 
@@ -27,35 +27,35 @@
 
 ## POST /api/payments/wechat/{orderId}/callback
 
-- 标题：接收微信支付回调
+- 摘要：接收微信支付回调
 - 标签：payment
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/payments/wechat/{orderId}/callback` |
 | OperationId | `callback` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `orderId` | path | 是 | `string` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -68,21 +68,21 @@
 
 ## POST /api/payments/wechat/prepay
 
-- 标题：创建微信预支付单
+- 摘要：创建微信预支付单
 - 标签：payment
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/payments/wechat/prepay` |
 | OperationId | `prepay` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -94,13 +94,13 @@
 | --- | --- | --- | --- |
 | `orderId` | `string` | 否 | - |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -121,21 +121,21 @@
 
 ## POST /api/payments/wechat/refund
 
-- 标题：发起微信退款
+- 摘要：发起微信退款
 - 标签：payment
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/payments/wechat/refund` |
 | OperationId | `refund` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -147,13 +147,13 @@
 | --- | --- | --- | --- |
 | `orderId` | `string` | 否 | - |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 

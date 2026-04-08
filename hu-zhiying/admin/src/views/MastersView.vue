@@ -1,10 +1,10 @@
 <template>
   <div class="page-panel">
-    <!-- 页面标题区：说明当前页负责师傅资料、启停用和信用分管理 -->
+    <!-- 页面标题区 -->
     <h2 class="page-title">师傅管理</h2>
     <p class="page-desc">查看师傅资料、编辑技能和服务区域，并支持启停用与信用分调整。</p>
 
-    <!-- 师傅列表区：展示基础资料和常用动作 -->
+    <!-- 师傅列表区 -->
     <el-table :data="rows">
       <el-table-column prop="name" label="师傅" width="120" />
       <el-table-column prop="skills" label="技能标签" min-width="220" />
@@ -27,7 +27,7 @@
       </el-table-column>
     </el-table>
 
-    <!-- 详情抽屉区：展示师傅完整资料 -->
+    <!-- 详情抽屉 -->
     <el-drawer v-model="detailVisible" title="师傅详情" size="560px">
       <template v-if="detail">
         <el-descriptions :column="1" border>
@@ -51,7 +51,7 @@
       </template>
     </el-drawer>
 
-    <!-- 编辑弹窗区：更新师傅基础资料和设置 -->
+    <!-- 编辑弹窗 -->
     <el-dialog v-model="editVisible" title="编辑师傅" width="520px">
       <el-form label-width="120px">
         <el-form-item label="师傅姓名">
@@ -61,10 +61,10 @@
           <el-input v-model="editForm.mobile" />
         </el-form-item>
         <el-form-item label="技能标签">
-          <el-input v-model="editForm.skillTagsText" placeholder="用逗号分隔，例如：空调维修,智能锁安装" />
+          <el-input v-model="editForm.skillTagsText" placeholder="例如：空调维修,智能锁安装" />
         </el-form-item>
         <el-form-item label="服务区域">
-          <el-input v-model="editForm.serviceAreasText" placeholder="用逗号分隔，例如：浦东新区,徐汇区" />
+          <el-input v-model="editForm.serviceAreasText" placeholder="例如：浦东新区,徐汇区" />
         </el-form-item>
         <el-form-item label="保证金">
           <el-input-number v-model="editForm.deposit" :min="0" :precision="2" />
@@ -91,7 +91,7 @@
       </template>
     </el-dialog>
 
-    <!-- 信用分弹窗区：单独调整信用分，方便运营快速处理 -->
+    <!-- 信用分弹窗 -->
     <el-dialog v-model="creditVisible" title="调整信用分" width="360px">
       <el-form label-width="100px">
         <el-form-item label="信用分">
@@ -260,7 +260,7 @@ onMounted(loadRows);
 </script>
 
 <style scoped>
-/* 页面局部样式：补充按钮布局和标签间距 */
+/* 页面局部样式 */
 .action-row {
   display: flex;
   gap: 8px;

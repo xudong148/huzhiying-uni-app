@@ -33,11 +33,11 @@ CREATE TABLE order_track_points (
 );
 
 INSERT INTO comments (id, service_item_id, user_name, score, content_text, images_text, tags_text, created_at) VALUES
-  (1, 201, '赵女士', 5, '师傅响应很快，现场报价也很清楚。', '/seed-media/comment-service.svg', '响应快|报价透明', CURRENT_TIMESTAMP),
-  (2, 201, '吴先生', 4, '收费透明，现场解决了冷媒不足的问题。', '', '专业可靠|准时上门', CURRENT_TIMESTAMP),
-  (3, 301, '林女士', 5, '安装很细致，联网调试一次完成。', '', '安装规范|调试专业', CURRENT_TIMESTAMP);
+  (1, 201, '用户 A', 5, '师傅响应很快，现场报价也很清楚。', '/seed-media/comment-service.svg', '响应快|报价透明', CURRENT_TIMESTAMP),
+  (2, 201, '用户 B', 4, '收费透明，现场解决了冷媒不足的问题。', '', '专业可靠|准时上门', CURRENT_TIMESTAMP),
+  (3, 301, '用户 C', 5, '安装很细致，联网调试一次完成。', '', '安装规范|调试专业', CURRENT_TIMESTAMP);
 
 INSERT INTO order_track_points (order_id, point_type, label_text, description_text, latitude, longitude, created_at) VALUES
   ('SO20260408001', 'CREATED', '订单创建', '用户已提交报修工单', 31.2253, 121.5443, CURRENT_TIMESTAMP),
-  ('SO20260408001', 'CLAIM', '师傅接单', '平台已通知张师傅准备出发', 31.2286, 121.5488, CURRENT_TIMESTAMP),
+  ('SO20260408001', 'CLAIM', '师傅接单', '平台已通知服务技师准备出发', 31.2286, 121.5488, CURRENT_TIMESTAMP),
   ('SO20260407009', 'ARRIVED', '到达现场', '师傅已到达并准备开始安装', 31.2231, 121.5412, CURRENT_TIMESTAMP);

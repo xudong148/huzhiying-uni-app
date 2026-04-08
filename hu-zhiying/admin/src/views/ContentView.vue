@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Banner 配置 -->
     <crud-console
       title="首页 Banner"
       description="维护首页轮播图、跳转链接和启用状态。"
@@ -9,7 +8,6 @@
       :fields="bannerFields"
     />
 
-    <!-- 公告配置 -->
     <crud-console
       title="公告通知"
       description="维护首页通知条、消息中心公告和等级标签。"
@@ -18,7 +16,6 @@
       :fields="noticeFields"
     />
 
-    <!-- 协议配置 -->
     <crud-console
       title="协议文档"
       description="维护用户服务协议、隐私政策等文档内容。"
@@ -31,13 +28,8 @@
 </template>
 
 <script setup>
-/**
- * 内容运营页面。
- * 所有数据都走后台真实 CRUD 接口。
- */
 import CrudConsole from '../components/CrudConsole.vue';
 
-// Banner 表格和表单配置。
 const bannerColumns = [
   { prop: 'title', label: '标题', minWidth: 180 },
   { prop: 'subtitle', label: '副标题', minWidth: 220 },
@@ -46,15 +38,14 @@ const bannerColumns = [
 ];
 
 const bannerFields = [
-  { prop: 'title', label: '标题', type: 'text' },
+  { prop: 'title', label: '标题', type: 'text', required: true },
   { prop: 'subtitle', label: '副标题', type: 'text' },
-  { prop: 'image', label: '图片地址', type: 'text' },
-  { prop: 'link', label: '跳转链接', type: 'text' },
-  { prop: 'sortOrder', label: '排序', type: 'number' },
+  { prop: 'image', label: '图片地址', type: 'text', required: true },
+  { prop: 'link', label: '跳转链接', type: 'text', required: true },
+  { prop: 'sortOrder', label: '排序', type: 'number', min: 0, required: true },
   { prop: 'enabled', label: '启用', type: 'switch', default: true },
 ];
 
-// 公告表格和表单配置。
 const noticeColumns = [
   { prop: 'title', label: '标题', minWidth: 220 },
   { prop: 'levelCode', label: '级别', width: 120 },
@@ -62,12 +53,13 @@ const noticeColumns = [
 ];
 
 const noticeFields = [
-  { prop: 'title', label: '公告标题', type: 'text' },
-  { prop: 'content', label: '公告内容', type: 'textarea', rows: 4 },
+  { prop: 'title', label: '公告标题', type: 'text', required: true },
+  { prop: 'content', label: '公告内容', type: 'textarea', rows: 4, required: true },
   {
     prop: 'levelCode',
     label: '级别',
     type: 'select',
+    required: true,
     options: [
       { label: '提醒', value: 'warning' },
       { label: '营销', value: 'promo' },
@@ -77,7 +69,6 @@ const noticeFields = [
   { prop: 'enabled', label: '启用', type: 'switch', default: true },
 ];
 
-// 协议表格和表单配置。
 const agreementColumns = [
   { prop: 'title', label: '文档标题', minWidth: 180 },
   { prop: 'version', label: '版本号', width: 140 },
@@ -85,13 +76,12 @@ const agreementColumns = [
 ];
 
 const agreementFields = [
-  { prop: 'title', label: '文档标题', type: 'text' },
-  { prop: 'version', label: '版本号', type: 'text' },
-  { prop: 'content', label: '正文内容', type: 'textarea', rows: 8 },
+  { prop: 'title', label: '文档标题', type: 'text', required: true },
+  { prop: 'version', label: '版本号', type: 'text', required: true, hint: '建议使用 yyyy.MM 或语义化版本。' },
+  { prop: 'content', label: '正文内容', type: 'textarea', rows: 8, required: true },
   { prop: 'enabled', label: '启用', type: 'switch', default: true },
 ];
 </script>
 
 <style scoped>
-/* 当前页使用通用 CRUD 面板布局，这里保留样式区块注释以统一页面结构。 */
 </style>

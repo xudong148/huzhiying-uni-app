@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 地图业务服务。前端只访问平台 API，不直接拼接高德 REST 能力。
+ * 地图业务服务。前端只访问平台 API，不直接拼接第三方地图能力。
  */
 @Service
 @Transactional(readOnly = true)
@@ -58,12 +58,14 @@ public class MapService {
 
     public MapDtos.GeofenceCheckPayload geofenceCheck(String city, String district) {
         boolean serviceable = isServiceable(city, district);
-        String matchedZone = serviceable ? (city + district) : "当前地址不在服务范围";
+        String matchedZone = serviceable ? (city + "·" + district) : "当前地址不在服务范围";
         return new MapDtos.GeofenceCheckPayload(serviceable, matchedZone);
     }
 
     public MapDtos.EtaPayload eta(MapDtos.EtaRequest request) {
-        int distanceBase = request.orderId() == null || request.orderId().isBlank() ? 4 : Math.max(3, request.orderId().length() % 8 + 2);
+        int distanceBase = request.orderId() == null || request.orderId().isBlank()
+                ? 4
+                : Math.max(3, request.orderId().length() % 8 + 2);
         int etaBase = distanceBase * 4;
         return new MapDtos.EtaPayload(etaBase + " 分钟", "约 " + distanceBase + ".6 公里");
     }

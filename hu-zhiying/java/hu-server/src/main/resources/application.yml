@@ -48,9 +48,9 @@ management:
 
 hzy:
   app:
-    name: 呼之应
+    name: HuZhiYing
     runtime-mode: ${HZY_RUNTIME_MODE:live}
-    city-whitelist: ${HZY_CITY_WHITELIST:上海,杭州,苏州,南京}
+    city-whitelist: ${HZY_CITY_WHITELIST:Shanghai,Hangzhou,Suzhou,Nanjing}
   amap:
     enabled: true
     key: ${HZY_AMAP_KEY:}

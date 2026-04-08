@@ -5,6 +5,7 @@ import com.huzhiying.server.dto.AdminConfigDtos;
 import com.huzhiying.server.service.AdminConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @Tag(name = "admin-pricing", description = "后台定价规则和服务区域配置")
-public class AdminPricingController {
+public class AdminPricingController extends AdminConfigControllerSupport {
 
     private final AdminConfigService adminConfigService;
 
@@ -42,14 +43,14 @@ public class AdminPricingController {
 
     @PostMapping("/api/admin/pricing/rules")
     @Operation(summary = "新增定价规则")
-    public ApiResponse<AdminConfigDtos.PricingRulePayload> createPricingRule(@RequestBody AdminConfigDtos.PricingRulePayload payload) {
+    public ApiResponse<AdminConfigDtos.PricingRulePayload> createPricingRule(@Valid @RequestBody AdminConfigDtos.PricingRulePayload payload) {
         return ApiResponse.success(adminConfigService.savePricingRule(null, payload));
     }
 
     @PutMapping("/api/admin/pricing/rules/{id}")
     @Operation(summary = "更新定价规则")
     public ApiResponse<AdminConfigDtos.PricingRulePayload> updatePricingRule(@PathVariable("id") Long id,
-                                                                             @RequestBody AdminConfigDtos.PricingRulePayload payload) {
+                                                                             @Valid @RequestBody AdminConfigDtos.PricingRulePayload payload) {
         return ApiResponse.success(adminConfigService.savePricingRule(id, payload));
     }
 
@@ -74,14 +75,14 @@ public class AdminPricingController {
 
     @PostMapping("/api/admin/dispatch/zones")
     @Operation(summary = "新增服务区域")
-    public ApiResponse<AdminConfigDtos.DispatchZonePayload> createDispatchZone(@RequestBody AdminConfigDtos.DispatchZonePayload payload) {
+    public ApiResponse<AdminConfigDtos.DispatchZonePayload> createDispatchZone(@Valid @RequestBody AdminConfigDtos.DispatchZonePayload payload) {
         return ApiResponse.success(adminConfigService.saveDispatchZone(null, payload));
     }
 
     @PutMapping("/api/admin/dispatch/zones/{id}")
     @Operation(summary = "更新服务区域")
     public ApiResponse<AdminConfigDtos.DispatchZonePayload> updateDispatchZone(@PathVariable("id") Long id,
-                                                                               @RequestBody AdminConfigDtos.DispatchZonePayload payload) {
+                                                                               @Valid @RequestBody AdminConfigDtos.DispatchZonePayload payload) {
         return ApiResponse.success(adminConfigService.saveDispatchZone(id, payload));
     }
 

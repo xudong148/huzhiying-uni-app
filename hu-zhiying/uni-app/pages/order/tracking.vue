@@ -42,6 +42,26 @@
         </view>
       </view>
     </view>
+
+    <!-- 现场凭证 -->
+    <view v-if="tracking.mediaFiles?.length" class="card tracking__section">
+      <view class="section-title">
+        <text class="section-title__text">现场凭证</text>
+        <text class="section-title__desc">{{ tracking.mediaFiles.length }} 个文件</text>
+      </view>
+      <view
+        v-for="item in tracking.mediaFiles"
+        :key="item.id"
+        class="tracking__media-item"
+        @tap="openMedia(item)"
+      >
+        <view class="tracking__media-copy">
+          <view class="tracking__media-title">{{ item.originalName || '订单文件' }}</view>
+          <view class="tracking__media-meta">{{ mediaLabel(item) }} · {{ formatTime(item.createdAt) }}</view>
+        </view>
+        <text class="tracking__media-link">{{ isImageMedia(item) ? '预览' : '复制链接' }}</text>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -55,11 +75,13 @@ import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { getOrderEta } from '../../api/map';
 import { getOrderTracking } from '../../api/order';
+import { buildAbsoluteUrl } from '../../utils/request';
 
 const orderId = ref('');
 const tracking = ref({
   points: [],
   distance: '',
+  mediaFiles: [],
 });
 
 const mapCenter = computed(() => {
@@ -101,6 +123,53 @@ function formatTime(time) {
   return String(time).replace('T', ' ').slice(0, 16);
 }
 
+function mediaLabel(item) {
+  const labels = {
+    order_evidence: '报修凭证',
+    before_work_media: '施工前',
+    after_work_media: '施工后',
+  };
+  return labels[item?.bizType] || '订单文件';
+}
+
+function isImageMedia(item) {
+  return String(item?.contentType || '').startsWith('image/');
+}
+
+function normalizeMediaUrl(url) {
+  if (!url) {
+    return '';
+  }
+  return /^https?:\/\//.test(url) ? url : buildAbsoluteUrl(url.startsWith('/') ? url : `/${url}`);
+}
+
+function openMedia(item) {
+  const currentUrl = normalizeMediaUrl(item?.url);
+  if (!currentUrl) {
+    uni.showToast({ title: '文件链接不存在', icon: 'none' });
+    return;
+  }
+
+  if (isImageMedia(item)) {
+    const urls = (tracking.value.mediaFiles || [])
+      .filter((media) => isImageMedia(media))
+      .map((media) => normalizeMediaUrl(media.url))
+      .filter(Boolean);
+    uni.previewImage({
+      current: currentUrl,
+      urls: urls.length ? urls : [currentUrl],
+    });
+    return;
+  }
+
+  uni.setClipboardData({
+    data: currentUrl,
+    success() {
+      uni.showToast({ title: '链接已复制', icon: 'none' });
+    },
+  });
+}
+
 async function refreshTracking() {
   if (!orderId.value) {
     return;
@@ -114,7 +183,7 @@ async function refreshTracking() {
   tracking.value = {
     ...(trackingRes.data || { points: [] }),
     eta: etaRes.data?.eta || trackingRes.data?.eta || '',
-    distance: etaRes.data?.distance || '',
+    distance: etaRes.data?.distance || trackingRes.data?.distance || '',
   };
 }
 
@@ -205,5 +274,36 @@ onLoad(async (options) => {
   font-size: 24rpx;
   line-height: 1.6;
   color: #667085;
+}
+
+.tracking__media-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 20rpx 0;
+  border-top: 1rpx solid #edf1f6;
+}
+
+.tracking__media-copy {
+  flex: 1;
+}
+
+.tracking__media-title {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #1c1e26;
+}
+
+.tracking__media-meta {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #667085;
+}
+
+.tracking__media-link {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: #2b5cff;
 }
 </style>

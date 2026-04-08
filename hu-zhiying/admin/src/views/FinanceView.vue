@@ -1,10 +1,10 @@
 <template>
   <div class="page-panel">
-    <!-- 页面标题区：说明当前页负责结算与退款审核 -->
+    <!-- 页面标题区 -->
     <h2 class="page-title">财务结算</h2>
     <p class="page-desc">查看师傅结算单和退款单，支持打开详情并执行审核动作。</p>
 
-    <!-- 财务列表区：展示账单类型、金额和状态 -->
+    <!-- 财务列表区 -->
     <el-table :data="rows">
       <el-table-column prop="billNo" label="账单号" min-width="180" />
       <el-table-column prop="type" label="类型" width="120" />
@@ -22,7 +22,7 @@
       </el-table-column>
     </el-table>
 
-    <!-- 详情抽屉区：展示账单明细和关联业务 -->
+    <!-- 详情抽屉 -->
     <el-drawer v-model="detailVisible" title="财务单详情" size="520px">
       <template v-if="detail">
         <el-descriptions :column="1" border>
@@ -46,7 +46,7 @@
  * 财务结算页面。
  * 1. 列表从后台财务接口读取。
  * 2. 详情抽屉读取财务单详情接口。
- * 3. 审核动作会调用后台真实审核接口并刷新列表与详情。
+ * 3. 审核动作调用后台真实审核接口并刷新列表与详情。
  */
 import { onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -98,7 +98,7 @@ onMounted(loadRows);
 </script>
 
 <style scoped>
-/* 页面局部样式：补充操作按钮间距 */
+/* 页面局部样式 */
 .action-row {
   display: flex;
   gap: 8px;

@@ -7,7 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 public final class MapDtos {
 
-    private MapDtos() {}
+    private MapDtos() {
+    }
 
     @Schema(description = "服务城市")
     public record ServiceCityPayload(

@@ -1,10 +1,3 @@
-/**
- * 管理后台请求层。
- * 说明：
- * 1. 运行时只访问真实后端接口，不再保留演示分支。
- * 2. 统一处理鉴权注入、401 刷新和通用 CRUD 请求。
- */
-
 const RUNTIME_KEY = 'hzy-admin-runtime';
 const SESSION_KEY = 'hzy-admin-session';
 
@@ -12,81 +5,89 @@ const defaultRuntime = {
   baseUrl: 'http://localhost:8080',
 };
 
-function readStorage(key, fallback) {
+const defaultSession = {
+  token: '',
+  refreshToken: '',
+  accessExpiresAt: '',
+  refreshExpiresAt: '',
+  profile: null,
+  menus: [],
+  permissions: [],
+};
+
+function getStorage(target = 'local') {
   if (typeof window === 'undefined') {
+    return null;
+  }
+  return target === 'session' ? window.sessionStorage : window.localStorage;
+}
+
+function readStorage(key, fallback, target = 'local') {
+  const storage = getStorage(target);
+  if (!storage) {
     return fallback;
   }
 
   try {
-    const raw = window.localStorage.getItem(key);
+    const raw = storage.getItem(key);
     return raw ? { ...fallback, ...JSON.parse(raw) } : fallback;
   } catch (error) {
     return fallback;
   }
 }
 
-function writeStorage(key, value) {
-  if (typeof window === 'undefined') {
+function writeStorage(key, value, target = 'local') {
+  const storage = getStorage(target);
+  if (!storage) {
     return;
   }
-  window.localStorage.setItem(key, JSON.stringify(value));
+  storage.setItem(key, JSON.stringify(value));
 }
 
 function normalizeAmount(value) {
   return typeof value === 'number' ? value : Number(value || 0);
 }
 
-/**
- * 读取后台运行环境配置。
- */
-export function getRuntimeConfig() {
-  return readStorage(RUNTIME_KEY, defaultRuntime);
+function normalizeSession(payload = {}) {
+  return {
+    ...defaultSession,
+    ...payload,
+    profile: payload.profile || null,
+    menus: Array.isArray(payload.menus) ? payload.menus : [],
+    permissions: Array.isArray(payload.permissions) ? payload.permissions : [],
+  };
 }
 
-/**
- * 更新后台运行环境配置。
- */
+export function getRuntimeConfig() {
+  return readStorage(RUNTIME_KEY, defaultRuntime, 'local');
+}
+
 export function setRuntimeConfig(payload) {
   const next = {
     ...getRuntimeConfig(),
     ...payload,
   };
-  writeStorage(RUNTIME_KEY, next);
+  writeStorage(RUNTIME_KEY, next, 'local');
   return next;
 }
 
-/**
- * 构造后台 WebSocket 地址。
- */
 export function buildAdminWsUrl(path) {
   const runtime = getRuntimeConfig();
   return `${runtime.baseUrl.replace(/^http/, 'ws')}${path}`;
 }
 
-/**
- * 获取后台登录会话。
- */
 export function getAdminSession() {
-  return readStorage(SESSION_KEY, {
-    token: '',
-    refreshToken: '',
-    profile: null,
-  });
+  return normalizeSession(readStorage(SESSION_KEY, defaultSession, 'session'));
 }
 
-/**
- * 保存后台登录会话。
- */
 export function saveAdminSession(session) {
-  writeStorage(SESSION_KEY, session);
+  writeStorage(SESSION_KEY, normalizeSession(session), 'session');
 }
 
-/**
- * 清除后台登录会话。
- */
 export function clearAdminSession() {
-  if (typeof window !== 'undefined') {
-    window.localStorage.removeItem(SESSION_KEY);
+  const storage = getStorage('session');
+  if (storage) {
+    storage.removeItem(SESSION_KEY);
   }
 }
 
@@ -97,20 +98,17 @@ async function refreshAccessToken(refreshToken) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ refreshToken }),
+    body: JSON.stringify({
+      refreshToken,
+      clientType: 'admin-web',
+    }),
   });
   const payload = await response.json().catch(() => null);
   if (!response.ok || !payload?.success) {
     clearAdminSession();
     throw new Error(payload?.message || '登录已过期');
   }
-
-  const session = getAdminSession();
-  saveAdminSession({
-    ...session,
-    token: payload.data.token,
-    refreshToken: payload.data.refreshToken,
-  });
+  saveAdminSession(payload.data);
 }
 
 async function rawRequest({ url, method = 'GET', data, auth = true, retry = true }) {
@@ -137,42 +135,34 @@ async function rawRequest({ url, method = 'GET', data, auth = true, retry = true
 
   const payload = await response.json().catch(() => null);
   if (!response.ok || !payload?.success) {
-    throw new Error(payload?.message || `请求失败：${response.status}`);
+    throw new Error(payload?.message || `请求失败: ${response.status}`);
   }
 
   return payload;
 }
 
-/**
- * 对外暴露统一请求方法。
- */
 export async function request(options) {
   return rawRequest(options);
 }
 
-/**
- * 后台登录。
- */
-export async function loginAsAdmin() {
+export async function loginAsAdmin(credentials) {
   const payload = await rawRequest({
-    url: '/api/auth/sms-login',
+    url: '/api/auth/admin-login',
     method: 'POST',
-    data: { role: 'admin' },
+    data: credentials,
     auth: false,
   });
-  return payload.data;
+  return normalizeSession(payload.data);
 }
 
-/**
- * 获取后台仪表盘数据。
- */
+export async function fetchAdminSession() {
+  return normalizeSession((await rawRequest({ url: '/api/auth/session' })).data);
+}
+
 export async function fetchAdminDashboard() {
   return (await rawRequest({ url: '/api/admin/dashboard' })).data;
 }
 
-/**
- * 获取调度中心列表。
- */
 export async function fetchAdminDispatch() {
   return (await rawRequest({ url: '/api/admin/dispatch' })).data.map((item) => ({
     ...item,
@@ -180,22 +170,16 @@ export async function fetchAdminDispatch() {
   }));
 }
 
-/**
- * 强制派单。
- */
-export async function forceAssignDispatch(taskId, masterName = '张师傅') {
+export async function forceAssignDispatch(taskId, masterName) {
   return (
     await rawRequest({
-      url: `/api/dispatch/tasks/${taskId}/force-assign`,
+      url: `/api/admin/dispatch/${taskId}/assign`,
       method: 'POST',
       data: { masterName },
     })
   ).data;
 }
 
-/**
- * 获取订单管理列表。
- */
 export async function fetchAdminOrders() {
   return (await rawRequest({ url: '/api/admin/orders' })).data.map((item) => ({
     ...item,
@@ -203,9 +187,6 @@ export async function fetchAdminOrders() {
   }));
 }
 
-/**
- * 获取师傅管理列表。
- */
 export async function fetchAdminMasters() {
   return (await rawRequest({ url: '/api/admin/masters' })).data.map((item) => ({
     ...item,
@@ -219,9 +200,6 @@ export async function fetchAdminMasters() {
   }));
 }
 
-/**
- * 获取财务视图。
- */
 export async function fetchAdminFinance() {
   return (await rawRequest({ url: '/api/admin/finance' })).data.map((item) => ({
     ...item,
@@ -229,72 +207,54 @@ export async function fetchAdminFinance() {
   }));
 }
 
-/**
- * 获取仲裁列表。
- */
 export async function fetchAdminArbitrations() {
   return (await rawRequest({ url: '/api/admin/arbitrations' })).data;
 }
 
-/**
- * 获取后台定价规则视图数据。
- */
 export async function fetchAdminPricing() {
   return fetchCrudList('/api/admin/pricing/rules');
 }
 
-/**
- * 查询任意配置类资源列表。
- */
 export async function fetchCrudList(resource) {
   return (await rawRequest({ url: resource })).data;
 }
 
-/**
- * 查询任意配置类资源详情。
- */
 export async function fetchCrudDetail(resource, id) {
   return (await rawRequest({ url: `${resource}/${id}` })).data;
 }
 
-/**
- * 新增任意配置类资源。
- */
 export async function createCrudItem(resource, payload) {
   return (await rawRequest({ url: resource, method: 'POST', data: payload })).data;
 }
 
-/**
- * 更新任意配置类资源。
- */
 export async function updateCrudItem(resource, id, payload) {
   return (await rawRequest({ url: `${resource}/${id}`, method: 'PUT', data: payload })).data;
 }
 
-/**
- * 删除任意配置类资源。
- */
 export async function deleteCrudItem(resource, id) {
   return (await rawRequest({ url: `${resource}/${id}`, method: 'DELETE' })).data;
 }
 
-/**
- * 查询调度详情。
- */
+export async function fetchRoleGrant(roleId) {
+  return (await rawRequest({ url: `/api/admin/system/roles/${roleId}/grants` })).data;
+}
+
+export async function saveRoleGrant(roleId, payload) {
+  return (await rawRequest({
+    url: `/api/admin/system/roles/${roleId}/grants`,
+    method: 'PUT',
+    data: payload,
+  })).data;
+}
+
 export async function fetchDispatchDetail(taskId) {
   return (await rawRequest({ url: `/api/admin/dispatch/${taskId}` })).data;
 }
 
-/**
- * 后台指派师傅。
- */
 export async function assignDispatchTask(taskId, payload) {
   return (await rawRequest({ url: `/api/admin/dispatch/${taskId}/assign`, method: 'POST', data: payload })).data;
 }
 
-/**
- * 从调度中心强制取消订单。
- */
 export async function cancelDispatchOrder(taskId, reason) {
   return (await rawRequest({
     url: `/api/admin/dispatch/${taskId}/cancel-order`,
@@ -303,16 +263,10 @@ export async function cancelDispatchOrder(taskId, reason) {
   })).data;
 }
 
-/**
- * 查询后台订单详情。
- */
 export async function fetchAdminOrderDetail(orderId) {
   return (await rawRequest({ url: `/api/admin/orders/${orderId}` })).data;
 }
 
-/**
- * 后台取消服务订单。
- */
 export async function cancelAdminOrder(orderId, reason) {
   return (await rawRequest({
     url: `/api/admin/orders/${orderId}/cancel`,
@@ -321,9 +275,6 @@ export async function cancelAdminOrder(orderId, reason) {
   })).data;
 }
 
-/**
- * 后台发起或审核退款。
- */
 export async function refundAdminOrder(orderId, reason) {
   return (await rawRequest({
     url: `/api/admin/orders/${orderId}/refund`,
@@ -332,37 +283,38 @@ export async function refundAdminOrder(orderId, reason) {
   })).data;
 }
 
-/**
- * 查询师傅详情。
- */
+export async function grantAdminCoupon(orderId, payload) {
+  return (await rawRequest({
+    url: `/api/admin/orders/${orderId}/grant-coupon`,
+    method: 'POST',
+    data: payload,
+  })).data;
+}
+
+export async function updateAdminOrderAppointment(orderId, appointment) {
+  return (await rawRequest({
+    url: `/api/admin/orders/${orderId}/appointment`,
+    method: 'PUT',
+    data: { appointment },
+  })).data;
+}
+
 export async function fetchAdminMasterDetail(userId) {
   return (await rawRequest({ url: `/api/admin/masters/${userId}` })).data;
 }
 
-/**
- * 更新师傅资料。
- */
 export async function updateAdminMaster(userId, payload) {
   return (await rawRequest({ url: `/api/admin/masters/${userId}`, method: 'PUT', data: payload })).data;
 }
 
-/**
- * 启用师傅。
- */
 export async function enableAdminMaster(userId) {
   return (await rawRequest({ url: `/api/admin/masters/${userId}/enable`, method: 'POST' })).data;
 }
 
-/**
- * 停用师傅。
- */
 export async function disableAdminMaster(userId) {
   return (await rawRequest({ url: `/api/admin/masters/${userId}/disable`, method: 'POST' })).data;
 }
 
-/**
- * 调整师傅信用分。
- */
 export async function updateAdminMasterCredit(userId, creditScore) {
   return (await rawRequest({
     url: `/api/admin/masters/${userId}/credit-score`,
@@ -371,16 +323,10 @@ export async function updateAdminMasterCredit(userId, creditScore) {
   })).data;
 }
 
-/**
- * 查询财务单详情。
- */
 export async function fetchFinanceDetail(billNo) {
   return (await rawRequest({ url: `/api/admin/finance/${billNo}` })).data;
 }
 
-/**
- * 审核财务单。
- */
 export async function approveFinanceBill(billNo, remark) {
   return (await rawRequest({
     url: `/api/admin/finance/${billNo}/approve`,
@@ -389,16 +335,10 @@ export async function approveFinanceBill(billNo, remark) {
   })).data;
 }
 
-/**
- * 查询仲裁详情。
- */
 export async function fetchArbitrationDetail(id) {
   return (await rawRequest({ url: `/api/admin/arbitrations/${id}` })).data;
 }
 
-/**
- * 提交仲裁裁决。
- */
 export async function resolveArbitrationCase(id, payload) {
   return (await rawRequest({
     url: `/api/admin/arbitrations/${id}/resolve`,

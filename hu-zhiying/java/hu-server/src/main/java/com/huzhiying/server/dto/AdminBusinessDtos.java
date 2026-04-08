@@ -20,7 +20,7 @@ public final class AdminBusinessDtos {
 
     @Schema(name = "AdminTimelineItem", description = "后台订单时间轴节点")
     public record TimelineItem(
-            @Schema(description = "步骤键", example = "dispatch")
+            @Schema(description = "步骤编码", example = "dispatch")
             String stepKey,
             @Schema(description = "步骤标题", example = "等待派单")
             String label,
@@ -65,6 +65,21 @@ public final class AdminBusinessDtos {
     ) {
     }
 
+    @Schema(name = "AdminMessageSummary", description = "后台订单聊天摘要")
+    public record MessageSummary(
+            @Schema(description = "会话 ID", example = "MS-001")
+            String sessionId,
+            @Schema(description = "会话标题", example = "空调维修沟通")
+            String title,
+            @Schema(description = "参与方", example = "订单用户")
+            String participant,
+            @Schema(description = "消息总数", example = "6")
+            int messageCount,
+            @Schema(description = "最后一条消息", example = "师傅 30 分钟内到达")
+            String latestMessage
+    ) {
+    }
+
     @Schema(name = "AdminQuotationItemView", description = "后台报价明细")
     public record QuotationItemView(
             @Schema(description = "项目名称", example = "新增配件")
@@ -105,7 +120,7 @@ public final class AdminBusinessDtos {
             String dispatchMode,
             @Schema(description = "当前师傅用户 ID", example = "20001")
             Long masterUserId,
-            @Schema(description = "当前师傅姓名", example = "张师傅")
+            @Schema(description = "当前师傅姓名", example = "服务技师")
             String masterName,
             @Schema(description = "服务地址", example = "上海市浦东新区张江高科技园区 88 号")
             String address,
@@ -126,7 +141,7 @@ public final class AdminBusinessDtos {
     public record DispatchAssignRequest(
             @Schema(description = "目标师傅用户 ID", example = "20001")
             Long masterUserId,
-            @Schema(description = "目标师傅姓名，和 masterUserId 二选一即可", example = "张师傅")
+            @Schema(description = "目标师傅姓名，和 masterUserId 二选一即可", example = "服务技师")
             String masterName
     ) {
     }
@@ -135,6 +150,23 @@ public final class AdminBusinessDtos {
     public record ReasonRequest(
             @Schema(description = "原因或备注", example = "用户要求取消")
             String reason
+    ) {
+    }
+
+    @Schema(name = "AdminGrantCouponRequest", description = "后台手工发券请求")
+    public record GrantCouponRequest(
+            @Schema(description = "优惠券 ID，为空时默认发放第一张可用券", example = "1")
+            Long couponId,
+            @Schema(description = "发券备注", example = "客服补偿")
+            String remark
+    ) {
+    }
+
+    @Schema(name = "AdminUpdateAppointmentRequest", description = "后台改预约请求")
+    public record UpdateAppointmentRequest(
+            @Schema(description = "新的预约时间", example = "明天 10:00-12:00")
+            @NotBlank
+            String appointment
     ) {
     }
 
@@ -150,7 +182,7 @@ public final class AdminBusinessDtos {
             String status,
             @Schema(description = "支付状态", example = "已预付")
             String paymentStatus,
-            @Schema(description = "下单用户", example = "周女士")
+            @Schema(description = "下单用户", example = "订单用户")
             String userName,
             @Schema(description = "服务地址", example = "上海市浦东新区张江高科技园区 88 号")
             String address,
@@ -166,8 +198,16 @@ public final class AdminBusinessDtos {
             boolean canCancel,
             @Schema(description = "是否允许退款", example = "true")
             boolean canRefund,
+            @Schema(description = "是否允许手工发券", example = "true")
+            boolean canGrantCoupon,
+            @Schema(description = "是否允许改预约", example = "true")
+            boolean canUpdateAppointment,
             @Schema(implementation = QuotationView.class)
             QuotationView quotation,
+            @Schema(implementation = MessageSummary.class)
+            MessageSummary messageSummary,
+            @ArraySchema(schema = @Schema(implementation = MediaItem.class))
+            List<MediaItem> mediaItems,
             @ArraySchema(schema = @Schema(implementation = TimelineItem.class))
             List<TimelineItem> timeline,
             @ArraySchema(schema = @Schema(implementation = TrackPoint.class))
@@ -179,9 +219,9 @@ public final class AdminBusinessDtos {
     public record MasterDetail(
             @Schema(description = "师傅用户 ID", example = "20001")
             Long userId,
-            @Schema(description = "师傅姓名", example = "张师傅")
+            @Schema(description = "师傅姓名", example = "服务技师")
             String realName,
-            @Schema(description = "手机号", example = "170****8899")
+            @Schema(description = "手机号", example = "139****1234")
             String mobile,
             @ArraySchema(schema = @Schema(description = "技能标签"))
             List<String> skillTags,
@@ -206,9 +246,9 @@ public final class AdminBusinessDtos {
 
     @Schema(name = "AdminMasterUpdateRequest", description = "后台更新师傅资料请求")
     public record MasterUpdateRequest(
-            @Schema(description = "师傅姓名", example = "张师傅")
+            @Schema(description = "师傅姓名", example = "服务技师")
             String realName,
-            @Schema(description = "手机号", example = "170****8899")
+            @Schema(description = "手机号", example = "139****1234")
             String mobile,
             @ArraySchema(schema = @Schema(description = "技能标签"))
             List<String> skillTags,
@@ -251,7 +291,7 @@ public final class AdminBusinessDtos {
             String orderId,
             @Schema(description = "账单标题", example = "SO20260406018 智能锁安装结算")
             String title,
-            @Schema(description = "关联师傅", example = "张师傅")
+            @Schema(description = "关联师傅", example = "服务技师")
             String masterName,
             @Schema(description = "业务时间", example = "今天 10:18")
             String transactionTime,

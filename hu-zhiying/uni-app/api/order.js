@@ -6,7 +6,7 @@ const statusTextMap = {
   PENDING_ACCEPT: '等待师傅确认上门',
   ON_THE_WAY: '师傅已出发，正在赶来',
   ARRIVED: '师傅已到场，等待开始施工',
-  WAITING_SUPPLEMENT_PAYMENT: '师傅已提交增项报价，等待确认补款',
+  WAITING_SUPPLEMENT_PAYMENT: '师傅已提交增项报价，等待补款',
   IN_SERVICE: '订单正在施工中',
   COMPLETED: '服务已完成，欢迎评价',
   REFUNDING: '退款处理中',
@@ -15,9 +15,9 @@ const statusTextMap = {
 
 function normalizeTimeline(timeline = []) {
   return timeline.map((item) => ({
-    key: item.key,
+    key: item.key || item.stepKey,
     label: item.label,
-    desc: item.desc,
+    desc: item.desc || item.description,
     done: item.done,
     time: item.time,
   }));
@@ -29,9 +29,10 @@ function normalizeQuotation(quotation) {
   }
   return {
     ...quotation,
+    quotationId: quotation.quotationId || quotation.id,
     totalAmount: Number(quotation.totalAmount || 0),
     items: (quotation.items || []).map((item, index) => ({
-      id: `${quotation.id}-${index + 1}`,
+      id: `${quotation.id || quotation.quotationId}-${index + 1}`,
       name: item.name,
       amount: Number(item.amount || 0),
     })),
@@ -39,25 +40,19 @@ function normalizeQuotation(quotation) {
 }
 
 function normalizeServiceOrder(item) {
-  const tags = item.status === 'PENDING_PAYMENT'
-    ? ['待支付', '支付后派单']
-    : item.status === 'WAITING_SUPPLEMENT_PAYMENT'
-      ? ['待补款', '平台担保']
-      : item.paymentStatus === 'PARTIAL_PAID'
-        ? ['预付上门费', '平台担保']
-        : ['已支付'];
-
   return {
     ...item,
     type: 'service',
-    statusText: statusTextMap[item.status] || '订单处理中',
-    address: item.address?.detail || item.address || '待补充地址',
+    statusText: item.statusText || statusTextMap[item.status] || '订单处理中',
+    address: item.address || '待补充地址',
     price: Number(item.amount || 0),
     eta: item.eta || '待确认',
-    masterMobile: item.masterName && item.masterName !== '待接单' ? '170****8899' : '',
-    tags,
+    masterMobile: item.masterMobile || '',
+    tags: [],
     timeline: normalizeTimeline(item.timeline),
     quotation: normalizeQuotation(item.quotation),
+    mediaFiles: item.mediaFiles || [],
+    messageSummary: item.messageSummary || null,
   };
 }
 
@@ -78,6 +73,8 @@ function normalizeProductOrder(item) {
     tags: item.createInstallOrder ? ['商城订单', '自动生成安装工单'] : ['商城订单'],
     timeline: [],
     quotation: null,
+    mediaFiles: [],
+    messageSummary: null,
   };
 }
 
@@ -100,7 +97,6 @@ export async function getOrderList() {
 
 /**
  * 查询订单详情。
- * @param {string} orderId
  */
 export async function getOrderDetail(orderId) {
   const response = orderId.startsWith('PO')
@@ -116,7 +112,6 @@ export async function getOrderDetail(orderId) {
 
 /**
  * 查询订单轨迹。
- * @param {string} orderId
  */
 export function getOrderTracking(orderId) {
   return request({ url: `/api/orders/${orderId}/tracking` });
@@ -134,7 +129,6 @@ export async function getTimeSlots() {
 
 /**
  * 创建服务订单。
- * @param {object} payload
  */
 export function createServiceOrder(payload) {
   return request({
@@ -146,7 +140,6 @@ export function createServiceOrder(payload) {
 
 /**
  * 创建商品订单。
- * @param {object} payload
  */
 export function createProductOrder(payload) {
   return request({
@@ -158,7 +151,6 @@ export function createProductOrder(payload) {
 
 /**
  * 创建微信预支付单。
- * @param {string} orderId
  */
 export function requestWechatPrepay(orderId) {
   return request({
@@ -170,7 +162,6 @@ export function requestWechatPrepay(orderId) {
 
 /**
  * 确认增项报价。
- * @param {string} quotationId
  */
 export function confirmQuotation(quotationId) {
   return request({
@@ -181,8 +172,6 @@ export function confirmQuotation(quotationId) {
 
 /**
  * 更新服务订单状态。
- * @param {string} orderId
- * @param {string} status
  */
 export function updateServiceOrderStatus(orderId, status) {
   return request({
@@ -194,8 +183,6 @@ export function updateServiceOrderStatus(orderId, status) {
 
 /**
  * 创建增项报价。
- * @param {string} orderId
- * @param {string} remark
  */
 export function createQuotation(orderId, remark) {
   return request({
@@ -207,7 +194,6 @@ export function createQuotation(orderId, remark) {
 
 /**
  * 发起退款。
- * @param {string} orderId
  */
 export function refundOrder(orderId) {
   return request({
@@ -219,8 +205,6 @@ export function refundOrder(orderId) {
 
 /**
  * 取消订单。
- * @param {string} orderId
- * @param {string} reason
  */
 export function cancelOrder(orderId, reason) {
   return request({
@@ -232,8 +216,6 @@ export function cancelOrder(orderId, reason) {
 
 /**
  * 催单。
- * @param {string} orderId
- * @param {string} remark
  */
 export function urgeOrder(orderId, remark) {
   return request({

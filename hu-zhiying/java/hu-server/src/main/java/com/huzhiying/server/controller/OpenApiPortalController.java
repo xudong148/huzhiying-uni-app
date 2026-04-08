@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 兼容旧文档入口，统一跳转到 Knife4j 的 doc.html 页面。
+ * 兼容旧版 Swagger UI 地址，统一跳转到 Knife4j 门户页。
  */
 @RestController
 public class OpenApiPortalController {

@@ -18,18 +18,18 @@ async function main() {
 
   const indexSections = [
     '<!--',
-    '  文档说明：',
-    '  1. 本目录中的 Markdown 文档由 scripts/export-openapi-markdown.mjs 自动生成。',
-    '  2. 默认读取本地正在运行的 OpenAPI 服务，地址为 http://localhost:8080。',
-    '  3. 当后端接口、请求体或响应体有变更时，请重新执行本脚本。',
+    '  接口文档目录页，由 scripts/export-openapi-markdown.mjs 自动生成。',
+    '  1. 默认读取本地 http://localhost:8080 的 OpenAPI 接口。',
+    '  2. 后端接口契约发生变化后，需要重新执行导出脚本。',
+    '  3. 本目录中的 Markdown 用于离线审阅、联调和代码评审。',
     '-->',
     '',
-    '# 呼之应接口文档索引',
+    '# 接口文档目录',
     '',
     '## 生成信息',
     '',
     `- 生成时间：\`${generatedAt}\``,
-    `- 文档源：\`${baseUrl}\``,
+    `- 来源服务：\`${baseUrl}\``,
     '',
     '## 文档列表',
     '',
@@ -44,11 +44,11 @@ async function main() {
 
   indexSections.push(
     '',
-    '## 使用建议',
+    '## 说明',
     '',
-    '- 本地浏览建议优先打开 `http://localhost:8080/doc.html` 查看 Knife4j 页面。',
-    '- 第三方工具导入建议直接使用 `/v3/api-docs` 或对应分组地址。',
-    '- Markdown 适合做代码评审、接口对照和离线归档，不替代在线调试页面。',
+    `- 交互式界面请使用 \`${baseUrl}/doc.html\`。`,
+    '- Apifox / Apiform 可直接导入 `/v3/api-docs` 或各分组地址。',
+    '- Markdown 文档适合离线查看和评审，联调时仍以实时接口和 Knife4j 页面为准。',
     ''
   );
 
@@ -58,7 +58,7 @@ async function main() {
 async function fetchOpenApi(sourcePath) {
   const response = await fetch(`${baseUrl}${sourcePath}`);
   if (!response.ok) {
-    throw new Error(`拉取 OpenAPI 失败：${sourcePath} -> ${response.status}`);
+    throw new Error(`获取 OpenAPI 文档失败：${sourcePath} -> ${response.status}`);
   }
   return response.json();
 }
@@ -67,10 +67,10 @@ function renderDocument(spec, group) {
   const endpointList = collectOperations(spec.paths || {});
   const sections = [
     '<!--',
-    '  文档说明：',
-    `  1. 当前文件为 ${group.title}，由 scripts/export-openapi-markdown.mjs 自动生成。`,
-    `  2. 数据源地址：${baseUrl}${group.sourcePath}。`,
-    '  3. 字段表会展开请求参数、请求体和响应体，便于前后端对照联调。',
+    `  ${group.title}，由 scripts/export-openapi-markdown.mjs 自动生成。`,
+    `  1. OpenAPI 来源：${baseUrl}${group.sourcePath}`,
+    '  2. 下文展开展示参数、请求体和响应字段，便于联调查阅。',
+    '  3. 接口契约变更后请重新执行导出脚本。',
     '-->',
     '',
     `# ${group.title}`,
@@ -78,12 +78,12 @@ function renderDocument(spec, group) {
     '## 基本信息',
     '',
     `- 文档标题：\`${spec.info?.title || '未知'}\``,
-    `- 文档版本：\`${spec.info?.version || 'unknown'}\``,
+    `- 版本：\`${spec.info?.version || 'unknown'}\``,
     `- 分组：\`${group.id}\``,
     `- 接口数量：\`${endpointList.length}\``,
     `- OpenAPI 地址：\`${baseUrl}${group.sourcePath}\``,
     '',
-    '## 鉴权约定',
+    '## 鉴权说明',
     '',
     ...renderSecuritySchemes(spec),
     '',
@@ -127,15 +127,15 @@ function renderSecuritySchemes(spec) {
   return entries.map(([name, scheme]) => {
     const parts = [`- \`${name}\``];
     if (scheme.type) {
-      parts.push(`类型：${scheme.type}`);
+      parts.push(`类型: ${scheme.type}`);
     }
     if (scheme.scheme) {
-      parts.push(`协议：${scheme.scheme}`);
+      parts.push(`方案: ${scheme.scheme}`);
     }
     if (scheme.bearerFormat) {
-      parts.push(`格式：${scheme.bearerFormat}`);
+      parts.push(`格式: ${scheme.bearerFormat}`);
     }
-    return parts.join('，');
+    return parts.join(', ');
   });
 }
 
@@ -144,19 +144,19 @@ function renderOperation(spec, entry) {
   const sections = [
     `## ${entry.method} ${entry.path}`,
     '',
-    `- 标题：${operation.summary || '未填写'}`,
-    `- 标签：${(operation.tags || []).join(' / ') || '未分组'}`,
+    `- 摘要：${normalizeText(operation.summary) || '未提供'}`,
+    `- 标签：${(operation.tags || []).join(' / ') || '未分类'}`,
   ];
 
   if (operation.description) {
-    sections.push(`- 说明：${operation.description}`);
+    sections.push(`- 说明：${normalizeText(operation.description)}`);
   }
 
   sections.push('');
   sections.push('### 请求信息', '');
-  sections.push('| 项目 | 内容 |');
+  sections.push('| 项目 | 值 |');
   sections.push('| --- | --- |');
-  sections.push(`| 方法 | \`${entry.method}\` |`);
+  sections.push(`| 请求方法 | \`${entry.method}\` |`);
   sections.push(`| 路径 | \`${entry.path}\` |`);
   sections.push(`| OperationId | \`${operation.operationId || '-'}\` |`);
   sections.push(`| 鉴权 | \`${renderSecurityRequirement(operation.security, spec.security)}\` |`);
@@ -176,24 +176,24 @@ function renderSecurityRequirement(operationSecurity, globalSecurity) {
     return '无';
   }
   return security
-    .map((item) => Object.keys(item).join(', ') || 'anonymous')
+    .map((item) => Object.keys(item).join(', ') || '匿名')
     .join(' | ');
 }
 
 function renderParametersTable(spec, parameters) {
   if (!parameters.length) {
-    return ['### 路径 / Query 参数', '', '- 无显式参数。', ''];
+    return ['### 路径 / 查询参数', '', '- 当前接口没有显式参数。', ''];
   }
   const rows = dedupeParameters(parameters).map((parameter) => {
     const normalized = resolveParameter(spec, parameter);
     const schema = normalized.schema || {};
-    return `| \`${normalized.name}\` | ${normalized.in || '-'} | ${normalized.required ? '是' : '否'} | \`${describeSchemaType(schema, spec.components?.schemas || {})}\` | ${sanitizeText(normalized.description) || '-'} |`;
+    return `| \`${normalized.name}\` | ${normalized.in || '-'} | ${normalized.required ? '是' : '否'} | \`${describeSchemaType(schema, spec.components?.schemas || {})}\` | ${sanitizeText(normalizeText(normalized.description)) || '-'} |`;
   });
 
   return [
-    '### 路径 / Query 参数',
+    '### 路径 / 查询参数',
     '',
-    '| 名称 | 位置 | 必填 | 类型 | 说明 |',
+    '| 参数名 | 位置 | 必填 | 类型 | 说明 |',
     '| --- | --- | --- | --- | --- |',
     ...rows,
     '',
@@ -202,7 +202,7 @@ function renderParametersTable(spec, parameters) {
 
 function renderRequestBody(spec, requestBody) {
   if (!requestBody) {
-    return ['### 请求体', '', '- 无请求体。', ''];
+    return ['### 请求体', '', '- 当前接口没有请求体。', ''];
   }
 
   const normalized = resolveRequestBody(spec, requestBody);
@@ -217,10 +217,10 @@ function renderRequestBody(spec, requestBody) {
 }
 
 function renderResponses(spec, responses) {
-  const sections = ['### 响应体', ''];
+  const sections = ['### 响应说明', ''];
   const entries = Object.entries(responses);
   if (!entries.length) {
-    sections.push('- 未声明响应结构。', '');
+    sections.push('- 当前接口未声明结构化响应体。', '');
     return sections;
   }
 
@@ -228,16 +228,16 @@ function renderResponses(spec, responses) {
     const normalized = resolveResponse(spec, response);
     sections.push(`#### 响应 \`${statusCode}\``, '');
     if (normalized.description) {
-      sections.push(`- 说明：${normalized.description}`, '');
+      sections.push(`- 说明：${normalizeText(normalized.description)}`, '');
     }
     const contentEntries = Object.entries(normalized.content || {});
     if (!contentEntries.length) {
-      sections.push('- 无结构化响应体。', '');
+      sections.push('- 当前响应没有结构化响应体。', '');
       continue;
     }
 
     for (const [contentType, media] of contentEntries) {
-      sections.push(`- Content-Type：\`${contentType}\``, '');
+      sections.push(`- Content-Type: \`${contentType}\``, '');
       sections.push(...renderSchemaTable('响应字段', media.schema, spec.components?.schemas || {}));
     }
   }
@@ -248,7 +248,7 @@ function renderResponses(spec, responses) {
 function renderSchemaTable(title, schema, components) {
   const fields = flattenSchema(schema, components);
   if (!fields.length) {
-    return [`#### ${title}`, '', '- 无可展开字段。', ''];
+    return [`#### ${title}`, '', '- 当前结构没有可展开字段。', ''];
   }
 
   return [
@@ -256,7 +256,7 @@ function renderSchemaTable(title, schema, components) {
     '',
     '| 字段 | 类型 | 必填 | 说明 |',
     '| --- | --- | --- | --- |',
-    ...fields.map((field) => `| \`${field.name}\` | \`${field.type}\` | ${field.required ? '是' : '否'} | ${sanitizeText(field.description) || '-'} |`),
+    ...fields.map((field) => `| \`${field.name}\` | \`${field.type}\` | ${field.required ? '是' : '否'} | ${sanitizeText(normalizeText(field.description)) || '-'} |`),
     '',
   ];
 }
@@ -285,7 +285,7 @@ function flattenSchema(schema, components, prefix = '', required = false, visite
       name: prefix || 'value',
       type: variants.map((item) => describeSchemaType(item, components)).join(' | '),
       required,
-      description: schema.description || '多态对象',
+      description: schema.description || '多态结构',
     }];
   }
 
@@ -452,6 +452,19 @@ function sanitizeText(value) {
     .replace(/\|/g, '\\|')
     .replace(/\r?\n/g, '<br />')
     .trim();
+}
+
+function normalizeText(value) {
+  const text = String(value || '').trim();
+  if (!text) {
+    return '';
+  }
+  return looksLikeMojibake(text) ? '' : text;
+}
+
+function looksLikeMojibake(text) {
+  const suspicious = text.match(/[鍚鏌璁甯鎺鏀寰鍦绉浜夊彴]/g) || [];
+  return suspicious.length >= 3;
 }
 
 main().catch((error) => {

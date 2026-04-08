@@ -43,7 +43,7 @@ public class AdminBusinessController {
     }
 
     @PostMapping("/api/admin/dispatch/{taskId}/cancel-order")
-    @Operation(summary = "后台从调度中心取消订单")
+    @Operation(summary = "从调度中心取消订单")
     public ApiResponse<?> cancelDispatchOrder(@PathVariable("taskId") String taskId,
                                               @RequestBody(required = false) AdminBusinessDtos.ReasonRequest request) {
         return ApiResponse.success(adminBusinessService.cancelDispatchOrder(taskId, request));
@@ -67,6 +67,23 @@ public class AdminBusinessController {
     public ApiResponse<?> refundOrder(@PathVariable("orderId") String orderId,
                                       @RequestBody(required = false) AdminBusinessDtos.ReasonRequest request) {
         return ApiResponse.success(adminBusinessService.refundOrder(orderId, request));
+    }
+
+    @PostMapping("/api/admin/orders/{orderId}/grant-coupon")
+    @Operation(summary = "后台手工发券")
+    public ApiResponse<?> grantCoupon(@PathVariable("orderId") String orderId,
+                                      @RequestBody(required = false) AdminBusinessDtos.GrantCouponRequest request) {
+        AdminBusinessDtos.GrantCouponRequest payload = request == null
+                ? new AdminBusinessDtos.GrantCouponRequest(null, "")
+                : request;
+        return ApiResponse.success(adminBusinessService.grantCoupon(orderId, payload));
+    }
+
+    @PutMapping("/api/admin/orders/{orderId}/appointment")
+    @Operation(summary = "后台改预约")
+    public ApiResponse<?> updateAppointment(@PathVariable("orderId") String orderId,
+                                            @Valid @RequestBody AdminBusinessDtos.UpdateAppointmentRequest request) {
+        return ApiResponse.success(adminBusinessService.updateAppointment(orderId, request));
     }
 
     @GetMapping("/api/admin/masters/{userId}")

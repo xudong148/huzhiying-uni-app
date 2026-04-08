@@ -1,10 +1,10 @@
 <template>
   <div class="page-panel">
-    <!-- 页面标题区：说明当前页负责仲裁工单与裁决 -->
+    <!-- 页面标题区 -->
     <h2 class="page-title">仲裁中心</h2>
     <p class="page-desc">查看用户投诉与履约争议，支持打开详情并提交裁决结果。</p>
 
-    <!-- 仲裁列表区：展示仲裁工单与常用动作 -->
+    <!-- 仲裁列表区 -->
     <el-table :data="rows">
       <el-table-column prop="id" label="仲裁号" min-width="160" />
       <el-table-column prop="orderId" label="关联订单" min-width="180" />
@@ -20,7 +20,7 @@
       </el-table-column>
     </el-table>
 
-    <!-- 详情抽屉区：展示关联订单、轨迹和媒体摘要 -->
+    <!-- 详情抽屉 -->
     <el-drawer v-model="detailVisible" title="仲裁详情" size="620px">
       <template v-if="detail">
         <el-descriptions :column="1" border>
@@ -53,7 +53,7 @@
       </template>
     </el-drawer>
 
-    <!-- 裁决弹窗区：填写裁决状态和结果说明 -->
+    <!-- 裁决弹窗 -->
     <el-dialog v-model="resolveVisible" title="提交裁决" width="420px">
       <el-form label-width="100px">
         <el-form-item label="状态文案">
@@ -80,7 +80,7 @@
 /**
  * 仲裁中心页面。
  * 1. 列表读取后台仲裁总表。
- * 2. 详情抽屉读取后台仲裁详情接口，展示轨迹和媒体摘要。
+ * 2. 详情抽屉读取仲裁详情接口，展示轨迹和媒体摘要。
  * 3. 裁决表单调用后台裁决接口并刷新列表与详情。
  */
 import { onMounted, reactive, ref } from 'vue';
@@ -148,7 +148,7 @@ onMounted(loadRows);
 </script>
 
 <style scoped>
-/* 页面局部样式：补充操作区和详情内容布局 */
+/* 页面局部样式 */
 .action-row {
   display: flex;
   gap: 8px;

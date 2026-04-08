@@ -6,9 +6,11 @@ import com.huzhiying.domain.enums.DomainEnums.ServiceOrderStatus;
 import com.huzhiying.server.dto.AdminBusinessDtos;
 import com.huzhiying.server.persistence.PersistenceEntities.AddressEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ArbitrationCaseEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.CouponEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.DispatchTaskEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MasterProfileEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MediaFileEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.MessageItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductOrderEntity;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,7 +98,7 @@ public class AdminBusinessService {
     @Transactional
     public AdminBusinessDtos.OrderDetail cancelOrder(String orderId, AdminBusinessDtos.ReasonRequest request) {
         if (platformRepository.findProductOrder(orderId).isPresent()) {
-            throw new IllegalStateException("商品订单暂不支持后台取消，请直接走退款流程。");
+            throw new IllegalStateException("商品订单暂不支持后台直接取消，请走退款流程。");
         }
         commandService.cancelOrder(orderId, request == null ? null : request.reason());
         return orderDetail(orderId);
@@ -104,6 +107,32 @@ public class AdminBusinessService {
     @Transactional
     public AdminBusinessDtos.OrderDetail refundOrder(String orderId, AdminBusinessDtos.ReasonRequest request) {
         commandService.refundOrder(orderId);
+        return orderDetail(orderId);
+    }
+
+    @Transactional
+    public AdminBusinessDtos.OrderDetail grantCoupon(String orderId, AdminBusinessDtos.GrantCouponRequest request) {
+        CouponEntity coupon = chooseCoupon(request);
+        MessageSessionEntity session = findSessionByOrderId(orderId);
+        if (session != null) {
+            MessageItemEntity message = new MessageItemEntity();
+            message.sessionId = session.id;
+            message.senderCode = "customer_service";
+            message.messageType = "text";
+            message.contentText = "客服已补发优惠券：" + coupon.title + (request.remark() == null || request.remark().isBlank() ? "" : "，备注：" + request.remark());
+            message.messageTime = "刚刚";
+            platformRepository.saveMessageItem(message);
+        }
+        return orderDetail(orderId);
+    }
+
+    @Transactional
+    public AdminBusinessDtos.OrderDetail updateAppointment(String orderId, AdminBusinessDtos.UpdateAppointmentRequest request) {
+        ServiceOrderEntity order = domainSupport.findServiceOrderEntity(orderId);
+        order.appointment = request.appointment();
+        order.updatedAt = LocalDateTime.now();
+        platformRepository.saveServiceOrder(order);
+        domainSupport.saveStep(orderId, "appointment_update", "改预约", "后台已调整预约时间为 " + request.appointment(), true);
         return orderDetail(orderId);
     }
 
@@ -251,7 +280,7 @@ public class AdminBusinessService {
             if (order.status == ServiceOrderStatus.REFUNDING) {
                 order.status = ServiceOrderStatus.CANCELLED;
             }
-            order.updatedAt = java.time.LocalDateTime.now();
+            order.updatedAt = LocalDateTime.now();
             platformRepository.saveServiceOrder(order);
         });
 
@@ -275,11 +304,7 @@ public class AdminBusinessService {
                 .mapToInt(sessionId -> platformRepository.listMessageItems(sessionId).size())
                 .sum();
 
-        List<AdminBusinessDtos.MediaItem> mediaItems = new ArrayList<>();
-        mediaItems.addAll(toMediaItems(platformRepository.listMediaFilesByBiz("order_evidence", orderId)));
-        mediaItems.addAll(toMediaItems(platformRepository.listMediaFilesByBiz("before_work_media", orderId)));
-        mediaItems.addAll(toMediaItems(platformRepository.listMediaFilesByBiz("after_work_media", orderId)));
-
+        List<AdminBusinessDtos.MediaItem> mediaItems = collectOrderMedia(orderId);
         return new AdminBusinessDtos.ArbitrationDetail(
                 arbitration.id,
                 orderId,
@@ -325,7 +350,11 @@ public class AdminBusinessService {
                 "",
                 canCancel,
                 canRefund,
+                true,
+                true,
                 buildQuotationView(quotation),
+                buildMessageSummary(order.id),
+                collectOrderMedia(order.id),
                 buildTimeline(order.id),
                 buildTrackPoints(order.id)
         );
@@ -342,7 +371,7 @@ public class AdminBusinessService {
                 order.id,
                 "PRODUCT",
                 order.title,
-                domainSupport.productStatusLabel(order.status),
+                productStatusLabel(order.status),
                 domainSupport.paymentStatusLabel(order.paymentStatus),
                 user == null ? "" : user.nickname,
                 address == null ? "" : address.detailAddress,
@@ -352,7 +381,11 @@ public class AdminBusinessService {
                 order.installServiceOrderId == null ? "" : order.installServiceOrderId,
                 false,
                 canRefund,
+                true,
+                false,
                 null,
+                buildMessageSummary(order.installServiceOrderId),
+                order.installServiceOrderId == null ? List.of() : collectOrderMedia(order.installServiceOrderId),
                 List.of(),
                 List.of()
         );
@@ -390,6 +423,20 @@ public class AdminBusinessService {
         );
     }
 
+    private AdminBusinessDtos.MessageSummary buildMessageSummary(String orderId) {
+        if (orderId == null || orderId.isBlank()) {
+            return null;
+        }
+        MessageSessionEntity session = findSessionByOrderId(orderId);
+        if (session == null) {
+            return null;
+        }
+        List<MessageItemEntity> items = platformRepository.listMessageItems(session.id);
+        String latest = items.isEmpty() ? "" : items.get(items.size() - 1).contentText;
+        String participant = platformRepository.findUser(session.participantUserId).map(user -> user.nickname).orElse("");
+        return new AdminBusinessDtos.MessageSummary(session.id, session.title, participant, items.size(), latest);
+    }
+
     private List<AdminBusinessDtos.TimelineItem> buildTimeline(String orderId) {
         return platformRepository.listWorkSteps(orderId).stream()
                 .map(this::toTimelineItem)
@@ -402,9 +449,22 @@ public class AdminBusinessService {
                 .toList();
     }
 
+    private List<AdminBusinessDtos.MediaItem> collectOrderMedia(String orderId) {
+        List<MediaFileEntity> entities = new ArrayList<>();
+        entities.addAll(platformRepository.listMediaFilesByBiz("order_evidence", orderId));
+        entities.addAll(platformRepository.listMediaFilesByBiz("before_work_media", orderId));
+        entities.addAll(platformRepository.listMediaFilesByBiz("after_work_media", orderId));
+        return toMediaItems(entities);
+    }
+
     private List<AdminBusinessDtos.MediaItem> toMediaItems(List<MediaFileEntity> entities) {
         return entities.stream()
-                .map(item -> new AdminBusinessDtos.MediaItem(item.id, item.bizType, item.originalName, item.accessUrl))
+                .map(item -> new AdminBusinessDtos.MediaItem(
+                        item.id,
+                        item.bizType,
+                        item.originalName,
+                        item.accessUrl == null || item.accessUrl.isBlank() ? item.storagePath : item.accessUrl
+                ))
                 .toList();
     }
 
@@ -430,6 +490,21 @@ public class AdminBusinessService {
         );
     }
 
+    private CouponEntity chooseCoupon(AdminBusinessDtos.GrantCouponRequest request) {
+        return platformRepository.listCoupons().stream()
+                .filter(item -> Boolean.TRUE.equals(item.enabled))
+                .filter(item -> request.couponId() == null || item.id.equals(request.couponId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("没有可发放的优惠券。"));
+    }
+
+    private MessageSessionEntity findSessionByOrderId(String orderId) {
+        return platformRepository.listMessageSessions().stream()
+                .filter(item -> orderId.equals(item.orderId))
+                .findFirst()
+                .orElse(null);
+    }
+
     private String resolveMasterName(Long masterUserId, String masterName) {
         if (masterName != null && !masterName.isBlank()) {
             return masterName;
@@ -441,7 +516,7 @@ public class AdminBusinessService {
         }
         return platformRepository.findMasterProfileByUserId(PlatformDomainSupport.DEFAULT_MASTER_USER_ID)
                 .map(profile -> profile.realName)
-                .orElse("张师傅");
+                .orElse("");
     }
 
     private String extractOrderId(String title) {
@@ -450,5 +525,16 @@ public class AdminBusinessService {
         }
         int blankIndex = title.indexOf(' ');
         return blankIndex > 0 ? title.substring(0, blankIndex) : "";
+    }
+
+    private String productStatusLabel(ProductOrderStatus status) {
+        return switch (status) {
+            case PENDING_PAYMENT -> "待支付";
+            case PAID -> "已支付";
+            case PENDING_SHIPMENT -> "待发货";
+            case SHIPPED -> "已发货";
+            case COMPLETED -> "已完成";
+            case REFUNDING -> "退款中";
+        };
     }
 }

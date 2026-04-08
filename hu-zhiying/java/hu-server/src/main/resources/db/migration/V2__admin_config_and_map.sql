@@ -62,11 +62,11 @@ CREATE TABLE IF NOT EXISTS dispatch_zones (
 );
 
 UPDATE users
-SET nickname = '周女士', level_name = 'SVIP 预备用户'
+SET nickname = '平台用户', level_name = '平台会员'
 WHERE id = 10001;
 
 UPDATE users
-SET nickname = '张师傅', level_name = '认证工程师'
+SET nickname = '服务技师', level_name = '平台认证技师'
 WHERE id = 20001;
 
 UPDATE users
@@ -75,7 +75,7 @@ WHERE id = 90001;
 
 UPDATE addresses
 SET tag_name = '家',
-    contact_name = '周女士',
+    contact_name = '联系人',
     detail_address = '上海市浦东新区张江高科技园区 88 号 12 幢 1602',
     city_name = '上海',
     district_name = '浦东新区'
@@ -83,14 +83,14 @@ WHERE id = 1;
 
 UPDATE addresses
 SET tag_name = '公司',
-    contact_name = '周女士',
+    contact_name = '联系人',
     detail_address = '上海市徐汇区桂平路 410 号 10 楼',
     city_name = '上海',
     district_name = '徐汇区'
 WHERE id = 2;
 
 UPDATE master_profiles
-SET real_name = '张师傅',
+SET real_name = '服务技师',
     skill_tags = '空调维修|智能锁安装',
     service_area = '浦东新区|徐汇区'
 WHERE id = 1;
@@ -204,7 +204,7 @@ WHERE order_id = 'SO20260407009' AND step_key = 'created';
 
 UPDATE work_step_records
 SET label_text = '强派完成',
-    description_text = '平台已将订单指派给张师傅'
+    description_text = '平台已将订单指派给服务技师'
 WHERE order_id = 'SO20260407009' AND step_key = 'assigned';
 
 UPDATE work_step_records
@@ -236,7 +236,7 @@ SET title = '智能锁安装沟通'
 WHERE id = 'MS-001';
 
 UPDATE message_items
-SET content_text = '订单已分配给张师傅，预计 26 分钟到达。'
+SET content_text = '订单已分配给服务技师，预计 26 分钟到达。'
 WHERE id = 1;
 
 UPDATE message_items

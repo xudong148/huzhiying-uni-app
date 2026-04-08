@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class AdminOpenApiIntegrationTest {
+class AdminOpenApiIntegrationTest extends AdminControllerIntegrationSupport {
 
     @Autowired
     private MockMvc mockMvc;
@@ -28,10 +28,32 @@ class AdminOpenApiIntegrationTest {
         mockMvc.perform(get("/v3/api-docs/admin"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paths").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/catalog/categories']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/pricing/rules']").exists())
                 .andExpect(jsonPath("$.paths['/api/admin/content/banners']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/marketing/coupons']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/system/roles']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/system/roles/{id}/grants']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/system/permissions']").exists())
                 .andExpect(jsonPath("$.paths['/api/admin/dispatch/{taskId}']").exists())
                 .andExpect(jsonPath("$.paths['/api/admin/orders/{orderId}']").exists())
-                .andExpect(jsonPath("$.paths['/api/admin/masters/{userId}']").exists());
+                .andExpect(jsonPath("$.paths['/api/admin/masters/{userId}']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/orders/{orderId}/grant-coupon']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/orders/{orderId}/appointment']").exists());
+    }
+
+    @Test
+    void shouldExposeMobileOpenApiGroup() throws Exception {
+        mockMvc.perform(get("/v3/api-docs/mobile"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.paths['/api/home']").exists())
+                .andExpect(jsonPath("$.paths['/api/auth/admin-login']").exists())
+                .andExpect(jsonPath("$.paths['/api/auth/send-code']").exists())
+                .andExpect(jsonPath("$.paths['/api/auth/mobile-login']").exists())
+                .andExpect(jsonPath("$.paths['/api/auth/register']").exists())
+                .andExpect(jsonPath("$.paths['/api/auth/refresh']").exists())
+                .andExpect(jsonPath("$.paths['/api/orders/{id}/tracking']").exists())
+                .andExpect(jsonPath("$.paths['/api/files/upload']").exists());
     }
 
     @Test
@@ -47,7 +69,7 @@ class AdminOpenApiIntegrationTest {
 
     @Test
     void shouldCreateBannerThroughAdminCrudApi() throws Exception {
-        mockMvc.perform(post("/api/admin/content/banners")
+        mockMvc.perform(admin(post("/api/admin/content/banners"))
                         .contentType("application/json")
                         .content("""
                                 {

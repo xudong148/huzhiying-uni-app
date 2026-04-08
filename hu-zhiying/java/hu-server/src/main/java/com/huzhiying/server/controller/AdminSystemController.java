@@ -5,6 +5,7 @@ import com.huzhiying.server.dto.AdminConfigDtos;
 import com.huzhiying.server.service.AdminConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @Tag(name = "admin-system", description = "后台系统权限配置")
-public class AdminSystemController {
+public class AdminSystemController extends AdminConfigControllerSupport {
 
     private final AdminConfigService adminConfigService;
 
@@ -42,14 +43,14 @@ public class AdminSystemController {
 
     @PostMapping("/api/admin/system/roles")
     @Operation(summary = "新增角色")
-    public ApiResponse<AdminConfigDtos.RolePayload> createRole(@RequestBody AdminConfigDtos.RolePayload payload) {
+    public ApiResponse<AdminConfigDtos.RolePayload> createRole(@Valid @RequestBody AdminConfigDtos.RolePayload payload) {
         return ApiResponse.success(adminConfigService.saveRole(null, payload));
     }
 
     @PutMapping("/api/admin/system/roles/{id}")
     @Operation(summary = "更新角色")
     public ApiResponse<AdminConfigDtos.RolePayload> updateRole(@PathVariable("id") Long id,
-                                                               @RequestBody AdminConfigDtos.RolePayload payload) {
+                                                               @Valid @RequestBody AdminConfigDtos.RolePayload payload) {
         return ApiResponse.success(adminConfigService.saveRole(id, payload));
     }
 
@@ -58,6 +59,19 @@ public class AdminSystemController {
     public ApiResponse<Boolean> deleteRole(@PathVariable("id") Long id) {
         adminConfigService.deleteRole(id);
         return ApiResponse.success(true);
+    }
+
+    @GetMapping("/api/admin/system/roles/{id}/grants")
+    @Operation(summary = "查询角色菜单与权限绑定")
+    public ApiResponse<AdminConfigDtos.RoleGrantPayload> roleGrant(@PathVariable("id") Long id) {
+        return ApiResponse.success(adminConfigService.getRoleGrant(id));
+    }
+
+    @PutMapping("/api/admin/system/roles/{id}/grants")
+    @Operation(summary = "保存角色菜单与权限绑定")
+    public ApiResponse<AdminConfigDtos.RoleGrantPayload> saveRoleGrant(@PathVariable("id") Long id,
+                                                                       @RequestBody AdminConfigDtos.RoleGrantPayload payload) {
+        return ApiResponse.success(adminConfigService.saveRoleGrant(id, payload));
     }
 
     @GetMapping("/api/admin/system/menus")
@@ -74,14 +88,14 @@ public class AdminSystemController {
 
     @PostMapping("/api/admin/system/menus")
     @Operation(summary = "新增菜单")
-    public ApiResponse<AdminConfigDtos.MenuPayload> createMenu(@RequestBody AdminConfigDtos.MenuPayload payload) {
+    public ApiResponse<AdminConfigDtos.MenuPayload> createMenu(@Valid @RequestBody AdminConfigDtos.MenuPayload payload) {
         return ApiResponse.success(adminConfigService.saveMenu(null, payload));
     }
 
     @PutMapping("/api/admin/system/menus/{id}")
     @Operation(summary = "更新菜单")
     public ApiResponse<AdminConfigDtos.MenuPayload> updateMenu(@PathVariable("id") Long id,
-                                                               @RequestBody AdminConfigDtos.MenuPayload payload) {
+                                                               @Valid @RequestBody AdminConfigDtos.MenuPayload payload) {
         return ApiResponse.success(adminConfigService.saveMenu(id, payload));
     }
 
@@ -106,14 +120,14 @@ public class AdminSystemController {
 
     @PostMapping("/api/admin/system/permissions")
     @Operation(summary = "新增权限点")
-    public ApiResponse<AdminConfigDtos.PermissionPayload> createPermission(@RequestBody AdminConfigDtos.PermissionPayload payload) {
+    public ApiResponse<AdminConfigDtos.PermissionPayload> createPermission(@Valid @RequestBody AdminConfigDtos.PermissionPayload payload) {
         return ApiResponse.success(adminConfigService.savePermission(null, payload));
     }
 
     @PutMapping("/api/admin/system/permissions/{id}")
     @Operation(summary = "更新权限点")
     public ApiResponse<AdminConfigDtos.PermissionPayload> updatePermission(@PathVariable("id") Long id,
-                                                                           @RequestBody AdminConfigDtos.PermissionPayload payload) {
+                                                                           @Valid @RequestBody AdminConfigDtos.PermissionPayload payload) {
         return ApiResponse.success(adminConfigService.savePermission(id, payload));
     }
 

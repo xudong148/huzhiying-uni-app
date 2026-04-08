@@ -216,16 +216,16 @@ CREATE TABLE IF NOT EXISTS member_levels (
 );
 
 INSERT INTO users (id, nickname, mobile, role_code, avatar, level_name) VALUES
-  (10001, '周女士', '138****5288', 'USER', '/static/user.png', 'SVIP 预备用户'),
-  (20001, '张师傅', '170****8899', 'MASTER', '/static/user.png', '认证工程师'),
+  (10001, '平台用户', '13900001234', 'USER', '/static/user.png', '平台会员'),
+  (20001, '服务技师', '13700004567', 'MASTER', '/static/user.png', '平台认证技师'),
   (90001, '运营后台', '400-000-0000', 'ADMIN', '/static/user.png', '超级管理员');
 
 INSERT INTO addresses (id, user_id, tag_name, contact_name, mobile, detail_address, city_name, district_name, latitude, longitude, is_default) VALUES
-  (1, 10001, '家', '周女士', '138****5288', '上海市浦东新区张江高科技园区 88 号 12 幢 1602', '上海', '浦东新区', 31.2253, 121.5443, TRUE),
-  (2, 10001, '公司', '周女士', '138****5288', '上海市徐汇区桂平路 410 号 10 楼', '上海', '徐汇区', 31.1692, 121.4191, FALSE);
+  (1, 10001, '家', '联系人', '13900001234', '上海市浦东新区张江高科技园区 88 号 12 幢 1602', '上海', '浦东新区', 31.2253, 121.5443, TRUE),
+  (2, 10001, '公司', '联系人', '13900001234', '上海市徐汇区桂平路 410 号 10 楼', '上海', '徐汇区', 31.1692, 121.4191, FALSE);
 
 INSERT INTO master_profiles (id, user_id, real_name, skill_tags, service_area, deposit, credit_score, online, listening, max_distance_km, privacy_number) VALUES
-  (1, 20001, '张师傅', '空调维修|智能锁安装', '浦东新区|徐汇区', 3000.00, 98, TRUE, TRUE, 20, TRUE);
+  (1, 20001, '服务技师', '空调维修|智能锁安装', '浦东新区|徐汇区', 3000.00, 98, TRUE, TRUE, 20, TRUE);
 
 INSERT INTO service_categories (id, name, icon, sort_order) VALUES
   (2, '专业维修', '/static/icons/screwdriver.svg', 1),
@@ -261,7 +261,7 @@ INSERT INTO work_step_records (order_id, step_key, label_text, description_text,
   ('SO20260408001', 'dispatch', '派单中', '系统已推送给 20km 内匹配师傅', TRUE, CURRENT_TIMESTAMP),
   ('SO20260408001', 'accepted', '师傅接单', '等待师傅出发', FALSE, CURRENT_TIMESTAMP),
   ('SO20260407009', 'created', '订单创建', '用户已提交安装工单', TRUE, CURRENT_TIMESTAMP),
-  ('SO20260407009', 'assigned', '强派完成', '平台已将订单指派给张师傅', TRUE, CURRENT_TIMESTAMP),
+  ('SO20260407009', 'assigned', '强派完成', '平台已将订单指派给服务技师', TRUE, CURRENT_TIMESTAMP),
   ('SO20260407009', 'quotation', '增项报价', '现场门体厚度超出标准安装范围，等待用户确认', TRUE, CURRENT_TIMESTAMP);
 
 INSERT INTO quotations (id, order_id, total_amount, status, remark_text, created_at) VALUES
@@ -283,7 +283,7 @@ INSERT INTO message_sessions (id, order_id, title, participant_user_id) VALUES
   ('MS-001', 'SO20260407009', '智能锁安装沟通', 20001);
 
 INSERT INTO message_items (session_id, sender_code, message_type, content_text, message_time) VALUES
-  ('MS-001', 'system', 'system', '订单已分配给张师傅，预计 26 分钟到达。', '14:02'),
+  ('MS-001', 'system', 'system', '订单已分配给服务技师，预计 26 分钟到达。', '14:02'),
   ('MS-001', 'master', 'text', '您好，我已经出发，麻烦确认一下门禁方式。', '14:06'),
   ('MS-001', 'user', 'text', '到楼下给我打电话，我下来接您。', '14:07');
 

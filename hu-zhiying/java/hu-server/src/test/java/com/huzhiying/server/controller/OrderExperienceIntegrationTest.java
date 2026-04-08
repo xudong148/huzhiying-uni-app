@@ -21,6 +21,16 @@ class OrderExperienceIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
+    void shouldExposeHomeAggregate() throws Exception {
+        mockMvc.perform(get("/api/home"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.hotKeywords").isArray())
+                .andExpect(jsonPath("$.data.categoryNav").isArray())
+                .andExpect(jsonPath("$.data.recommendations").isArray());
+    }
+
+    @Test
     void shouldExposeRealCommentsAndTracking() throws Exception {
         mockMvc.perform(get("/api/services/201/comments"))
                 .andExpect(status().isOk())
@@ -30,7 +40,31 @@ class OrderExperienceIntegrationTest {
         mockMvc.perform(get("/api/orders/SO20260408001/tracking"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.points").isArray());
+                .andExpect(jsonPath("$.data.distance").isNotEmpty())
+                .andExpect(jsonPath("$.data.points").isArray())
+                .andExpect(jsonPath("$.data.mediaFiles").isArray())
+                .andExpect(jsonPath("$.data.mediaFiles[0].bizType").value("order_evidence"));
+
+        mockMvc.perform(get("/api/service-orders/SO20260408001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.id").value("SO20260408001"))
+                .andExpect(jsonPath("$.data.timeline").isArray())
+                .andExpect(jsonPath("$.data.messageSummary.sessionId").value("MS-002"))
+                .andExpect(jsonPath("$.data.mediaFiles[0].bizType").value("order_evidence"))
+                .andExpect(jsonPath("$.data.canUrge").value(true));
+    }
+
+    @Test
+    void shouldExposeRichServiceOrderAggregate() throws Exception {
+        mockMvc.perform(get("/api/service-orders/SO20260407009"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.id").value("SO20260407009"))
+                .andExpect(jsonPath("$.data.quotation.id").value("QT20260408001"))
+                .andExpect(jsonPath("$.data.messageSummary.sessionId").value("MS-001"))
+                .andExpect(jsonPath("$.data.mediaFiles[0].bizType").value("before_work_media"))
+                .andExpect(jsonPath("$.data.canPay").value(true));
     }
 
     @Test

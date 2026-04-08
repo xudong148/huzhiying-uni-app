@@ -5,6 +5,7 @@ import com.huzhiying.server.dto.AdminConfigDtos;
 import com.huzhiying.server.service.AdminConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @Tag(name = "admin-marketing", description = "后台营销与会员配置")
-public class AdminMarketingController {
+public class AdminMarketingController extends AdminConfigControllerSupport {
 
     private final AdminConfigService adminConfigService;
 
@@ -42,14 +43,14 @@ public class AdminMarketingController {
 
     @PostMapping("/api/admin/marketing/coupons")
     @Operation(summary = "新增优惠券")
-    public ApiResponse<AdminConfigDtos.CouponPayload> createCoupon(@RequestBody AdminConfigDtos.CouponPayload payload) {
+    public ApiResponse<AdminConfigDtos.CouponPayload> createCoupon(@Valid @RequestBody AdminConfigDtos.CouponPayload payload) {
         return ApiResponse.success(adminConfigService.saveCoupon(null, payload));
     }
 
     @PutMapping("/api/admin/marketing/coupons/{id}")
     @Operation(summary = "更新优惠券")
     public ApiResponse<AdminConfigDtos.CouponPayload> updateCoupon(@PathVariable("id") Long id,
-                                                                   @RequestBody AdminConfigDtos.CouponPayload payload) {
+                                                                   @Valid @RequestBody AdminConfigDtos.CouponPayload payload) {
         return ApiResponse.success(adminConfigService.saveCoupon(id, payload));
     }
 
@@ -74,14 +75,14 @@ public class AdminMarketingController {
 
     @PostMapping("/api/admin/marketing/member-levels")
     @Operation(summary = "新增会员等级")
-    public ApiResponse<AdminConfigDtos.MemberLevelPayload> createMemberLevel(@RequestBody AdminConfigDtos.MemberLevelPayload payload) {
+    public ApiResponse<AdminConfigDtos.MemberLevelPayload> createMemberLevel(@Valid @RequestBody AdminConfigDtos.MemberLevelPayload payload) {
         return ApiResponse.success(adminConfigService.saveMemberLevel(null, payload));
     }
 
     @PutMapping("/api/admin/marketing/member-levels/{id}")
     @Operation(summary = "更新会员等级")
     public ApiResponse<AdminConfigDtos.MemberLevelPayload> updateMemberLevel(@PathVariable("id") Long id,
-                                                                             @RequestBody AdminConfigDtos.MemberLevelPayload payload) {
+                                                                             @Valid @RequestBody AdminConfigDtos.MemberLevelPayload payload) {
         return ApiResponse.success(adminConfigService.saveMemberLevel(id, payload));
     }
 

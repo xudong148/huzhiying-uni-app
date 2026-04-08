@@ -116,6 +116,7 @@ public class PlatformDomainSupport {
         if (entity.masterUserId == null) {
             return;
         }
+
         WalletAccountEntity account = platformRepository.findWalletAccountByMasterUserId(entity.masterUserId).orElseThrow();
         String title = entity.id + " " + entity.title + " 结算";
         boolean alreadySettled = platformRepository.listWalletTransactions(account.id).stream()

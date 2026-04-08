@@ -4,7 +4,7 @@
       <!-- 顶部品牌区 -->
       <view class="home__hero">
         <view class="home__headline">一呼百应，专业到家</view>
-        <view class="home__subline">维修、安装、保洁、商城一体化本地服务平台</view>
+        <view class="home__subline">维修、安装、清洗、商城一体化本地服务平台</view>
       </view>
 
       <!-- 首页头部能力 -->
@@ -48,7 +48,7 @@
       <view class="home__feed">
         <view
           v-for="item in feedList"
-          :key="item.id"
+          :key="`${item.type}-${item.id}`"
           class="home__feed-card card pressable"
           @tap="goGoods(item)"
         >
@@ -89,25 +89,19 @@ import { useLocationStore } from '../../stores/location';
 const appStore = useAppStore();
 const location = useLocationStore();
 
-// 首页生态卡片固定为平台入口，不参与实时配置。
-const ecologyList = [
-  { id: 1, name: '小应学堂', desc: '师傅培训与故障案例', icon: '/static/icons/school.svg', color: '#2B5CFF' },
-  { id: 2, name: '小应商城', desc: '五金耗材与安装套件', icon: '/static/icons/mall.svg', color: '#FF7D00' },
-  { id: 3, name: '同城圈子', desc: '邻里互助和口碑内容', icon: '/static/icons/community.svg', color: '#00B578' },
-];
-
+const ecologyList = ref([]);
 const keywords = ref([]);
 const categories = ref([]);
 const feedList = ref([]);
 
 const topNotice = computed(() => appStore.topNotice?.title || '新客立减券已到账');
 
-// 拉取首页聚合数据并同步公共内容位。
 async function loadPage() {
   const res = await getHomeData();
   keywords.value = res.data.hotKeywords || [];
   categories.value = res.data.categories || [];
   feedList.value = res.data.recommendationList || [];
+  ecologyList.value = res.data.ecosystemCards || [];
   appStore.setAppContent({
     notices: res.data.notices || [],
     banners: res.data.banners || [],

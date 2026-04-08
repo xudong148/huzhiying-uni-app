@@ -1,16 +1,16 @@
 <!--
-  文档说明：
-  1. 本目录中的 Markdown 文档由 scripts/export-openapi-markdown.mjs 自动生成。
-  2. 默认读取本地正在运行的 OpenAPI 服务，地址为 http://localhost:8080。
-  3. 当后端接口、请求体或响应体有变更时，请重新执行本脚本。
+  接口文档目录页，由 scripts/export-openapi-markdown.mjs 自动生成。
+  1. 默认读取本地 http://localhost:8080 的 OpenAPI 接口。
+  2. 后端接口契约发生变化后，需要重新执行导出脚本。
+  3. 本目录中的 Markdown 用于离线审阅、联调和代码评审。
 -->
 
-# 呼之应接口文档索引
+# 接口文档目录
 
 ## 生成信息
 
-- 生成时间：`2026-04-08T09:25:51.477Z`
-- 文档源：`http://localhost:8080`
+- 生成时间：`2026-04-08T12:56:10.196Z`
+- 来源服务：`http://localhost:8080`
 
 ## 文档列表
 
@@ -20,8 +20,8 @@
 - [后台接口文档](./admin.md)
 - [支付接口文档](./payment.md)
 
-## 使用建议
+## 说明
 
-- 本地浏览建议优先打开 `http://localhost:8080/doc.html` 查看 Knife4j 页面。
-- 第三方工具导入建议直接使用 `/v3/api-docs` 或对应分组地址。
-- Markdown 适合做代码评审、接口对照和离线归档，不替代在线调试页面。
+- 交互式界面请使用 `http://localhost:8080/doc.html`。
+- Apifox / Apiform 可直接导入 `/v3/api-docs` 或各分组地址。
+- Markdown 文档适合离线查看和评审，联调时仍以实时接口和 Knife4j 页面为准。

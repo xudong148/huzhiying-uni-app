@@ -28,6 +28,9 @@ public final class PersistenceEntities {
     public static class UserEntity {
         @Id
         public Long id;
+        public String username;
+        @Column(name = "password_hash")
+        public String passwordHash;
         public String nickname;
         public String mobile;
         @Enumerated(EnumType.STRING)
@@ -36,6 +39,7 @@ public final class PersistenceEntities {
         public String avatar;
         @Column(name = "level_name")
         public String levelName;
+        public Boolean enabled;
 
         public UserEntity() {}
     }
@@ -150,6 +154,10 @@ public final class PersistenceEntities {
         @Column(name = "description_text")
         public String descriptionText;
         public BigDecimal price;
+        @Column(name = "tag_price")
+        public BigDecimal tagPrice;
+        @Column(name = "discount_price")
+        public BigDecimal discountPrice;
         @Column(name = "create_install_order")
         public Boolean createInstallOrder;
         @Column(name = "image_url")
@@ -168,6 +176,10 @@ public final class PersistenceEntities {
         public Long productId;
         public String name;
         public BigDecimal price;
+        @Column(name = "tag_price")
+        public BigDecimal tagPrice;
+        @Column(name = "discount_price")
+        public BigDecimal discountPrice;
         public Integer stock;
         public Boolean enabled;
 
@@ -529,6 +541,99 @@ public final class PersistenceEntities {
         public Boolean enabled;
 
         public PermissionEntity() {}
+    }
+
+    @Entity(name = "UserRoleBindingEntity")
+    @Table(name = "user_roles")
+    public static class UserRoleBindingEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "user_id")
+        public Long userId;
+        @Column(name = "role_id")
+        public Long roleId;
+
+        public UserRoleBindingEntity() {}
+    }
+
+    @Entity(name = "RoleMenuBindingEntity")
+    @Table(name = "role_menus")
+    public static class RoleMenuBindingEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "role_id")
+        public Long roleId;
+        @Column(name = "menu_id")
+        public Long menuId;
+
+        public RoleMenuBindingEntity() {}
+    }
+
+    @Entity(name = "RolePermissionBindingEntity")
+    @Table(name = "role_permissions")
+    public static class RolePermissionBindingEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "role_id")
+        public Long roleId;
+        @Column(name = "permission_id")
+        public Long permissionId;
+
+        public RolePermissionBindingEntity() {}
+    }
+
+    @Entity(name = "AuthSessionEntity")
+    @Table(name = "auth_sessions")
+    public static class AuthSessionEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "user_id")
+        public Long userId;
+        @Column(name = "role_code")
+        public String roleCode;
+        @Column(name = "access_token_hash")
+        public String accessTokenHash;
+        @Column(name = "access_token_preview")
+        public String accessTokenPreview;
+        @Column(name = "refresh_token_hash")
+        public String refreshTokenHash;
+        @Column(name = "client_type")
+        public String clientType;
+        @Column(name = "access_expires_at")
+        public LocalDateTime accessExpiresAt;
+        @Column(name = "refresh_expires_at")
+        public LocalDateTime refreshExpiresAt;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+        @Column(name = "updated_at")
+        public LocalDateTime updatedAt;
+        @Column(name = "last_seen_at")
+        public LocalDateTime lastSeenAt;
+
+        public AuthSessionEntity() {}
+    }
+
+    @Entity(name = "SmsCodeEntity")
+    @Table(name = "auth_sms_codes")
+    public static class SmsCodeEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        public String mobile;
+        public String purpose;
+        public String code;
+        @Column(name = "expires_at")
+        public LocalDateTime expiresAt;
+        @Column(name = "consumed_at")
+        public LocalDateTime consumedAt;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+
+        public SmsCodeEntity() {}
     }
 
     @Entity(name = "PricingRuleEntity")

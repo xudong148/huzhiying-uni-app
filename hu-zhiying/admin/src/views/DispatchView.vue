@@ -1,12 +1,10 @@
 <template>
   <div class="page-panel">
-    <!-- 页面标题区：说明当前页负责调度列表、详情和动作操作 -->
+    <!-- 页面标题区 -->
     <h2 class="page-title">订单调度中心</h2>
-    <p class="page-desc">
-      查看待派单和已派单任务，支持打开详情、指派师傅和强制取消订单。
-    </p>
+    <p class="page-desc">查看待派单和已派单任务，支持详情、指派师傅和强制取消订单。</p>
 
-    <!-- 调度列表区：展示当前调度任务并提供快捷操作 -->
+    <!-- 调度列表区 -->
     <el-table :data="rows">
       <el-table-column prop="id" label="订单号" min-width="180" />
       <el-table-column prop="type" label="类型" width="100" />
@@ -27,7 +25,7 @@
       </el-table-column>
     </el-table>
 
-    <!-- 详情抽屉区：展示任务详情和时间轴 -->
+    <!-- 详情抽屉 -->
     <el-drawer v-model="detailVisible" title="调度详情" size="560px">
       <template v-if="detail">
         <el-descriptions :column="1" border>
@@ -64,11 +62,11 @@
       </template>
     </el-drawer>
 
-    <!-- 指派弹窗区：支持按师傅姓名或用户 ID 指派 -->
+    <!-- 指派弹窗 -->
     <el-dialog v-model="assignVisible" title="指派师傅" width="420px">
       <el-form label-width="100px">
         <el-form-item label="师傅姓名">
-          <el-input v-model="assignForm.masterName" placeholder="例如：张师傅" />
+          <el-input v-model="assignForm.masterName" placeholder="请输入师傅姓名" />
         </el-form-item>
         <el-form-item label="师傅用户 ID">
           <el-input v-model.number="assignForm.masterUserId" placeholder="可选，优先按姓名指派" />
@@ -85,9 +83,9 @@
 <script setup>
 /**
  * 调度中心页面。
- * 1. 列表从真实后台接口读取。
+ * 1. 列表从真实后端接口读取。
  * 2. 详情、指派、取消动作都走后台业务接口。
- * 3. 通过调度 WebSocket 自动刷新列表，保持后台大屏和列表页同步。
+ * 3. 通过调度 WebSocket 自动刷新列表与详情。
  */
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -201,7 +199,7 @@ onBeforeUnmount(closeSocket);
 </script>
 
 <style scoped>
-/* 页面局部样式：补充分组标签和操作区布局 */
+/* 页面局部样式 */
 .action-row {
   display: flex;
   gap: 8px;

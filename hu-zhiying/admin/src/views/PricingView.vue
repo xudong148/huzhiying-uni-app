@@ -1,15 +1,13 @@
 <template>
   <div class="page-panel">
-    <!-- 页面标题 -->
     <h2 class="page-title">定价与类目</h2>
     <p class="page-desc">维护服务类目、服务项、商品、SKU、定价规则和服务区域。</p>
 
-    <!-- 多资源配置入口 -->
     <el-tabs v-model="activeTab" class="pricing-tabs">
       <el-tab-pane label="服务类目" name="categories">
         <crud-console
           title="服务类目"
-          description="维护首页金刚区和类目页展示的服务类目。"
+          description="维护首页和类目页展示的服务分类。"
           resource="/api/admin/catalog/categories"
           :columns="categoryColumns"
           :fields="categoryFields"
@@ -25,13 +23,14 @@
           :columns="serviceItemColumns"
           :fields="serviceItemFields"
           width="860px"
+          @changed="reloadMeta"
         />
       </el-tab-pane>
 
       <el-tab-pane label="商品" name="products">
         <crud-console
           title="商品"
-          description="维护商城商品、安装联动配置和启用状态。"
+          description="维护商品基础价、标签价、折扣价和安装联动配置。"
           resource="/api/admin/catalog/products"
           :columns="productColumns"
           :fields="productFields"
@@ -42,27 +41,29 @@
       <el-tab-pane label="SKU" name="skus">
         <crud-console
           title="SKU"
-          description="维护商品规格、库存和价格。"
+          description="维护商品规格、SKU 价格体系和库存。"
           resource="/api/admin/catalog/skus"
           :columns="skuColumns"
           :fields="skuFields"
+          @changed="reloadMeta"
         />
       </el-tab-pane>
 
       <el-tab-pane label="定价规则" name="rules">
         <crud-console
           title="定价规则"
-          description="维护基础价、指导价和特殊时段加价说明。"
+          description="维护基础价、系数说明和指导价说明。"
           resource="/api/admin/pricing/rules"
           :columns="pricingRuleColumns"
           :fields="pricingRuleFields"
+          @changed="reloadMeta"
         />
       </el-tab-pane>
 
       <el-tab-pane label="服务区域" name="zones">
         <crud-console
           title="服务区域"
-          description="维护可服务城市、区县和地图白名单。"
+          description="维护可服务城市、区县和排序。"
           resource="/api/admin/dispatch/zones"
           :columns="dispatchZoneColumns"
           :fields="dispatchZoneFields"
@@ -74,28 +75,40 @@
 </template>
 
 <script setup>
-/**
- * 定价与类目页面。
- * 部分表单字段依赖类目与商品元数据，因此页面初始化时会先加载选项。
- */
 import { computed, onMounted, ref } from 'vue';
 import CrudConsole from '../components/CrudConsole.vue';
 import { fetchCrudList } from '../api/request';
 
 const activeTab = ref('categories');
-const categoryOptions = ref([]);
-const productOptions = ref([]);
+const categories = ref([]);
+const products = ref([]);
+
+const categoryOptions = computed(() => categories.value.map((item) => ({ label: item.name, value: item.id })));
+const productOptions = computed(() => products.value.map((item) => ({ label: item.name, value: item.id })));
+const categoryMap = computed(() => Object.fromEntries(categories.value.map((item) => [item.id, item.name])));
+const productMap = computed(() => Object.fromEntries(products.value.map((item) => [item.id, item.name])));
+
+function formatMoney(value) {
+  return `¥${Number(value || 0).toFixed(2)}`;
+}
 
 async function reloadMeta() {
-  const [categories, products] = await Promise.all([
+  const [categoryList, productList] = await Promise.all([
     fetchCrudList('/api/admin/catalog/categories'),
     fetchCrudList('/api/admin/catalog/products'),
   ]);
-  categoryOptions.value = categories.map((item) => ({ label: item.name, value: item.id }));
-  productOptions.value = products.map((item) => ({ label: item.name, value: item.id }));
+  categories.value = categoryList;
+  products.value = productList;
 }
 
-// 服务类目配置。
+function resolveCategoryName(categoryId) {
+  return categoryMap.value[categoryId] || `#${categoryId}`;
+}
+
+function resolveProductName(productId) {
+  return productMap.value[productId] || `#${productId}`;
+}
+
 const categoryColumns = [
   { prop: 'name', label: '类目名称', minWidth: 180 },
   { prop: 'icon', label: '图标', minWidth: 220 },
@@ -104,40 +117,72 @@ const categoryColumns = [
 ];
 
 const categoryFields = [
-  { prop: 'name', label: '类目名称', type: 'text' },
+  { prop: 'name', label: '类目名称', type: 'text', required: true },
   { prop: 'icon', label: '图标地址', type: 'text' },
-  { prop: 'sortOrder', label: '排序', type: 'number', min: 0 },
+  { prop: 'sortOrder', label: '排序', type: 'number', min: 0, required: true },
   { prop: 'enabled', label: '启用', type: 'switch', default: true },
 ];
 
-// 服务项配置。
 const serviceItemColumns = [
   { prop: 'name', label: '服务名称', minWidth: 180 },
-  { prop: 'categoryId', label: '类目 ID', width: 120 },
-  { prop: 'basePrice', label: '基础价', width: 120, formatter: (row) => `¥${Number(row.basePrice || 0).toFixed(2)}` },
+  { prop: 'categoryId', label: '所属类目', minWidth: 140, formatter: (row) => resolveCategoryName(row.categoryId) },
+  { prop: 'basePrice', label: '基础价', width: 120, formatter: (row) => formatMoney(row.basePrice) },
+  { prop: 'doorPrice', label: '上门费', width: 120, formatter: (row) => formatMoney(row.doorPrice) },
   { prop: 'guidePrice', label: '指导价', minWidth: 140 },
   { prop: 'enabled', label: '状态', width: 100, type: 'switch' },
 ];
 
-const serviceItemFields = computed(() => ([
-  { prop: 'categoryId', label: '所属类目', type: 'select', options: categoryOptions.value },
-  { prop: 'name', label: '服务名称', type: 'text' },
+const serviceItemFields = computed(() => [
+  {
+    prop: 'categoryId',
+    label: '所属类目',
+    type: 'select',
+    options: categoryOptions.value,
+    required: true,
+    placeholder: '请选择服务类目',
+  },
+  { prop: 'name', label: '服务名称', type: 'text', required: true },
   { prop: 'subtitle', label: '副标题', type: 'text' },
-  { prop: 'basePrice', label: '基础价', type: 'number', precision: 2, min: 0 },
-  { prop: 'doorPrice', label: '上门费', type: 'number', precision: 2, min: 0 },
+  { prop: 'basePrice', label: '基础价', type: 'number', precision: 2, min: 0, required: true },
+  { prop: 'doorPrice', label: '上门费', type: 'number', precision: 2, min: 0, required: true },
   { prop: 'guidePrice', label: '指导价', type: 'text' },
   { prop: 'warrantyText', label: '质保说明', type: 'text' },
-  { prop: 'guaranteesText', label: '保障说明', type: 'textarea', rows: 3 },
-  { prop: 'tagsText', label: '标签', type: 'textarea', rows: 3, placeholder: '使用 | 分隔多个标签' },
-  { prop: 'imageUrls', label: '图片地址', type: 'textarea', rows: 3, placeholder: '使用 | 分隔多个图片地址' },
-  { prop: 'processSteps', label: '流程步骤', type: 'textarea', rows: 5, placeholder: '使用 | 分隔多个流程节点' },
+  {
+    prop: 'guaranteesText',
+    label: '保障说明',
+    type: 'textarea',
+    rows: 3,
+    hint: '多条说明可用 | 分隔。',
+  },
+  {
+    prop: 'tagsText',
+    label: '标签',
+    type: 'textarea',
+    rows: 3,
+    placeholder: '使用 | 分隔多个标签',
+  },
+  {
+    prop: 'imageUrls',
+    label: '图片地址',
+    type: 'textarea',
+    rows: 3,
+    placeholder: '使用 | 分隔多个图片地址',
+  },
+  {
+    prop: 'processSteps',
+    label: '流程步骤',
+    type: 'textarea',
+    rows: 5,
+    placeholder: '使用 | 分隔多个流程节点',
+  },
   { prop: 'enabled', label: '启用', type: 'switch', default: true },
-]));
+]);
 
-// 商品配置。
 const productColumns = [
   { prop: 'name', label: '商品名称', minWidth: 180 },
-  { prop: 'price', label: '售价', width: 120, formatter: (row) => `¥${Number(row.price || 0).toFixed(2)}` },
+  { prop: 'tagPrice', label: '标签价', width: 120, formatter: (row) => formatMoney(row.tagPrice) },
+  { prop: 'discountPrice', label: '折扣价', width: 120, formatter: (row) => formatMoney(row.discountPrice) },
+  { prop: 'price', label: '结算价', width: 120, formatter: (row) => formatMoney(row.price) },
   {
     prop: 'createInstallOrder',
     label: '安装联动',
@@ -148,50 +193,83 @@ const productColumns = [
 ];
 
 const productFields = [
-  { prop: 'name', label: '商品名称', type: 'text' },
+  { prop: 'name', label: '商品名称', type: 'text', required: true },
   { prop: 'descriptionText', label: '商品描述', type: 'textarea', rows: 4 },
-  { prop: 'price', label: '售价', type: 'number', precision: 2, min: 0 },
-  { prop: 'createInstallOrder', label: '自动生成安装工单', type: 'switch', default: true },
+  { prop: 'tagPrice', label: '标签价', type: 'number', precision: 2, min: 0, required: true },
+  { prop: 'discountPrice', label: '折扣价', type: 'number', precision: 2, min: 0, required: true },
+  {
+    prop: 'price',
+    label: '结算价',
+    type: 'number',
+    precision: 2,
+    min: 0,
+    required: true,
+    hint: '前台最终成交价，默认不应高于标签价。',
+  },
+  { prop: 'createInstallOrder', label: '自动生成安装工单', type: 'switch', default: false },
   { prop: 'imageUrl', label: '商品图片', type: 'text' },
   { prop: 'enabled', label: '启用', type: 'switch', default: true },
 ];
 
-// SKU 配置。
 const skuColumns = [
-  { prop: 'productId', label: '商品 ID', width: 120 },
+  { prop: 'productId', label: '所属商品', minWidth: 160, formatter: (row) => resolveProductName(row.productId) },
   { prop: 'name', label: 'SKU 名称', minWidth: 180 },
-  { prop: 'price', label: '价格', width: 120, formatter: (row) => `¥${Number(row.price || 0).toFixed(2)}` },
+  { prop: 'tagPrice', label: '标签价', width: 120, formatter: (row) => formatMoney(row.tagPrice) },
+  { prop: 'discountPrice', label: '折扣价', width: 120, formatter: (row) => formatMoney(row.discountPrice) },
+  { prop: 'price', label: '结算价', width: 120, formatter: (row) => formatMoney(row.price) },
   { prop: 'stock', label: '库存', width: 120 },
   { prop: 'enabled', label: '状态', width: 100, type: 'switch' },
 ];
 
-const skuFields = computed(() => ([
-  { prop: 'productId', label: '所属商品', type: 'select', options: productOptions.value },
-  { prop: 'name', label: 'SKU 名称', type: 'text' },
-  { prop: 'price', label: '价格', type: 'number', precision: 2, min: 0 },
-  { prop: 'stock', label: '库存', type: 'number', min: 0 },
+const skuFields = computed(() => [
+  {
+    prop: 'productId',
+    label: '所属商品',
+    type: 'select',
+    options: productOptions.value,
+    required: true,
+    placeholder: '请选择商品',
+  },
+  { prop: 'name', label: 'SKU 名称', type: 'text', required: true },
+  { prop: 'tagPrice', label: '标签价', type: 'number', precision: 2, min: 0, required: true },
+  { prop: 'discountPrice', label: '折扣价', type: 'number', precision: 2, min: 0, required: true },
+  {
+    prop: 'price',
+    label: '结算价',
+    type: 'number',
+    precision: 2,
+    min: 0,
+    required: true,
+    hint: 'SKU 成交价，建议和商品价格体系保持一致。',
+  },
+  { prop: 'stock', label: '库存', type: 'number', min: 0, required: true },
   { prop: 'enabled', label: '启用', type: 'switch', default: true },
-]));
+]);
 
-// 定价规则配置。
 const pricingRuleColumns = [
   { prop: 'label', label: '规则名称', minWidth: 220 },
-  { prop: 'categoryId', label: '类目 ID', width: 120 },
-  { prop: 'basePrice', label: '基础价', width: 120, formatter: (row) => `¥${Number(row.basePrice || 0).toFixed(2)}` },
+  { prop: 'categoryId', label: '所属类目', minWidth: 140, formatter: (row) => resolveCategoryName(row.categoryId) },
+  { prop: 'basePrice', label: '基础价', width: 120, formatter: (row) => formatMoney(row.basePrice) },
   { prop: 'coefficient', label: '系数说明', minWidth: 180 },
   { prop: 'enabled', label: '状态', width: 100, type: 'switch' },
 ];
 
-const pricingRuleFields = computed(() => ([
-  { prop: 'categoryId', label: '所属类目', type: 'select', options: categoryOptions.value },
-  { prop: 'label', label: '规则名称', type: 'text' },
-  { prop: 'basePrice', label: '基础价', type: 'number', precision: 2, min: 0 },
+const pricingRuleFields = computed(() => [
+  {
+    prop: 'categoryId',
+    label: '所属类目',
+    type: 'select',
+    options: categoryOptions.value,
+    required: true,
+    placeholder: '请选择服务类目',
+  },
+  { prop: 'label', label: '规则名称', type: 'text', required: true },
+  { prop: 'basePrice', label: '基础价', type: 'number', precision: 2, min: 0, required: true },
   { prop: 'coefficient', label: '系数说明', type: 'textarea', rows: 3 },
   { prop: 'guidePrice', label: '指导价', type: 'text' },
   { prop: 'enabled', label: '启用', type: 'switch', default: true },
-]));
+]);
 
-// 服务区域配置。
 const dispatchZoneColumns = [
   { prop: 'cityName', label: '城市', width: 140 },
   { prop: 'districtName', label: '区县', minWidth: 180 },
@@ -200,9 +278,9 @@ const dispatchZoneColumns = [
 ];
 
 const dispatchZoneFields = [
-  { prop: 'cityName', label: '城市名称', type: 'text' },
-  { prop: 'districtName', label: '区县名称', type: 'text' },
-  { prop: 'sortOrder', label: '排序', type: 'number', min: 0 },
+  { prop: 'cityName', label: '城市名称', type: 'text', required: true },
+  { prop: 'districtName', label: '区县名称', type: 'text', required: true },
+  { prop: 'sortOrder', label: '排序', type: 'number', min: 0, required: true },
   { prop: 'enabled', label: '启用', type: 'switch', default: true },
 ];
 
@@ -210,7 +288,6 @@ onMounted(reloadMeta);
 </script>
 
 <style scoped>
-/* 标签页间距 */
 .pricing-tabs {
   margin-top: 18px;
 }

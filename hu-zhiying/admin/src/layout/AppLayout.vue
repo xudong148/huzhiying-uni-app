@@ -3,28 +3,24 @@
     <el-aside width="240px" class="layout__aside">
       <div class="layout__brand">呼之应后台</div>
       <el-menu :default-active="route.path" router class="layout__menu">
-        <el-menu-item index="/dashboard">仪表盘</el-menu-item>
-        <el-menu-item index="/dispatch">订单调度中心</el-menu-item>
-        <el-menu-item index="/orders">订单管理</el-menu-item>
-        <el-menu-item index="/masters">师傅管理</el-menu-item>
-        <el-menu-item index="/pricing">定价与类目</el-menu-item>
-        <el-menu-item index="/finance">财务结算</el-menu-item>
-        <el-menu-item index="/arbitration">仲裁中心</el-menu-item>
-        <el-menu-item index="/marketing">优惠券与会员</el-menu-item>
-        <el-menu-item index="/content">内容运营</el-menu-item>
-        <el-menu-item index="/system">系统权限</el-menu-item>
+        <el-menu-item v-for="item in store.menuItems" :key="item.id || item.path" :index="item.path">
+          {{ item.name }}
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
       <el-header class="layout__header">
         <div>
-          <div class="layout__title">{{ route.meta.title }}</div>
-          <div class="layout__subtitle">统一处理调度、履约、财务、仲裁与运营配置</div>
+          <div class="layout__title">{{ route.meta.title || currentMenuTitle }}</div>
+          <div class="layout__subtitle">订单、配置、财务和风控统一工作台</div>
         </div>
         <div class="layout__actions">
           <div class="layout__user">
-            <div class="layout__user-name">{{ store.profile.name }}</div>
-            <el-tag type="primary">{{ store.profile.role }}</el-tag>
+            <div class="layout__user-main">
+              <div class="layout__user-name">{{ store.profile.name }}</div>
+              <div v-if="store.profile.username" class="layout__user-code">@{{ store.profile.username }}</div>
+            </div>
+            <el-tag type="primary">{{ store.profile.roleName }}</el-tag>
           </div>
           <el-button plain @click="handleLogout">退出登录</el-button>
         </div>
@@ -37,17 +33,18 @@
 </template>
 
 <script setup>
-/**
- * 后台通用布局。
- * 1. 左侧导航与路由标题保持一一对应。
- * 2. 登录态由用户 store 维护，退出后统一跳转登录页。
- */
+import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAdminUserStore } from '../stores/user';
 
 const route = useRoute();
 const router = useRouter();
 const store = useAdminUserStore();
+
+const currentMenuTitle = computed(() => {
+  const current = store.menuItems.find((item) => item.path === route.path);
+  return current?.name || '后台工作台';
+});
 
 function handleLogout() {
   store.logout();
@@ -119,10 +116,22 @@ function handleLogout() {
   gap: 12px;
 }
 
+.layout__user-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
 .layout__user-name {
   font-size: 14px;
   font-weight: 600;
   color: #344054;
+}
+
+.layout__user-code {
+  font-size: 12px;
+  color: #667085;
 }
 
 .layout__main {

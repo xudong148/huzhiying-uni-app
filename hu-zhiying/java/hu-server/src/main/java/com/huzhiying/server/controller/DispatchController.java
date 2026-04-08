@@ -28,8 +28,8 @@ public class DispatchController {
 
     @PostMapping("/api/dispatch/tasks/{id}/claim")
     @Operation(summary = "师傅抢单")
-    public ApiResponse<?> claim(@PathVariable("id") String id, @RequestBody ClaimRequest request) {
-        return ApiResponse.success(platformFacadeService.claimTask(id, request.masterName()));
+    public ApiResponse<?> claim(@PathVariable("id") String id, @RequestBody(required = false) ClaimRequest request) {
+        return ApiResponse.success(platformFacadeService.claimTask(id, request == null ? null : request.masterName()));
     }
 
     @PostMapping("/api/dispatch/tasks/{id}/force-assign")

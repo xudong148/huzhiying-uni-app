@@ -20,7 +20,7 @@ export const useAppStore = defineStore('app', () => {
     {
       id: 1,
       title: '家电维修专场',
-      subtitle: '不修不收，90 天质保',
+      subtitle: '不修不收费，30 天质保',
       image: '/static/home.png',
     },
     {

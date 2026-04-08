@@ -1,23 +1,23 @@
 <!--
-  文档说明：
-  1. 当前文件为 后台接口文档，由 scripts/export-openapi-markdown.mjs 自动生成。
-  2. 数据源地址：http://localhost:8080/v3/api-docs/admin。
-  3. 字段表会展开请求参数、请求体和响应体，便于前后端对照联调。
+  后台接口文档，由 scripts/export-openapi-markdown.mjs 自动生成。
+  1. OpenAPI 来源：http://localhost:8080/v3/api-docs/admin
+  2. 下文展开展示参数、请求体和响应字段，便于联调查阅。
+  3. 接口契约变更后请重新执行导出脚本。
 -->
 
 # 后台接口文档
 
 ## 基本信息
 
-- 文档标题：`呼之应开放接口`
-- 文档版本：`v1`
+- 文档标题：`呼之应开放接口文档`
+- 版本：`v1`
 - 分组：`admin`
-- 接口数量：`92`
+- 接口数量：`94`
 - OpenAPI 地址：`http://localhost:8080/v3/api-docs/admin`
 
-## 鉴权约定
+## 鉴权说明
 
-- `bearerAuth`，类型：http，协议：bearer，格式：JWT
+- `bearerAuth`, 类型: http, 方案: bearer, 格式: JWT
 
 ## 接口目录
 
@@ -90,7 +90,9 @@
 - [POST /api/admin/masters/{userId}/enable](#post-api-admin-masters-userid-enable)
 - [GET /api/admin/orders](#get-api-admin-orders)
 - [GET /api/admin/orders/{orderId}](#get-api-admin-orders-orderid)
+- [PUT /api/admin/orders/{orderId}/appointment](#put-api-admin-orders-orderid-appointment)
 - [POST /api/admin/orders/{orderId}/cancel](#post-api-admin-orders-orderid-cancel)
+- [POST /api/admin/orders/{orderId}/grant-coupon](#post-api-admin-orders-orderid-grant-coupon)
 - [POST /api/admin/orders/{orderId}/refund](#post-api-admin-orders-orderid-refund)
 - [GET /api/admin/pricing](#get-api-admin-pricing)
 - [GET /api/admin/pricing/rules](#get-api-admin-pricing-rules)
@@ -116,33 +118,33 @@
 
 ## GET /api/admin/arbitrations
 
-- 标题：查询仲裁工单列表
+- 摘要：查询仲裁列表
 - 标签：admin-dashboard
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/arbitrations` |
 | OperationId | `arbitrations` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -155,35 +157,35 @@
 
 ## GET /api/admin/arbitrations/{id}
 
-- 标题：查询仲裁详情
+- 摘要：查询仲裁详情
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/arbitrations/{id}` |
 | OperationId | `arbitrationDetail` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `string` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -196,21 +198,21 @@
 
 ## POST /api/admin/arbitrations/{id}/resolve
 
-- 标题：提交仲裁裁决
+- 摘要：提交仲裁裁决
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/arbitrations/{id}/resolve` |
 | OperationId | `resolveArbitration` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `string` | - |
 
@@ -225,13 +227,13 @@
 | `statusText` | `string` | 是 | 裁决后的状态文案 |
 | `resultText` | `string` | 是 | 裁决结果说明 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -244,33 +246,33 @@
 
 ## GET /api/admin/catalog/categories
 
-- 标题：查询服务类目列表
+- 摘要：查询服务类目列表
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/catalog/categories` |
 | OperationId | `categories` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -288,21 +290,21 @@
 
 ## POST /api/admin/catalog/categories
 
-- 标题：新增服务类目
+- 摘要：新增服务类目
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/catalog/categories` |
 | OperationId | `createCategory` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -318,13 +320,13 @@
 | `sortOrder` | `integer` | 否 | 排序值 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -341,35 +343,35 @@
 
 ## DELETE /api/admin/catalog/categories/{id}
 
-- 标题：删除服务类目
+- 摘要：删除服务类目
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/catalog/categories/{id}` |
 | OperationId | `deleteCategory` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -381,35 +383,35 @@
 
 ## GET /api/admin/catalog/categories/{id}
 
-- 标题：查询服务类目详情
+- 摘要：查询服务类目详情
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/catalog/categories/{id}` |
 | OperationId | `category` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -426,21 +428,21 @@
 
 ## PUT /api/admin/catalog/categories/{id}
 
-- 标题：更新服务类目
+- 摘要：更新服务类目
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/catalog/categories/{id}` |
 | OperationId | `updateCategory` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -458,13 +460,13 @@
 | `sortOrder` | `integer` | 否 | 排序值 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -481,33 +483,33 @@
 
 ## GET /api/admin/catalog/products
 
-- 标题：查询商品列表
+- 摘要：查询商品列表
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/catalog/products` |
 | OperationId | `products` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -527,21 +529,21 @@
 
 ## POST /api/admin/catalog/products
 
-- 标题：新增商品
+- 摘要：新增商品
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/catalog/products` |
 | OperationId | `createProduct` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -559,13 +561,13 @@
 | `imageUrl` | `string` | 否 | 商品图片 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -584,35 +586,35 @@
 
 ## DELETE /api/admin/catalog/products/{id}
 
-- 标题：删除商品
+- 摘要：删除商品
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/catalog/products/{id}` |
 | OperationId | `deleteProduct` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -624,35 +626,35 @@
 
 ## GET /api/admin/catalog/products/{id}
 
-- 标题：查询商品详情
+- 摘要：查询商品详情
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/catalog/products/{id}` |
 | OperationId | `product` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -671,21 +673,21 @@
 
 ## PUT /api/admin/catalog/products/{id}
 
-- 标题：更新商品
+- 摘要：更新商品
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/catalog/products/{id}` |
 | OperationId | `updateProduct` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -705,13 +707,13 @@
 | `imageUrl` | `string` | 否 | 商品图片 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -730,33 +732,33 @@
 
 ## GET /api/admin/catalog/service-items
 
-- 标题：查询服务项列表
+- 摘要：查询服务项列表
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/catalog/service-items` |
 | OperationId | `serviceItems` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -782,21 +784,21 @@
 
 ## POST /api/admin/catalog/service-items
 
-- 标题：新增服务项
+- 摘要：新增服务项
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/catalog/service-items` |
 | OperationId | `createServiceItem` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -820,13 +822,13 @@
 | `processSteps` | `string` | 否 | 流程步骤，使用 \| 分隔 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -851,35 +853,35 @@
 
 ## DELETE /api/admin/catalog/service-items/{id}
 
-- 标题：删除服务项
+- 摘要：删除服务项
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/catalog/service-items/{id}` |
 | OperationId | `deleteServiceItem` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -891,35 +893,35 @@
 
 ## GET /api/admin/catalog/service-items/{id}
 
-- 标题：查询服务项详情
+- 摘要：查询服务项详情
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/catalog/service-items/{id}` |
 | OperationId | `serviceItem` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -944,21 +946,21 @@
 
 ## PUT /api/admin/catalog/service-items/{id}
 
-- 标题：更新服务项
+- 摘要：更新服务项
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/catalog/service-items/{id}` |
 | OperationId | `updateServiceItem` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -984,13 +986,13 @@
 | `processSteps` | `string` | 否 | 流程步骤，使用 \| 分隔 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1015,33 +1017,33 @@
 
 ## GET /api/admin/catalog/skus
 
-- 标题：查询 SKU 列表
+- 摘要：查询 SKU 列表
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/catalog/skus` |
 | OperationId | `skus` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1060,21 +1062,21 @@
 
 ## POST /api/admin/catalog/skus
 
-- 标题：新增 SKU
+- 摘要：新增 SKU
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/catalog/skus` |
 | OperationId | `createSku` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -1091,13 +1093,13 @@
 | `stock` | `integer` | 否 | 库存 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1115,35 +1117,35 @@
 
 ## DELETE /api/admin/catalog/skus/{id}
 
-- 标题：删除 SKU
+- 摘要：删除 SKU
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/catalog/skus/{id}` |
 | OperationId | `deleteSku` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1155,35 +1157,35 @@
 
 ## GET /api/admin/catalog/skus/{id}
 
-- 标题：查询 SKU 详情
+- 摘要：查询 SKU 详情
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/catalog/skus/{id}` |
 | OperationId | `sku` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1201,21 +1203,21 @@
 
 ## PUT /api/admin/catalog/skus/{id}
 
-- 标题：更新 SKU
+- 摘要：更新 SKU
 - 标签：admin-catalog
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/catalog/skus/{id}` |
 | OperationId | `updateSku` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -1234,13 +1236,13 @@
 | `stock` | `integer` | 否 | 库存 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1258,33 +1260,33 @@
 
 ## GET /api/admin/content/agreements
 
-- 标题：查询协议列表
+- 摘要：查询协议列表
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/content/agreements` |
 | OperationId | `agreements` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1302,21 +1304,21 @@
 
 ## POST /api/admin/content/agreements
 
-- 标题：新增协议
+- 摘要：新增协议
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/content/agreements` |
 | OperationId | `createAgreement` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -1332,13 +1334,13 @@
 | `content` | `string` | 否 | 正文内容 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1355,35 +1357,35 @@
 
 ## DELETE /api/admin/content/agreements/{id}
 
-- 标题：删除协议
+- 摘要：删除协议
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/content/agreements/{id}` |
 | OperationId | `deleteAgreement` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1395,35 +1397,35 @@
 
 ## GET /api/admin/content/agreements/{id}
 
-- 标题：查询协议详情
+- 摘要：查询协议详情
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/content/agreements/{id}` |
 | OperationId | `agreement` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1440,21 +1442,21 @@
 
 ## PUT /api/admin/content/agreements/{id}
 
-- 标题：更新协议
+- 摘要：更新协议
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/content/agreements/{id}` |
 | OperationId | `updateAgreement` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -1472,13 +1474,13 @@
 | `content` | `string` | 否 | 正文内容 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1495,33 +1497,33 @@
 
 ## GET /api/admin/content/banners
 
-- 标题：查询 Banner 列表
+- 摘要：查询 Banner 列表
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/content/banners` |
 | OperationId | `banners` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1541,21 +1543,21 @@
 
 ## POST /api/admin/content/banners
 
-- 标题：新增 Banner
+- 摘要：新增 Banner
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/content/banners` |
 | OperationId | `createBanner` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -1573,13 +1575,13 @@
 | `sortOrder` | `integer` | 否 | 排序值 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1598,35 +1600,35 @@
 
 ## DELETE /api/admin/content/banners/{id}
 
-- 标题：删除 Banner
+- 摘要：删除 Banner
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/content/banners/{id}` |
 | OperationId | `deleteBanner` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1638,35 +1640,35 @@
 
 ## GET /api/admin/content/banners/{id}
 
-- 标题：查询 Banner 详情
+- 摘要：查询 Banner 详情
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/content/banners/{id}` |
 | OperationId | `banner` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1685,21 +1687,21 @@
 
 ## PUT /api/admin/content/banners/{id}
 
-- 标题：更新 Banner
+- 摘要：更新 Banner
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/content/banners/{id}` |
 | OperationId | `updateBanner` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -1719,13 +1721,13 @@
 | `sortOrder` | `integer` | 否 | 排序值 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1744,33 +1746,33 @@
 
 ## GET /api/admin/content/notices
 
-- 标题：查询公告列表
+- 摘要：查询公告列表
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/content/notices` |
 | OperationId | `notices` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1788,21 +1790,21 @@
 
 ## POST /api/admin/content/notices
 
-- 标题：新增公告
+- 摘要：新增公告
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/content/notices` |
 | OperationId | `createNotice` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -1818,13 +1820,13 @@
 | `levelCode` | `string` | 否 | 级别 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1841,35 +1843,35 @@
 
 ## DELETE /api/admin/content/notices/{id}
 
-- 标题：删除公告
+- 摘要：删除公告
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/content/notices/{id}` |
 | OperationId | `deleteNotice` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1881,35 +1883,35 @@
 
 ## GET /api/admin/content/notices/{id}
 
-- 标题：查询公告详情
+- 摘要：查询公告详情
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/content/notices/{id}` |
 | OperationId | `notice` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1926,21 +1928,21 @@
 
 ## PUT /api/admin/content/notices/{id}
 
-- 标题：更新公告
+- 摘要：更新公告
 - 标签：admin-content
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/content/notices/{id}` |
 | OperationId | `updateNotice` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -1958,13 +1960,13 @@
 | `levelCode` | `string` | 否 | 级别 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -1981,33 +1983,33 @@
 
 ## GET /api/admin/dashboard
 
-- 标题：查询后台仪表盘
+- 摘要：查询后台仪表盘
 - 标签：admin-dashboard
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/dashboard` |
 | OperationId | `dashboard` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2020,33 +2022,33 @@
 
 ## GET /api/admin/dispatch
 
-- 标题：查询后台调度列表
+- 摘要：查询调度任务列表
 - 标签：admin-dashboard
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/dispatch` |
 | OperationId | `dispatch` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2059,35 +2061,35 @@
 
 ## GET /api/admin/dispatch/{taskId}
 
-- 标题：查询调度任务详情
+- 摘要：查询调度任务详情
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/dispatch/{taskId}` |
 | OperationId | `dispatchDetail` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `taskId` | path | 是 | `string` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2100,21 +2102,21 @@
 
 ## POST /api/admin/dispatch/{taskId}/assign
 
-- 标题：后台指派师傅
+- 摘要：后台指派师傅
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/dispatch/{taskId}/assign` |
 | OperationId | `assignDispatch` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `taskId` | path | 是 | `string` | - |
 
@@ -2129,13 +2131,13 @@
 | `masterUserId` | `integer` | 否 | 目标师傅用户 ID |
 | `masterName` | `string` | 否 | 目标师傅姓名，和 masterUserId 二选一即可 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2148,21 +2150,21 @@
 
 ## POST /api/admin/dispatch/{taskId}/cancel-order
 
-- 标题：后台从调度中心取消订单
+- 摘要：从调度中心取消订单
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/dispatch/{taskId}/cancel-order` |
 | OperationId | `cancelDispatchOrder` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `taskId` | path | 是 | `string` | - |
 
@@ -2176,13 +2178,13 @@
 | --- | --- | --- | --- |
 | `reason` | `string` | 否 | 原因或备注 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2195,33 +2197,33 @@
 
 ## GET /api/admin/dispatch/zones
 
-- 标题：查询服务区域列表
+- 摘要：查询服务区域列表
 - 标签：admin-pricing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/dispatch/zones` |
 | OperationId | `dispatchZones` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2239,21 +2241,21 @@
 
 ## POST /api/admin/dispatch/zones
 
-- 标题：新增服务区域
+- 摘要：新增服务区域
 - 标签：admin-pricing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/dispatch/zones` |
 | OperationId | `createDispatchZone` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -2269,13 +2271,13 @@
 | `sortOrder` | `integer` | 否 | 排序值 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2292,35 +2294,35 @@
 
 ## DELETE /api/admin/dispatch/zones/{id}
 
-- 标题：删除服务区域
+- 摘要：删除服务区域
 - 标签：admin-pricing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/dispatch/zones/{id}` |
 | OperationId | `deleteDispatchZone` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2332,35 +2334,35 @@
 
 ## GET /api/admin/dispatch/zones/{id}
 
-- 标题：查询服务区域详情
+- 摘要：查询服务区域详情
 - 标签：admin-pricing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/dispatch/zones/{id}` |
 | OperationId | `dispatchZone` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2377,21 +2379,21 @@
 
 ## PUT /api/admin/dispatch/zones/{id}
 
-- 标题：更新服务区域
+- 摘要：更新服务区域
 - 标签：admin-pricing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/dispatch/zones/{id}` |
 | OperationId | `updateDispatchZone` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -2409,13 +2411,13 @@
 | `sortOrder` | `integer` | 否 | 排序值 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2432,33 +2434,33 @@
 
 ## GET /api/admin/finance
 
-- 标题：查询财务列表
+- 摘要：查询财务结算列表
 - 标签：admin-dashboard
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/finance` |
 | OperationId | `finance` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2471,35 +2473,35 @@
 
 ## GET /api/admin/finance/{billNo}
 
-- 标题：查询财务单详情
+- 摘要：查询财务单详情
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/finance/{billNo}` |
 | OperationId | `financeDetail` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `billNo` | path | 是 | `string` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2512,21 +2514,21 @@
 
 ## POST /api/admin/finance/{billNo}/approve
 
-- 标题：审核财务单
+- 摘要：审核财务单
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/finance/{billNo}/approve` |
 | OperationId | `approveFinance` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `billNo` | path | 是 | `string` | - |
 
@@ -2540,13 +2542,13 @@
 | --- | --- | --- | --- |
 | `remark` | `string` | 否 | 审核备注 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2559,33 +2561,33 @@
 
 ## GET /api/admin/marketing/coupons
 
-- 标题：查询优惠券列表
+- 摘要：查询优惠券列表
 - 标签：admin-marketing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/marketing/coupons` |
 | OperationId | `coupons` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2604,21 +2606,21 @@
 
 ## POST /api/admin/marketing/coupons
 
-- 标题：新增优惠券
+- 摘要：新增优惠券
 - 标签：admin-marketing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/marketing/coupons` |
 | OperationId | `createCoupon` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -2635,13 +2637,13 @@
 | `expireAt` | `string` | 否 | 过期时间 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2659,35 +2661,35 @@
 
 ## DELETE /api/admin/marketing/coupons/{id}
 
-- 标题：删除优惠券
+- 摘要：删除优惠券
 - 标签：admin-marketing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/marketing/coupons/{id}` |
 | OperationId | `deleteCoupon` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2699,35 +2701,35 @@
 
 ## GET /api/admin/marketing/coupons/{id}
 
-- 标题：查询优惠券详情
+- 摘要：查询优惠券详情
 - 标签：admin-marketing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/marketing/coupons/{id}` |
 | OperationId | `coupon` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2745,21 +2747,21 @@
 
 ## PUT /api/admin/marketing/coupons/{id}
 
-- 标题：更新优惠券
+- 摘要：更新优惠券
 - 标签：admin-marketing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/marketing/coupons/{id}` |
 | OperationId | `updateCoupon` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -2778,13 +2780,13 @@
 | `expireAt` | `string` | 否 | 过期时间 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2802,33 +2804,33 @@
 
 ## GET /api/admin/marketing/member-levels
 
-- 标题：查询会员等级列表
+- 摘要：查询会员等级列表
 - 标签：admin-marketing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/marketing/member-levels` |
 | OperationId | `memberLevels` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2846,21 +2848,21 @@
 
 ## POST /api/admin/marketing/member-levels
 
-- 标题：新增会员等级
+- 摘要：新增会员等级
 - 标签：admin-marketing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/marketing/member-levels` |
 | OperationId | `createMemberLevel` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -2876,13 +2878,13 @@
 | `pointsRequired` | `integer` | 否 | 所需积分 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2899,35 +2901,35 @@
 
 ## DELETE /api/admin/marketing/member-levels/{id}
 
-- 标题：删除会员等级
+- 摘要：删除会员等级
 - 标签：admin-marketing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/marketing/member-levels/{id}` |
 | OperationId | `deleteMemberLevel` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2939,35 +2941,35 @@
 
 ## GET /api/admin/marketing/member-levels/{id}
 
-- 标题：查询会员等级详情
+- 摘要：查询会员等级详情
 - 标签：admin-marketing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/marketing/member-levels/{id}` |
 | OperationId | `memberLevel` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -2984,21 +2986,21 @@
 
 ## PUT /api/admin/marketing/member-levels/{id}
 
-- 标题：更新会员等级
+- 摘要：更新会员等级
 - 标签：admin-marketing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/marketing/member-levels/{id}` |
 | OperationId | `updateMemberLevel` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -3016,13 +3018,13 @@
 | `pointsRequired` | `integer` | 否 | 所需积分 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3039,33 +3041,33 @@
 
 ## GET /api/admin/masters
 
-- 标题：查询师傅管理列表
+- 摘要：查询师傅列表
 - 标签：admin-dashboard
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/masters` |
 | OperationId | `masters` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3078,35 +3080,35 @@
 
 ## GET /api/admin/masters/{userId}
 
-- 标题：查询师傅详情
+- 摘要：查询师傅详情
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/masters/{userId}` |
 | OperationId | `masterDetail` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `userId` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3119,21 +3121,21 @@
 
 ## PUT /api/admin/masters/{userId}
 
-- 标题：更新师傅资料
+- 摘要：更新师傅资料
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/masters/{userId}` |
 | OperationId | `updateMaster` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `userId` | path | 是 | `integer` | - |
 
@@ -3158,13 +3160,13 @@
 | `privacyNumber` | `boolean` | 否 | 是否启用隐私号 |
 | `enabled` | `boolean` | 否 | 是否启用该师傅 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3177,21 +3179,21 @@
 
 ## POST /api/admin/masters/{userId}/credit-score
 
-- 标题：调整师傅信用分
+- 摘要：调整师傅信用分
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/masters/{userId}/credit-score` |
 | OperationId | `updateCreditScore` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `userId` | path | 是 | `integer` | - |
 
@@ -3205,13 +3207,13 @@
 | --- | --- | --- | --- |
 | `creditScore` | `integer` | 否 | 最新信用分 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3224,35 +3226,35 @@
 
 ## POST /api/admin/masters/{userId}/disable
 
-- 标题：停用师傅
+- 摘要：停用师傅
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/masters/{userId}/disable` |
 | OperationId | `disableMaster` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `userId` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3265,35 +3267,35 @@
 
 ## POST /api/admin/masters/{userId}/enable
 
-- 标题：启用师傅
+- 摘要：启用师傅
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/masters/{userId}/enable` |
 | OperationId | `enableMaster` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `userId` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3306,33 +3308,33 @@
 
 ## GET /api/admin/orders
 
-- 标题：查询后台订单列表
+- 摘要：查询后台订单列表
 - 标签：admin-dashboard
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/orders` |
 | OperationId | `orders` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3345,35 +3347,82 @@
 
 ## GET /api/admin/orders/{orderId}
 
-- 标题：查询订单详情
+- 摘要：查询订单详情
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/orders/{orderId}` |
 | OperationId | `orderDetail` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `orderId` | path | 是 | `string` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## PUT /api/admin/orders/{orderId}/appointment
+
+- 摘要：后台改预约
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `PUT` |
+| 路径 | `/api/admin/orders/{orderId}/appointment` |
+| OperationId | `updateAppointment` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `orderId` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `appointment` | `string` | 是 | 新的预约时间 |
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3386,21 +3435,21 @@
 
 ## POST /api/admin/orders/{orderId}/cancel
 
-- 标题：后台取消订单
+- 摘要：后台取消订单
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/orders/{orderId}/cancel` |
 | OperationId | `cancelOrder` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `orderId` | path | 是 | `string` | - |
 
@@ -3414,13 +3463,61 @@
 | --- | --- | --- | --- |
 | `reason` | `string` | 否 | 原因或备注 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/orders/{orderId}/grant-coupon
+
+- 摘要：后台手工发券
+- 标签：admin-business
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/admin/orders/{orderId}/grant-coupon` |
+| OperationId | `grantCoupon` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `orderId` | path | 是 | `string` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `couponId` | `integer` | 否 | 优惠券 ID，为空时默认发放第一张可用券 |
+| `remark` | `string` | 否 | 发券备注 |
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3433,21 +3530,21 @@
 
 ## POST /api/admin/orders/{orderId}/refund
 
-- 标题：后台发起或审核退款
+- 摘要：后台发起或审核退款
 - 标签：admin-business
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/orders/{orderId}/refund` |
 | OperationId | `refundOrder` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `orderId` | path | 是 | `string` | - |
 
@@ -3461,13 +3558,13 @@
 | --- | --- | --- | --- |
 | `reason` | `string` | 否 | 原因或备注 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3480,33 +3577,33 @@
 
 ## GET /api/admin/pricing
 
-- 标题：查询定价概览
+- 摘要：查询定价规则总览
 - 标签：admin-dashboard
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/pricing` |
 | OperationId | `pricing` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3519,33 +3616,33 @@
 
 ## GET /api/admin/pricing/rules
 
-- 标题：查询定价规则列表
+- 摘要：查询定价规则列表
 - 标签：admin-pricing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/pricing/rules` |
 | OperationId | `pricingRules` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3565,21 +3662,21 @@
 
 ## POST /api/admin/pricing/rules
 
-- 标题：新增定价规则
+- 摘要：新增定价规则
 - 标签：admin-pricing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/pricing/rules` |
 | OperationId | `createPricingRule` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -3597,13 +3694,13 @@
 | `guidePrice` | `string` | 否 | 指导价说明 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3622,35 +3719,35 @@
 
 ## DELETE /api/admin/pricing/rules/{id}
 
-- 标题：删除定价规则
+- 摘要：删除定价规则
 - 标签：admin-pricing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/pricing/rules/{id}` |
 | OperationId | `deletePricingRule` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3662,35 +3759,35 @@
 
 ## GET /api/admin/pricing/rules/{id}
 
-- 标题：查询定价规则详情
+- 摘要：查询定价规则详情
 - 标签：admin-pricing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/pricing/rules/{id}` |
 | OperationId | `pricingRule` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3709,21 +3806,21 @@
 
 ## PUT /api/admin/pricing/rules/{id}
 
-- 标题：更新定价规则
+- 摘要：更新定价规则
 - 标签：admin-pricing
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/pricing/rules/{id}` |
 | OperationId | `updatePricingRule` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -3743,13 +3840,13 @@
 | `guidePrice` | `string` | 否 | 指导价说明 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3768,33 +3865,33 @@
 
 ## GET /api/admin/system/menus
 
-- 标题：查询菜单列表
+- 摘要：查询菜单列表
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/system/menus` |
 | OperationId | `menus` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3813,21 +3910,21 @@
 
 ## POST /api/admin/system/menus
 
-- 标题：新增菜单
+- 摘要：新增菜单
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/system/menus` |
 | OperationId | `createMenu` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -3844,13 +3941,13 @@
 | `sortOrder` | `integer` | 否 | 排序值 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3868,35 +3965,35 @@
 
 ## DELETE /api/admin/system/menus/{id}
 
-- 标题：删除菜单
+- 摘要：删除菜单
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/system/menus/{id}` |
 | OperationId | `deleteMenu` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3908,35 +4005,35 @@
 
 ## GET /api/admin/system/menus/{id}
 
-- 标题：查询菜单详情
+- 摘要：查询菜单详情
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/system/menus/{id}` |
 | OperationId | `menu` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -3954,21 +4051,21 @@
 
 ## PUT /api/admin/system/menus/{id}
 
-- 标题：更新菜单
+- 摘要：更新菜单
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/system/menus/{id}` |
 | OperationId | `updateMenu` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -3987,13 +4084,13 @@
 | `sortOrder` | `integer` | 否 | 排序值 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -4011,33 +4108,33 @@
 
 ## GET /api/admin/system/permissions
 
-- 标题：查询权限点列表
+- 摘要：查询权限点列表
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/system/permissions` |
 | OperationId | `permissions` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -4055,21 +4152,21 @@
 
 ## POST /api/admin/system/permissions
 
-- 标题：新增权限点
+- 摘要：新增权限点
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/system/permissions` |
 | OperationId | `createPermission` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -4085,13 +4182,13 @@
 | `description` | `string` | 否 | 描述 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -4108,35 +4205,35 @@
 
 ## DELETE /api/admin/system/permissions/{id}
 
-- 标题：删除权限点
+- 摘要：删除权限点
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/system/permissions/{id}` |
 | OperationId | `deletePermission` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -4148,35 +4245,35 @@
 
 ## GET /api/admin/system/permissions/{id}
 
-- 标题：查询权限点详情
+- 摘要：查询权限点详情
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/system/permissions/{id}` |
 | OperationId | `permission` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -4193,21 +4290,21 @@
 
 ## PUT /api/admin/system/permissions/{id}
 
-- 标题：更新权限点
+- 摘要：更新权限点
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/system/permissions/{id}` |
 | OperationId | `updatePermission` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -4225,13 +4322,13 @@
 | `description` | `string` | 否 | 描述 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -4248,33 +4345,33 @@
 
 ## GET /api/admin/system/roles
 
-- 标题：查询角色列表
+- 摘要：查询角色列表
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/system/roles` |
 | OperationId | `roles` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -4292,21 +4389,21 @@
 
 ## POST /api/admin/system/roles
 
-- 标题：新增角色
+- 摘要：新增角色
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `POST` |
+| 请求方法 | `POST` |
 | 路径 | `/api/admin/system/roles` |
 | OperationId | `createRole` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-- 无显式参数。
+- 当前接口没有显式参数。
 
 ### 请求体
 
@@ -4322,13 +4419,13 @@
 | `description` | `string` | 否 | 描述 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -4345,35 +4442,35 @@
 
 ## DELETE /api/admin/system/roles/{id}
 
-- 标题：删除角色
+- 摘要：删除角色
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `DELETE` |
+| 请求方法 | `DELETE` |
 | 路径 | `/api/admin/system/roles/{id}` |
 | OperationId | `deleteRole` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -4385,35 +4482,35 @@
 
 ## GET /api/admin/system/roles/{id}
 
-- 标题：查询角色详情
+- 摘要：查询角色详情
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `GET` |
+| 请求方法 | `GET` |
 | 路径 | `/api/admin/system/roles/{id}` |
 | OperationId | `role` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
 ### 请求体
 
-- 无请求体。
+- 当前接口没有请求体。
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 
@@ -4430,21 +4527,21 @@
 
 ## PUT /api/admin/system/roles/{id}
 
-- 标题：更新角色
+- 摘要：更新角色
 - 标签：admin-system
 
 ### 请求信息
 
-| 项目 | 内容 |
+| 项目 | 值 |
 | --- | --- |
-| 方法 | `PUT` |
+| 请求方法 | `PUT` |
 | 路径 | `/api/admin/system/roles/{id}` |
 | OperationId | `updateRole` |
 | 鉴权 | `bearerAuth` |
 
-### 路径 / Query 参数
+### 路径 / 查询参数
 
-| 名称 | 位置 | 必填 | 类型 | 说明 |
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `id` | path | 是 | `integer` | - |
 
@@ -4462,13 +4559,13 @@
 | `description` | `string` | 否 | 描述 |
 | `enabled` | `boolean` | 否 | 是否启用 |
 
-### 响应体
+### 响应说明
 
 #### 响应 `200`
 
 - 说明：OK
 
-- Content-Type：`*/*`
+- Content-Type: `*/*`
 
 #### 响应字段
 

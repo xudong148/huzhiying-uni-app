@@ -28,10 +28,11 @@ public interface DomainModels {
     record ServiceItem(Long id, Long categoryId, String name, String subtitle, BigDecimal basePrice,
                        BigDecimal doorPrice, List<String> guarantees, List<String> tags) {}
 
-    record Product(Long id, String name, String description, BigDecimal price, List<Sku> skus,
-                   boolean createInstallOrder) {}
+    record Product(Long id, String name, String description, BigDecimal price, BigDecimal tagPrice,
+                   BigDecimal discountPrice, List<Sku> skus, boolean createInstallOrder) {}
 
-    record Sku(Long id, Long productId, String name, BigDecimal price, Integer stock) {}
+    record Sku(Long id, Long productId, String name, BigDecimal price, BigDecimal tagPrice,
+               BigDecimal discountPrice, Integer stock) {}
 
     record SearchDocument(String id, String type, String title, String summary, BigDecimal price, String icon) {}
 

@@ -43,12 +43,18 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const hasToken = Boolean(getAdminSession().token);
+  const session = getAdminSession();
+  const hasToken = Boolean(session.token);
+  const allowedPaths = Array.isArray(session.menus) ? session.menus.map((item) => item.path) : [];
+  const firstAllowedPath = allowedPaths[0] || '/dashboard';
   if (to.path !== '/login' && !hasToken) {
     return '/login';
   }
   if (to.path === '/login' && hasToken) {
-    return '/dashboard';
+    return firstAllowedPath;
+  }
+  if (hasToken && to.path !== '/' && to.path !== '/login' && allowedPaths.length > 0 && !allowedPaths.includes(to.path)) {
+    return firstAllowedPath;
   }
   return true;
 });

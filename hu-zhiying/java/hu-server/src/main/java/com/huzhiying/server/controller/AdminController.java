@@ -24,7 +24,7 @@ public class AdminController {
     }
 
     @GetMapping("/api/admin/dispatch")
-    @Operation(summary = "查询后台调度列表")
+    @Operation(summary = "查询调度任务列表")
     public ApiResponse<?> dispatch() {
         return ApiResponse.success(platformFacadeService.adminDispatchRows());
     }
@@ -36,25 +36,25 @@ public class AdminController {
     }
 
     @GetMapping("/api/admin/masters")
-    @Operation(summary = "查询师傅管理列表")
+    @Operation(summary = "查询师傅列表")
     public ApiResponse<?> masters() {
         return ApiResponse.success(platformFacadeService.masters());
     }
 
     @GetMapping("/api/admin/arbitrations")
-    @Operation(summary = "查询仲裁工单列表")
+    @Operation(summary = "查询仲裁列表")
     public ApiResponse<?> arbitrations() {
         return ApiResponse.success(platformFacadeService.arbitrations());
     }
 
     @GetMapping("/api/admin/pricing")
-    @Operation(summary = "查询定价概览")
+    @Operation(summary = "查询定价规则总览")
     public ApiResponse<?> pricing() {
         return ApiResponse.success(platformFacadeService.pricingRules());
     }
 
     @GetMapping("/api/admin/finance")
-    @Operation(summary = "查询财务列表")
+    @Operation(summary = "查询财务结算列表")
     public ApiResponse<?> finance() {
         return ApiResponse.success(platformFacadeService.financeRows());
     }

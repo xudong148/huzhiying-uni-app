@@ -5,6 +5,7 @@ import com.huzhiying.server.dto.AdminConfigDtos;
 import com.huzhiying.server.service.AdminConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @Tag(name = "admin-content", description = "后台内容运营配置")
-public class AdminContentController {
+public class AdminContentController extends AdminConfigControllerSupport {
 
     private final AdminConfigService adminConfigService;
 
@@ -42,14 +43,14 @@ public class AdminContentController {
 
     @PostMapping("/api/admin/content/banners")
     @Operation(summary = "新增 Banner")
-    public ApiResponse<AdminConfigDtos.BannerPayload> createBanner(@RequestBody AdminConfigDtos.BannerPayload payload) {
+    public ApiResponse<AdminConfigDtos.BannerPayload> createBanner(@Valid @RequestBody AdminConfigDtos.BannerPayload payload) {
         return ApiResponse.success(adminConfigService.saveBanner(null, payload));
     }
 
     @PutMapping("/api/admin/content/banners/{id}")
     @Operation(summary = "更新 Banner")
     public ApiResponse<AdminConfigDtos.BannerPayload> updateBanner(@PathVariable("id") Long id,
-                                                                   @RequestBody AdminConfigDtos.BannerPayload payload) {
+                                                                   @Valid @RequestBody AdminConfigDtos.BannerPayload payload) {
         return ApiResponse.success(adminConfigService.saveBanner(id, payload));
     }
 
@@ -74,14 +75,14 @@ public class AdminContentController {
 
     @PostMapping("/api/admin/content/notices")
     @Operation(summary = "新增公告")
-    public ApiResponse<AdminConfigDtos.NoticePayload> createNotice(@RequestBody AdminConfigDtos.NoticePayload payload) {
+    public ApiResponse<AdminConfigDtos.NoticePayload> createNotice(@Valid @RequestBody AdminConfigDtos.NoticePayload payload) {
         return ApiResponse.success(adminConfigService.saveNotice(null, payload));
     }
 
     @PutMapping("/api/admin/content/notices/{id}")
     @Operation(summary = "更新公告")
     public ApiResponse<AdminConfigDtos.NoticePayload> updateNotice(@PathVariable("id") Long id,
-                                                                   @RequestBody AdminConfigDtos.NoticePayload payload) {
+                                                                   @Valid @RequestBody AdminConfigDtos.NoticePayload payload) {
         return ApiResponse.success(adminConfigService.saveNotice(id, payload));
     }
 
@@ -106,14 +107,14 @@ public class AdminContentController {
 
     @PostMapping("/api/admin/content/agreements")
     @Operation(summary = "新增协议")
-    public ApiResponse<AdminConfigDtos.AgreementPayload> createAgreement(@RequestBody AdminConfigDtos.AgreementPayload payload) {
+    public ApiResponse<AdminConfigDtos.AgreementPayload> createAgreement(@Valid @RequestBody AdminConfigDtos.AgreementPayload payload) {
         return ApiResponse.success(adminConfigService.saveAgreement(null, payload));
     }
 
     @PutMapping("/api/admin/content/agreements/{id}")
     @Operation(summary = "更新协议")
     public ApiResponse<AdminConfigDtos.AgreementPayload> updateAgreement(@PathVariable("id") Long id,
-                                                                         @RequestBody AdminConfigDtos.AgreementPayload payload) {
+                                                                         @Valid @RequestBody AdminConfigDtos.AgreementPayload payload) {
         return ApiResponse.success(adminConfigService.saveAgreement(id, payload));
     }
 

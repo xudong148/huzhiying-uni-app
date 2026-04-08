@@ -10,13 +10,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name = "mobile-catalog", description = "移动端类目、商品与搜索接口")
+@Tag(name = "mobile-catalog", description = "移动端类目、商品、首页与搜索接口")
 public class CatalogController {
 
     private final PlatformFacadeService platformFacadeService;
 
     public CatalogController(PlatformFacadeService platformFacadeService) {
         this.platformFacadeService = platformFacadeService;
+    }
+
+    @GetMapping("/api/home")
+    @Operation(summary = "查询首页聚合数据")
+    public ApiResponse<?> home() {
+        return ApiResponse.success(platformFacadeService.homeData());
     }
 
     @GetMapping("/api/categories")

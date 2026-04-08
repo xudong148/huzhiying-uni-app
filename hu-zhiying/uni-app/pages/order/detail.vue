@@ -24,6 +24,15 @@
     </view>
     <order-timeline v-if="order.type === 'service' && order.timeline?.length" :list="order.timeline"></order-timeline>
 
+    <!-- 客服摘要 -->
+    <view v-if="order.messageSummary" class="card order-detail__quotation">
+      <view class="section-title">
+        <text class="section-title__text">客服沟通</text>
+        <text class="section-title__desc">{{ order.messageSummary.messageCount }} 条消息</text>
+      </view>
+      <view class="order-detail__quote-remark">{{ order.messageSummary.latestMessage || '暂无沟通记录' }}</view>
+    </view>
+
     <!-- 增项报价 -->
     <view v-if="order.quotation" class="card order-detail__quotation">
       <view class="section-title">
@@ -83,6 +92,7 @@ const cancelLoading = ref(false);
 const order = ref({
   timeline: [],
   quotation: null,
+  messageSummary: null,
 });
 
 let socketTask = null;
@@ -91,14 +101,11 @@ const canPay = computed(() => {
   if (order.value.type === 'product') {
     return order.value.status === 'PENDING_PAYMENT';
   }
-  if (order.value.status === 'PENDING_PAYMENT') {
-    return true;
-  }
-  return order.value.status === 'WAITING_SUPPLEMENT_PAYMENT' && order.value.quotation?.status === 'CONFIRMED';
+  return !!order.value.canPay;
 });
 
-const canUrge = computed(() => ['PENDING_DISPATCH', 'PENDING_ACCEPT', 'ON_THE_WAY'].includes(order.value.status));
-const canCancel = computed(() => ['PENDING_PAYMENT', 'PENDING_DISPATCH', 'PENDING_ACCEPT'].includes(order.value.status));
+const canUrge = computed(() => !!order.value.canUrge);
+const canCancel = computed(() => !!order.value.canCancel);
 
 function goTracking() {
   uni.navigateTo({ url: `/pages/order/tracking?id=${order.value.id}` });
@@ -109,7 +116,11 @@ function goRefund() {
 }
 
 function goChat() {
-  uni.setStorageSync('hzy-chat-session', 'MS-001');
+  if (!order.value.messageSummary?.sessionId) {
+    uni.showToast({ title: '当前订单暂无沟通会话', icon: 'none' });
+    return;
+  }
+  uni.setStorageSync('hzy-chat-session', order.value.messageSummary.sessionId);
   uni.setStorageSync('hzy-chat-order-id', order.value.id || '');
   uni.switchTab({ url: '/pages/message/chat' });
 }

@@ -1,10 +1,10 @@
 <template>
   <div class="page-panel">
-    <!-- 页面标题区：说明订单页同时管理服务单和商品单 -->
+    <!-- 页面标题区 -->
     <h2 class="page-title">订单管理</h2>
-    <p class="page-desc">统一查看服务单和商品单，支持打开详情、取消服务单和发起退款。</p>
+    <p class="page-desc">统一查看服务单和商品单，支持详情、取消、退款、发券和改预约。</p>
 
-    <!-- 订单列表区：展示后台订单总表和操作入口 -->
+    <!-- 订单列表区 -->
     <el-table :data="rows">
       <el-table-column prop="id" label="订单号" min-width="180" />
       <el-table-column prop="category" label="标题" min-width="220" />
@@ -13,7 +13,7 @@
       <el-table-column label="金额" width="120">
         <template #default="{ row }">¥{{ Number(row.amount || 0).toFixed(2) }}</template>
       </el-table-column>
-      <el-table-column label="操作" width="240" fixed="right">
+      <el-table-column label="操作" width="260" fixed="right">
         <template #default="{ row }">
           <div class="action-row">
             <el-button size="small" @click="openDetail(row.id)">详情</el-button>
@@ -24,8 +24,8 @@
       </el-table-column>
     </el-table>
 
-    <!-- 详情抽屉区：展示订单状态、报价、时间轴和轨迹 -->
-    <el-drawer v-model="detailVisible" title="订单详情" size="640px">
+    <!-- 详情抽屉 -->
+    <el-drawer v-model="detailVisible" title="订单详情" size="720px">
       <template v-if="detail">
         <el-descriptions :column="1" border>
           <el-descriptions-item label="订单号">{{ detail.orderId }}</el-descriptions-item>
@@ -42,6 +42,50 @@
             {{ detail.installServiceOrderId }}
           </el-descriptions-item>
         </el-descriptions>
+
+        <div class="drawer-section">
+          <div class="section-header">
+            <h3 class="drawer-title">客服动作</h3>
+            <div class="action-row">
+              <el-button
+                size="small"
+                type="primary"
+                :disabled="!detail.canGrantCoupon"
+                @click="openGrantCoupon"
+              >
+                手工发券
+              </el-button>
+              <el-button
+                size="small"
+                type="success"
+                :disabled="!detail.canUpdateAppointment"
+                @click="openAppointmentDialog"
+              >
+                改预约
+              </el-button>
+            </div>
+          </div>
+          <el-descriptions :column="1" border>
+            <el-descriptions-item label="聊天摘要">
+              {{ detail.messageSummary?.latestMessage || '暂无聊天记录' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="消息数量">
+              {{ detail.messageSummary?.messageCount || 0 }}
+            </el-descriptions-item>
+            <el-descriptions-item label="会话标题">
+              {{ detail.messageSummary?.title || '—' }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
+
+        <div v-if="detail.mediaItems?.length" class="drawer-section">
+          <h3 class="drawer-title">媒体摘要</h3>
+          <el-table :data="detail.mediaItems" size="small" class="sub-table">
+            <el-table-column prop="bizType" label="业务类型" width="160" />
+            <el-table-column prop="originalName" label="文件名" min-width="220" />
+            <el-table-column prop="url" label="访问地址" min-width="220" />
+          </el-table>
+        </div>
 
         <div v-if="detail.quotation" class="drawer-section">
           <h3 class="drawer-title">报价单</h3>
@@ -84,6 +128,35 @@
         </div>
       </template>
     </el-drawer>
+
+    <!-- 发券弹窗 -->
+    <el-dialog v-model="couponVisible" title="手工发券" width="420px">
+      <el-form label-width="90px">
+        <el-form-item label="优惠券 ID">
+          <el-input-number v-model="couponForm.couponId" :min="1" controls-position="right" />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="couponForm.remark" placeholder="例如：客服补偿" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="couponVisible = false">取消</el-button>
+        <el-button type="primary" :loading="couponLoading" @click="submitGrantCoupon">确认发券</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 改预约弹窗 -->
+    <el-dialog v-model="appointmentVisible" title="修改预约" width="420px">
+      <el-form label-width="90px">
+        <el-form-item label="预约时间">
+          <el-input v-model="appointmentForm.appointment" placeholder="例如：明天 10:00-12:00" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="appointmentVisible = false">取消</el-button>
+        <el-button type="primary" :loading="appointmentLoading" @click="submitAppointment">确认修改</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -91,21 +164,36 @@
 /**
  * 订单管理页面。
  * 1. 列表接口读取后台订单汇总。
- * 2. 详情抽屉读取后台详情接口，展示报价、时间轴和轨迹。
- * 3. 取消和退款动作统一走后台业务接口，并在动作后刷新列表与详情。
+ * 2. 详情抽屉读取后台详情接口，展示报价、聊天、媒体和轨迹。
+ * 3. 取消、退款、发券和改预约统一走后台真实接口，并在动作后刷新列表与详情。
  */
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   cancelAdminOrder,
   fetchAdminOrderDetail,
   fetchAdminOrders,
+  grantAdminCoupon,
   refundAdminOrder,
+  updateAdminOrderAppointment,
 } from '../api/request';
 
 const rows = ref([]);
 const detailVisible = ref(false);
 const detail = ref(null);
+const couponVisible = ref(false);
+const appointmentVisible = ref(false);
+const couponLoading = ref(false);
+const appointmentLoading = ref(false);
+
+const couponForm = reactive({
+  couponId: 1,
+  remark: '',
+});
+
+const appointmentForm = reactive({
+  appointment: '',
+});
 
 async function loadRows() {
   rows.value = await fetchAdminOrders();
@@ -113,12 +201,14 @@ async function loadRows() {
 
 async function openDetail(orderId) {
   detail.value = await fetchAdminOrderDetail(orderId);
+  appointmentForm.appointment = detail.value.appointment || '';
   detailVisible.value = true;
 }
 
 async function refreshDetailIfNeeded(orderId) {
   if (detailVisible.value && detail.value?.orderId === orderId) {
     detail.value = await fetchAdminOrderDetail(orderId);
+    appointmentForm.appointment = detail.value.appointment || '';
   }
 }
 
@@ -170,18 +260,75 @@ async function handleRefund(orderId) {
   }
 }
 
+function openGrantCoupon() {
+  couponForm.remark = '';
+  couponVisible.value = true;
+}
+
+function openAppointmentDialog() {
+  appointmentForm.appointment = detail.value?.appointment || '';
+  appointmentVisible.value = true;
+}
+
+async function submitGrantCoupon() {
+  if (!detail.value?.orderId) {
+    return;
+  }
+  couponLoading.value = true;
+  try {
+    await grantAdminCoupon(detail.value.orderId, {
+      couponId: couponForm.couponId || null,
+      remark: couponForm.remark,
+    });
+    couponVisible.value = false;
+    ElMessage.success('优惠券已发放');
+    await loadRows();
+    await refreshDetailIfNeeded(detail.value.orderId);
+  } catch (error) {
+    ElMessage.error(error.message || '发券失败');
+  } finally {
+    couponLoading.value = false;
+  }
+}
+
+async function submitAppointment() {
+  if (!detail.value?.orderId) {
+    return;
+  }
+  appointmentLoading.value = true;
+  try {
+    await updateAdminOrderAppointment(detail.value.orderId, appointmentForm.appointment);
+    appointmentVisible.value = false;
+    ElMessage.success('预约时间已更新');
+    await loadRows();
+    await refreshDetailIfNeeded(detail.value.orderId);
+  } catch (error) {
+    ElMessage.error(error.message || '改预约失败');
+  } finally {
+    appointmentLoading.value = false;
+  }
+}
+
 onMounted(loadRows);
 </script>
 
 <style scoped>
-/* 页面局部样式：补充操作区和详情区布局 */
+/* 页面局部样式 */
 .action-row {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .drawer-section {
   margin-top: 20px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .drawer-title {

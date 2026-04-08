@@ -30,12 +30,13 @@
 
 <script setup>
 /**
- * 师傅入驻页。
- * 1. 当前页提交真实入驻申请接口。
- * 2. 提交成功后切换到师傅端并跳转抢派单大厅。
+ * 师傅入驻页
+ * 1. 提交真实入驻申请接口。
+ * 2. 申请成功后重新登录师傅端，避免只在前端本地切角色。
  */
 import { reactive, ref } from 'vue';
 import { applyMaster } from '../../api/master';
+import { getCurrentUser, loginWithRole } from '../../api/user';
 import { useUserStore } from '../../stores/user';
 
 const userStore = useUserStore();
@@ -44,8 +45,8 @@ const submitting = ref(false);
 const form = reactive({
   name: '',
   mobile: '',
-  skills: '空调维修 / 智能锁安装',
-  area: '上海市浦东新区',
+  skills: '',
+  area: '',
   remark: '',
 });
 
@@ -63,12 +64,23 @@ async function submit() {
       skills: form.skills,
       area: form.area,
     });
-    userStore.switchRole('master');
-    userStore.updateProfile({
-      nickname: form.name,
-      mobile: form.mobile,
-      level: '认证工程师',
+
+    const authRes = await loginWithRole('master');
+    const profileRes = await getCurrentUser();
+
+    userStore.login({
+      token: authRes.data.token,
+      refreshToken: authRes.data.refreshToken,
+      role: 'master',
+      profile: {
+        ...(profileRes.data?.profile || {}),
+        avatar: profileRes.data?.profile?.avatar || '/static/user.png',
+        nickname: profileRes.data?.profile?.nickname || form.name,
+        mobile: profileRes.data?.profile?.mobile || form.mobile,
+        level: profileRes.data?.profile?.level || '入驻审核中',
+      },
     });
+
     uni.showToast({ title: '申请已提交，已切换到师傅端', icon: 'none' });
     setTimeout(() => {
       uni.navigateTo({ url: '/pages-master/master/dispatch' });

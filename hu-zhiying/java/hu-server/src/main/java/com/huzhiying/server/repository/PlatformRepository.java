@@ -3,26 +3,34 @@ package com.huzhiying.server.repository;
 import com.huzhiying.domain.enums.DomainEnums.RoleCode;
 import com.huzhiying.server.persistence.PersistenceEntities.AddressEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ArbitrationCaseEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.AuthSessionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.BannerEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.CouponEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.DispatchTaskEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MasterProfileEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.MenuEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MemberLevelEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MediaFileEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.NoticeEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.PermissionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductOrderEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.QuotationEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.QuotationItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.CommentEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.RoleEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.RoleMenuBindingEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.RolePermissionBindingEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceCategoryEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceOrderEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.SkuEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.SmsCodeEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.UserEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.UserRoleBindingEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.WalletAccountEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.WalletTransactionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.WorkStepRecordEntity;
@@ -32,6 +40,7 @@ import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -70,6 +79,58 @@ public class PlatformRepository {
         return value + 1;
     }
 
+    public long countByField(String entityName, String fieldName, Object value) {
+        return countByFields(entityName, Map.of(fieldName, value), null);
+    }
+
+    public long countByFields(String entityName, Map<String, ?> filters, Object excludeId) {
+        StringBuilder queryBuilder = new StringBuilder("select count(e) from ").append(entityName).append(" e");
+        boolean hasWhere = false;
+        int index = 0;
+        for (Map.Entry<String, ?> entry : filters.entrySet()) {
+            queryBuilder.append(hasWhere ? " and " : " where ");
+            if (entry.getValue() == null) {
+                queryBuilder.append("e.").append(entry.getKey()).append(" is null");
+            } else {
+                queryBuilder.append("e.").append(entry.getKey()).append(" = :p").append(index);
+                index++;
+            }
+            hasWhere = true;
+        }
+        if (excludeId != null) {
+            queryBuilder.append(hasWhere ? " and " : " where ");
+            queryBuilder.append("e.id <> :excludeId");
+        }
+
+        TypedQuery<Long> query = entityManager.createQuery(queryBuilder.toString(), Long.class);
+        index = 0;
+        for (Map.Entry<String, ?> entry : filters.entrySet()) {
+            if (entry.getValue() != null) {
+                query.setParameter("p" + index, entry.getValue());
+                index++;
+            }
+        }
+        if (excludeId != null) {
+            query.setParameter("excludeId", excludeId);
+        }
+        return query.getSingleResult();
+    }
+
+    public boolean existsByFields(String entityName, Map<String, ?> filters, Object excludeId) {
+        return countByFields(entityName, filters, excludeId) > 0;
+    }
+
+    public long countEnabledDispatchZonesExcluding(Long excludeId) {
+        String queryText = excludeId == null
+                ? "select count(e) from DispatchZoneEntity e where e.enabled = true"
+                : "select count(e) from DispatchZoneEntity e where e.enabled = true and e.id <> :excludeId";
+        TypedQuery<Long> query = entityManager.createQuery(queryText, Long.class);
+        if (excludeId != null) {
+            query.setParameter("excludeId", excludeId);
+        }
+        return query.getSingleResult();
+    }
+
     public List<UserEntity> listUsers() {
         return entityManager.createQuery("select u from UserEntity u order by u.id", UserEntity.class).getResultList();
     }
@@ -94,6 +155,26 @@ public class PlatformRepository {
                 UserEntity.class
         );
         query.setParameter("nickname", nickname);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public Optional<UserEntity> findUserByMobile(String mobile) {
+        TypedQuery<UserEntity> query = entityManager.createQuery(
+                "select u from UserEntity u where u.mobile = :mobile",
+                UserEntity.class
+        );
+        query.setParameter("mobile", mobile);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public Optional<UserEntity> findUserByUsername(String username) {
+        TypedQuery<UserEntity> query = entityManager.createQuery(
+                "select u from UserEntity u where lower(u.username) = :username",
+                UserEntity.class
+        );
+        query.setParameter("username", username == null ? "" : username.toLowerCase());
         query.setMaxResults(1);
         return query.getResultList().stream().findFirst();
     }
@@ -429,6 +510,188 @@ public class PlatformRepository {
                 "select m from MemberLevelEntity m order by m.pointsRequired desc",
                 MemberLevelEntity.class
         );
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public Optional<RoleEntity> findRole(Long id) {
+        return Optional.ofNullable(entityManager.find(RoleEntity.class, id));
+    }
+
+    public Optional<RoleEntity> findRoleByCode(String code) {
+        TypedQuery<RoleEntity> query = entityManager.createQuery(
+                "select r from RoleEntity r where r.code = :code",
+                RoleEntity.class
+        );
+        query.setParameter("code", code);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public List<RoleEntity> listRolesByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return entityManager.createQuery(
+                        "select r from RoleEntity r where r.id in :ids order by r.id asc",
+                        RoleEntity.class
+                )
+                .setParameter("ids", ids)
+                .getResultList();
+    }
+
+    public List<UserRoleBindingEntity> listUserRoles(Long userId) {
+        return entityManager.createQuery(
+                        "select ur from UserRoleBindingEntity ur where ur.userId = :userId order by ur.id asc",
+                        UserRoleBindingEntity.class
+                )
+                .setParameter("userId", userId)
+                .getResultList();
+    }
+
+    public List<UserRoleBindingEntity> listUserRolesByRoleId(Long roleId) {
+        return entityManager.createQuery(
+                        "select ur from UserRoleBindingEntity ur where ur.roleId = :roleId order by ur.id asc",
+                        UserRoleBindingEntity.class
+                )
+                .setParameter("roleId", roleId)
+                .getResultList();
+    }
+
+    public UserRoleBindingEntity saveUserRole(UserRoleBindingEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public void deleteUserRoles(Long userId) {
+        entityManager.createQuery("delete from UserRoleBindingEntity ur where ur.userId = :userId")
+                .setParameter("userId", userId)
+                .executeUpdate();
+    }
+
+    public List<RoleMenuBindingEntity> listRoleMenuBindings(Long roleId) {
+        return entityManager.createQuery(
+                        "select rm from RoleMenuBindingEntity rm where rm.roleId = :roleId order by rm.id asc",
+                        RoleMenuBindingEntity.class
+                )
+                .setParameter("roleId", roleId)
+                .getResultList();
+    }
+
+    public List<RolePermissionBindingEntity> listRolePermissionBindings(Long roleId) {
+        return entityManager.createQuery(
+                        "select rp from RolePermissionBindingEntity rp where rp.roleId = :roleId order by rp.id asc",
+                        RolePermissionBindingEntity.class
+                )
+                .setParameter("roleId", roleId)
+                .getResultList();
+    }
+
+    public RoleMenuBindingEntity saveRoleMenuBinding(RoleMenuBindingEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public RolePermissionBindingEntity saveRolePermissionBinding(RolePermissionBindingEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public void deleteRoleMenuBindings(Long roleId) {
+        entityManager.createQuery("delete from RoleMenuBindingEntity rm where rm.roleId = :roleId")
+                .setParameter("roleId", roleId)
+                .executeUpdate();
+    }
+
+    public void deleteRolePermissionBindings(Long roleId) {
+        entityManager.createQuery("delete from RolePermissionBindingEntity rp where rp.roleId = :roleId")
+                .setParameter("roleId", roleId)
+                .executeUpdate();
+    }
+
+    public List<RoleMenuBindingEntity> listMenuBindingsByMenuId(Long menuId) {
+        return entityManager.createQuery(
+                        "select rm from RoleMenuBindingEntity rm where rm.menuId = :menuId",
+                        RoleMenuBindingEntity.class
+                )
+                .setParameter("menuId", menuId)
+                .getResultList();
+    }
+
+    public List<RolePermissionBindingEntity> listPermissionBindingsByPermissionId(Long permissionId) {
+        return entityManager.createQuery(
+                        "select rp from RolePermissionBindingEntity rp where rp.permissionId = :permissionId",
+                        RolePermissionBindingEntity.class
+                )
+                .setParameter("permissionId", permissionId)
+                .getResultList();
+    }
+
+    public List<MenuEntity> listMenusByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return entityManager.createQuery(
+                        "select m from MenuEntity m where m.id in :ids order by m.sortOrder asc, m.id asc",
+                        MenuEntity.class
+                )
+                .setParameter("ids", ids)
+                .getResultList();
+    }
+
+    public List<PermissionEntity> listPermissionsByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return entityManager.createQuery(
+                        "select p from PermissionEntity p where p.id in :ids order by p.id asc",
+                        PermissionEntity.class
+                )
+                .setParameter("ids", ids)
+                .getResultList();
+    }
+
+    public Optional<AuthSessionEntity> findAuthSessionByAccessHash(String accessTokenHash) {
+        TypedQuery<AuthSessionEntity> query = entityManager.createQuery(
+                "select s from AuthSessionEntity s where s.accessTokenHash = :accessTokenHash",
+                AuthSessionEntity.class
+        );
+        query.setParameter("accessTokenHash", accessTokenHash);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public Optional<AuthSessionEntity> findAuthSessionByRefreshHash(String refreshTokenHash) {
+        TypedQuery<AuthSessionEntity> query = entityManager.createQuery(
+                "select s from AuthSessionEntity s where s.refreshTokenHash = :refreshTokenHash",
+                AuthSessionEntity.class
+        );
+        query.setParameter("refreshTokenHash", refreshTokenHash);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public AuthSessionEntity saveAuthSession(AuthSessionEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public void deleteAuthSession(Long id) {
+        deleteEntity(AuthSessionEntity.class, id);
+    }
+
+    public void deleteExpiredSmsCodes() {
+        entityManager.createQuery("delete from SmsCodeEntity s where s.expiresAt < CURRENT_TIMESTAMP or s.consumedAt is not null")
+                .executeUpdate();
+    }
+
+    public SmsCodeEntity saveSmsCode(SmsCodeEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public Optional<SmsCodeEntity> findLatestActiveSmsCode(String mobile, String purpose) {
+        TypedQuery<SmsCodeEntity> query = entityManager.createQuery(
+                "select s from SmsCodeEntity s where s.mobile = :mobile and s.purpose = :purpose and s.consumedAt is null order by s.createdAt desc, s.id desc",
+                SmsCodeEntity.class
+        );
+        query.setParameter("mobile", mobile);
+        query.setParameter("purpose", purpose);
         query.setMaxResults(1);
         return query.getResultList().stream().findFirst();
     }

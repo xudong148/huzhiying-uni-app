@@ -2,17 +2,17 @@
   <view class="page-shell">
     <!-- 页面头部 -->
     <view class="card master-dispatch__hero">
-      <view class="master-dispatch__title">听单大厅</view>
-      <view class="master-dispatch__desc">当前共为你推送 {{ orders.length }} 个可接服务订单</view>
+      <view class="master-dispatch__title">抢派单大厅</view>
+      <view class="master-dispatch__desc">当前共为你推送 {{ orders.length }} 个可接服务订单。</view>
     </view>
 
     <!-- 抢单列表 -->
     <view v-for="item in orders" :key="item.id" class="card master-dispatch__card">
       <view class="master-dispatch__top">
         <view class="master-dispatch__name">{{ item.title }}</view>
-        <text class="chip">{{ item.distance }}</text>
+        <text class="chip">{{ item.distance || '待计算' }}</text>
       </view>
-      <view class="master-dispatch__meta">{{ item.address }}</view>
+      <view class="master-dispatch__meta">{{ item.address || '待补充服务区域' }}</view>
       <view class="master-dispatch__tags">
         <text v-for="tag in item.tags" :key="tag" class="tag">{{ tag }}</text>
       </view>
@@ -29,9 +29,9 @@
 
 <script setup>
 /**
- * 师傅抢派单大厅。
+ * 师傅抢派单大厅
  * 1. 列表实时读取真实调度任务。
- * 2. 抢单成功后直接跳转到履约工作台。
+ * 2. 抢单时不再传固定师傅姓名，由后端按当前登录态解析身份。
  */
 import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
@@ -48,7 +48,7 @@ async function loadOrders() {
 async function grab(item) {
   loadingTaskId.value = item.id;
   try {
-    await claimDispatchOrder(item.id, '张师傅');
+    await claimDispatchOrder(item.id);
     uni.showToast({ title: `抢单成功：${item.title}`, icon: 'none' });
     setTimeout(() => {
       uni.navigateTo({ url: `/pages-master/master/workbench?orderId=${item.orderId}` });

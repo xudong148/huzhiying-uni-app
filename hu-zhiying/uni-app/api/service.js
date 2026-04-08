@@ -13,60 +13,36 @@ function normalizeRuntimeUrl(url) {
   return url;
 }
 
-function defaultFeedImage(type) {
-  return type === 'product' ? '/static/icons/mall.svg' : '/static/icons/screwdriver.svg';
-}
-
-function mapCategoryTree(categories = []) {
+function normalizeCategoryTree(categories = []) {
   return categories.map((category) => ({
     id: category.id,
     name: category.name,
-    icon: category.icon || '/static/icons/pipeline.svg',
-    subs: (category.services || []).map((service) => service.name),
-    groups: [
-      {
-        title: '精选服务',
-        list: (category.services || []).map((service) => ({
-          id: service.id,
-          name: service.name,
-          icon: category.icon || '/static/icons/pipeline.svg',
-          price: service.basePrice,
-        })),
-      },
-    ],
+    icon: normalizeRuntimeUrl(category.icon) || '/static/icons/pipeline.svg',
+    subs: category.subs || [],
   }));
 }
 
 /**
- * 获取首页数据。
+ * 获取首页聚合数据。
  */
 export async function getHomeData() {
-  const [categoryRes, searchRes, userRes] = await Promise.all([
-    request({ url: '/api/categories' }),
-    request({ url: '/api/search' }),
-    request({ url: '/api/users/me' }),
-  ]);
-
-  const categories = mapCategoryTree(categoryRes.data || []);
-  const docs = searchRes.data || [];
-  const keywords = docs.slice(0, 5).map((item) => item.title);
-  const feed = docs.slice(0, 8).map((item, index) => ({
-    id: Number(String(item.id).replace(/\D/g, '')) || index + 1,
-    title: item.title,
-    tag: item.type === 'product' ? '商城推荐' : '上门服务',
-    price: item.price,
-    sales: `${index + 1}.2k`,
-    image: normalizeRuntimeUrl(item.icon) || defaultFeedImage(item.type),
-    type: item.type,
-  }));
+  const response = await request({ url: '/api/home' });
+  const data = response.data || {};
 
   return {
     data: {
-      hotKeywords: keywords,
-      categories,
-      recommendationList: feed,
-      notices: userRes.data?.notices || [],
-      banners: userRes.data?.banners || [],
+      location: data.location || '上海',
+      serviceCities: data.serviceCities || [],
+      hotKeywords: data.hotKeywords || [],
+      categories: normalizeCategoryTree(data.categoryNav || []),
+      svipCard: data.svipCard || null,
+      ecosystemCards: data.ecosystemCards || [],
+      recommendationList: (data.recommendations || []).map((item) => ({
+        ...item,
+        image: normalizeRuntimeUrl(item.image) || '/static/icons/screwdriver.svg',
+      })),
+      notices: data.notices || [],
+      banners: data.banners || [],
     },
   };
 }
@@ -77,7 +53,23 @@ export async function getHomeData() {
 export async function getCategoryTree() {
   const response = await request({ url: '/api/categories' });
   return {
-    data: mapCategoryTree(response.data || []),
+    data: (response.data || []).map((category) => ({
+      id: category.id,
+      name: category.name,
+      icon: normalizeRuntimeUrl(category.icon) || '/static/icons/pipeline.svg',
+      subs: (category.services || []).map((service) => service.name),
+      groups: [
+        {
+          title: '精选服务',
+          list: (category.services || []).map((service) => ({
+            id: service.id,
+            name: service.name,
+            icon: normalizeRuntimeUrl(category.icon) || '/static/icons/pipeline.svg',
+            price: service.basePrice,
+          })),
+        },
+      ],
+    })),
   };
 }
 

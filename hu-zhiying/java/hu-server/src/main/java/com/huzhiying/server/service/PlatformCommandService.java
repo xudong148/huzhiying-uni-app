@@ -59,11 +59,13 @@ public class PlatformCommandService {
     private final DispatchLockService dispatchLockService;
     private final WebSocketEventGateway webSocketEventGateway;
     private final FileStorageService fileStorageService;
+    private final AuthSessionService authSessionService;
 
     public PlatformCommandService(PlatformRepository platformRepository, PlatformAssembler assembler,
                                   PlatformDomainSupport domainSupport, PricingEngineService pricingEngineService,
                                   OrderWorkflowService orderWorkflowService, DispatchLockService dispatchLockService,
-                                  WebSocketEventGateway webSocketEventGateway, FileStorageService fileStorageService) {
+                                  WebSocketEventGateway webSocketEventGateway, FileStorageService fileStorageService,
+                                  AuthSessionService authSessionService) {
         this.platformRepository = platformRepository;
         this.assembler = assembler;
         this.domainSupport = domainSupport;
@@ -72,6 +74,7 @@ public class PlatformCommandService {
         this.dispatchLockService = dispatchLockService;
         this.webSocketEventGateway = webSocketEventGateway;
         this.fileStorageService = fileStorageService;
+        this.authSessionService = authSessionService;
     }
 
     public AuthToken login(String role) {
@@ -81,22 +84,30 @@ public class PlatformCommandService {
             case ADMIN -> platformRepository.findFirstUserByRole(RoleCode.ADMIN).orElse(domainSupport.findUserEntity(PlatformDomainSupport.DEFAULT_USER_ID));
             default -> domainSupport.findUserEntity(PlatformDomainSupport.DEFAULT_USER_ID);
         };
-        String normalizedRole = roleCode.name().toLowerCase();
-        return new AuthToken("token-" + user.id + "-" + normalizedRole, "refresh-" + user.id + "-" + UUID.randomUUID().toString().replace("-", ""), normalizedRole);
+        return authSessionService.issueToken(user, roleCode);
+    }
+
+    public AuthToken refresh(String refreshToken) {
+        AuthSessionService.SessionIdentity identity = authSessionService.refreshIdentity(refreshToken, RoleCode.USER);
+        UserEntity user = platformRepository.findUser(identity.userId()).orElseThrow();
+        return authSessionService.issueToken(user, identity.roleCode());
     }
 
     public User saveProfile(String nickname, String mobile) {
-        UserEntity entity = domainSupport.findUserEntity(PlatformDomainSupport.DEFAULT_USER_ID);
+        UserEntity entity = authSessionService.currentUser(RoleCode.USER);
         entity.nickname = nickname == null || nickname.isBlank() ? entity.nickname : nickname;
         entity.mobile = mobile == null || mobile.isBlank() ? entity.mobile : mobile;
         return assembler.toUser(platformRepository.saveUser(entity));
     }
 
     public Address saveAddress(Long id, String tag, String name, String mobile, String detailAddress, boolean isDefault) {
+        Long currentUserId = authSessionService.currentUserId(RoleCode.USER);
         AddressEntity entity = id == null ? new AddressEntity() : platformRepository.findAddress(id).orElse(new AddressEntity());
         if (entity.id == null) {
             entity.id = platformRepository.nextLongId("AddressEntity", "id", 0L);
-            entity.userId = PlatformDomainSupport.DEFAULT_USER_ID;
+            entity.userId = currentUserId;
+        } else if (entity.userId != null && !entity.userId.equals(currentUserId)) {
+            throw new IllegalStateException("当前地址不属于当前登录用户");
         }
         entity.tagName = tag;
         entity.contactName = name;
@@ -108,7 +119,7 @@ public class PlatformCommandService {
         entity.longitude = entity.longitude == null ? 121.5443 : entity.longitude;
         entity.isDefault = isDefault;
         if (Boolean.TRUE.equals(entity.isDefault)) {
-            platformRepository.listAddressesByUserId(PlatformDomainSupport.DEFAULT_USER_ID).forEach(address -> {
+            platformRepository.listAddressesByUserId(currentUserId).forEach(address -> {
                 if (!address.id.equals(entity.id) && Boolean.TRUE.equals(address.isDefault)) {
                     address.isDefault = false;
                     platformRepository.saveAddress(address);
@@ -119,14 +130,15 @@ public class PlatformCommandService {
     }
 
     public boolean deleteAddress(Long id) {
+        Long currentUserId = authSessionService.currentUserId(RoleCode.USER);
         AddressEntity entity = platformRepository.findAddress(id).orElseThrow();
-        if (entity.userId == null || !entity.userId.equals(PlatformDomainSupport.DEFAULT_USER_ID)) {
+        if (entity.userId == null || !entity.userId.equals(currentUserId)) {
             throw new IllegalStateException("当前地址不属于当前登录用户");
         }
         boolean wasDefault = Boolean.TRUE.equals(entity.isDefault);
         platformRepository.deleteAddress(id);
         if (wasDefault) {
-            platformRepository.listAddressesByUserId(PlatformDomainSupport.DEFAULT_USER_ID).stream().findFirst().ifPresent(address -> {
+            platformRepository.listAddressesByUserId(currentUserId).stream().findFirst().ifPresent(address -> {
                 address.isDefault = true;
                 platformRepository.saveAddress(address);
             });
@@ -145,7 +157,7 @@ public class PlatformCommandService {
         entity.title = serviceItem.name;
         entity.status = ServiceOrderStatus.PENDING_PAYMENT;
         entity.paymentStatus = PaymentStatus.UNPAID;
-        entity.userId = PlatformDomainSupport.DEFAULT_USER_ID;
+        entity.userId = authSessionService.currentUserId(RoleCode.USER);
         entity.addressId = address.id;
         entity.appointment = appointment;
         entity.amount = amount;
@@ -176,7 +188,7 @@ public class PlatformCommandService {
         entity.title = product.name + " / " + sku.name;
         entity.status = ProductOrderStatus.PENDING_PAYMENT;
         entity.paymentStatus = PaymentStatus.UNPAID;
-        entity.userId = PlatformDomainSupport.DEFAULT_USER_ID;
+        entity.userId = authSessionService.currentUserId(RoleCode.USER);
         entity.addressId = address.id;
         entity.amount = sku.price == null ? product.price : sku.price;
         entity.createInstallOrder = Boolean.TRUE.equals(product.createInstallOrder);
@@ -250,11 +262,11 @@ public class PlatformCommandService {
     }
 
     public DispatchTask claimTask(String id, String masterName) {
-        return assignTask(id, masterName, false);
+        return assignTask(id, authSessionService.currentMasterProfile(), false);
     }
 
     public DispatchTask forceAssignTask(String id, String masterName) {
-        return assignTask(id, masterName, true);
+        return assignTask(id, domainSupport.resolveMaster(masterName), true);
     }
 
     public MasterProfile applyMaster(String realName, String mobile, String skills, String area) {
@@ -265,7 +277,7 @@ public class PlatformCommandService {
         user.mobile = mobile;
         user.roleCode = RoleCode.MASTER;
         user.avatar = "/static/user.png";
-        user.levelName = "认证工程师";
+        user.levelName = "入驻审核中";
         platformRepository.saveUser(user);
         MasterProfileEntity profile = new MasterProfileEntity();
         profile.id = platformRepository.nextLongId("MasterProfileEntity", "id", 0L);
@@ -292,7 +304,7 @@ public class PlatformCommandService {
     }
 
     public Map<String, Object> saveMasterSettings(boolean listening, String maxDistance, boolean privacyNumber) {
-        MasterProfileEntity entity = platformRepository.findMasterProfileByUserId(PlatformDomainSupport.DEFAULT_MASTER_USER_ID).orElseThrow();
+        MasterProfileEntity entity = authSessionService.currentMasterProfile();
         entity.listening = listening;
         entity.maxDistanceKm = parseDistance(maxDistance, entity.maxDistanceKm == null ? 20 : entity.maxDistanceKm);
         entity.privacyNumber = privacyNumber;
@@ -359,7 +371,8 @@ public class PlatformCommandService {
 
     public Map<String, Object> masterCheckIn(String orderId, Double latitude, Double longitude, Double accuracy) {
         ServiceOrderEntity order = domainSupport.findServiceOrderEntity(orderId);
-        AddressEntity address = resolveAddress(order.addressId);
+        ensureCurrentMasterOwnsOrder(order);
+        AddressEntity address = platformRepository.findAddress(order.addressId).orElseThrow();
         double distanceMeters = distanceMeters(latitude, longitude, address.latitude, address.longitude);
         boolean verified = latitude != null && longitude != null && distanceMeters <= 3000D;
         if (order.status != ServiceOrderStatus.ARRIVED) {
@@ -371,7 +384,8 @@ public class PlatformCommandService {
     }
 
     public List<SupportDtos.MediaFilePayload> attachOrderMedia(String orderId, String stage, List<Long> fileIds, String note) {
-        domainSupport.findServiceOrderEntity(orderId);
+        ServiceOrderEntity order = domainSupport.findServiceOrderEntity(orderId);
+        ensureCurrentMasterOwnsOrder(order);
         if (fileIds == null || fileIds.isEmpty()) {
             throw new IllegalArgumentException("请先上传文件");
         }
@@ -423,13 +437,12 @@ public class PlatformCommandService {
         return Map.of("orderId", orderId, "status", "SUCCESS");
     }
 
-    private DispatchTask assignTask(String id, String masterName, boolean forceAssign) {
+    private DispatchTask assignTask(String id, MasterProfileEntity master, boolean forceAssign) {
         if (!dispatchLockService.tryLock(id)) {
             throw new IllegalStateException("当前派单任务正在被其他师傅处理");
         }
         try {
             DispatchTaskEntity task = platformRepository.findDispatchTask(id).orElseThrow();
-            MasterProfileEntity master = domainSupport.resolveMaster(masterName);
             if (!forceAssign && task.currentMasterUserId != null && !task.currentMasterUserId.equals(master.userId)) {
                 throw new IllegalStateException("当前任务已被其他师傅领取");
             }
@@ -464,7 +477,15 @@ public class PlatformCommandService {
     }
 
     private AddressEntity resolveAddress(Long addressId) {
-        return addressId == null ? platformRepository.listAddressesByUserId(PlatformDomainSupport.DEFAULT_USER_ID).stream().findFirst().orElseThrow() : platformRepository.findAddress(addressId).orElseThrow();
+        Long currentUserId = authSessionService.currentUserId(RoleCode.USER);
+        if (addressId == null) {
+            return platformRepository.listAddressesByUserId(currentUserId).stream().findFirst().orElseThrow();
+        }
+        AddressEntity address = platformRepository.findAddress(addressId).orElseThrow();
+        if (address.userId == null || !address.userId.equals(currentUserId)) {
+            throw new IllegalStateException("当前地址不属于当前登录用户");
+        }
+        return address;
     }
 
     private List<SupportDtos.MediaFilePayload> markFilesAsBound(List<Long> fileIds, String bizType, String bizId) {
@@ -500,11 +521,18 @@ public class PlatformCommandService {
         return earthRadius * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
     }
 
+    private void ensureCurrentMasterOwnsOrder(ServiceOrderEntity order) {
+        Long currentMasterUserId = authSessionService.currentMasterUserId();
+        if (order.masterUserId != null && !order.masterUserId.equals(currentMasterUserId)) {
+            throw new IllegalStateException("当前工单不属于当前登录师傅");
+        }
+    }
+
     private void createDispatchTaskIfNeeded(ServiceOrderEntity order) {
         if (platformRepository.findDispatchTaskByOrderId(order.id).isPresent()) {
             return;
         }
-        AddressEntity address = resolveAddress(order.addressId);
+        AddressEntity address = platformRepository.findAddress(order.addressId).orElseThrow();
         ServiceItemEntity serviceItem = domainSupport.findServiceItemEntity(order.serviceItemId);
         DispatchTaskEntity task = new DispatchTaskEntity();
         task.id = "DISP-" + System.currentTimeMillis();
@@ -523,7 +551,7 @@ public class PlatformCommandService {
 
     private String createInstallServiceOrder(ProductOrderEntity productOrder) {
         ServiceItemEntity installService = platformRepository.findServiceItem(301L).orElse(domainSupport.findServiceItemEntity(201L));
-        AddressEntity address = resolveAddress(productOrder.addressId);
+        AddressEntity address = platformRepository.findAddress(productOrder.addressId).orElseThrow();
         ServiceOrderEntity entity = new ServiceOrderEntity();
         entity.id = "SO" + System.currentTimeMillis();
         entity.serviceItemId = installService.id;

@@ -1,26 +1,40 @@
-# 呼之应
+# 呼之应工作区
+
+<!--
+  本文件用于说明当前仓库的本地运行方式和接口文档入口。
+  1. 三端运行时 mock 分支已从业务代码中移除。
+  2. 当前默认联调基线为 Spring Boot test profile + H2。
+  3. 接口文档以 Knife4j / OpenAPI / Markdown 三份出口同步维护。
+-->
 
 ## 仓库结构
-- `hu.md`：需求文档
-- `hu-zhiying/uni-app`：`uni-app` 移动端工程，承载 C 端和师傅端
-- `hu-zhiying/admin`：`Vue 3 + Element Plus` 管理后台
-- `hu-zhiying/java`：`Spring Boot` 多模块后端
+
+- `hu.md`：产品需求文档与当前交付基线说明。
+- `hu-zhiying/uni-app`：C 端与师傅端共用的 uni-app 工程。
+- `hu-zhiying/admin`：Vue 3 + Element Plus 管理后台。
+- `hu-zhiying/java`：Spring Boot 后端工程。
+- `docs/api`：根据 OpenAPI 导出的 Markdown 接口文档。
 
 ## 本地启动
-1. `cd hu-zhiying`
-2. `docker compose up -d`
-3. `cd java/hu-server && mvn spring-boot:run -Dspring-boot.run.profiles=test`
-4. `cd ../../admin && npm.cmd install && npm.cmd run dev`
-5. 使用 `HBuilderX` 或 `uni CLI` 打开 `hu-zhiying/uni-app`
 
-## 当前状态
-- 移动端、师傅端和后台运行时代码默认走真实后端接口，不再保留 `mock/useMock/getAdminMock/sandbox` 分支。
-- 后台配置中心的内容运营、营销会员、系统权限、类目商品、SKU、定价规则、服务区域已接入真实 CRUD 接口。
-- Java 后端已启用 `OpenAPI + Knife4j`，支持按端分组查看和导入接口文档。
-- 微信支付当前走正式接口路径；未配置真实商户参数时会明确返回失败，不会伪造支付成功。
+1. 进入根工程：`cd hu-zhiying`
+2. 启动基础依赖：`docker compose up -d`
+3. 启动后端：`cd java/hu-server && mvn spring-boot:run "-Dspring-boot.run.profiles=test"`
+4. 启动后台：`cd ../../admin && npm.cmd install && npm.cmd run dev`
+5. 使用 HBuilderX 打开 `hu-zhiying/uni-app` 运行移动端工程
 
-## 文档地址
-- Knife4j 界面：`http://localhost:8080/doc.html`
+## 当前基线
+
+- `uni-app` 与 `admin` 默认走真实后端接口。
+- `mock`、`useMock`、`getAdminMock`、`sandbox` 以及前端伪造支付成功链路已从运行时代码移除。
+- 运行时不再依赖演示账号、示例身份或默认示例姓名；`test` profile 的最小种子数据仅用于本地联调与文档运行。
+- 后台配置模块与后台业务页已接入真实 CRUD / 动作接口。
+- 微信预支付接口在未配置真实商户参数时会明确失败，不再返回演示凭据。
+- 后端文档已同时暴露 Knife4j、OpenAPI 分组地址与 Markdown 导出文件。
+
+## 接口文档
+
+- Knife4j：`http://localhost:8080/doc.html`
 - 兼容入口：`http://localhost:8080/swagger-ui/index.html`
 - 全量 OpenAPI：`http://localhost:8080/v3/api-docs`
 - YAML：`http://localhost:8080/v3/api-docs.yaml`
@@ -29,14 +43,18 @@
 - 后台分组：`http://localhost:8080/v3/api-docs/admin`
 - 支付分组：`http://localhost:8080/v3/api-docs/payment`
 
-## 导入建议
-- 在 `Apifox / Apiform` 中选择 `导入 OpenAPI / Swagger`，填入上面的任意一个 URL。
-- 如果只联调后台配置页，优先导入 `/v3/api-docs/admin`。
-- 如果移动端和师傅端并行联调，分别导入 `/v3/api-docs/mobile` 和 `/v3/api-docs/master`。
+## Markdown 文档导出
 
-## 已完成验证
-- `admin`：`npm.cmd run build`
-- `java`：`mvn -q test`
+- 导出脚本：`scripts/export-openapi-markdown.mjs`
+- 执行命令：`node scripts/export-openapi-markdown.mjs`
+- 输出目录：`docs/api`
 
-## 待继续验证
-- `uni-app` 仍需在 `HBuilderX` 或真机环境完成一次完整冒烟，重点验证上传、地图、聊天和支付唤起流程。
+## 已验证项
+
+- 后端测试：`cd hu-zhiying/java/hu-server && mvn -q test`
+- 后台构建：`cd hu-zhiying/admin && npm.cmd run build`
+
+## 剩余人工验证
+
+- `uni-app` 仍需在 HBuilderX、真机或模拟器完成一次完整冒烟。
+- 重点关注：首页、上传、地图、聊天、支付唤起以及跨角色订单流转。

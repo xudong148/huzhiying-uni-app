@@ -10,7 +10,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * OpenAPI 分组文档配置，便于在 Knife4j、Swagger UI 和 Apifox 中按端查看接口。
+ * OpenAPI 分组配置。
+ * 1. 供 Knife4j 页面展示。
+ * 2. 供 Apifox / Apiform 导入。
+ * 3. 供 Markdown 脚本离线导出。
  */
 @Configuration
 public class OpenApiConfig {
@@ -19,9 +22,9 @@ public class OpenApiConfig {
     public OpenAPI huZhiYingOpenApi() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("呼之应开放接口")
+                        .title("呼之应开放接口文档")
                         .version("v1")
-                        .description("三端统一业务接口文档，覆盖 C 端、师傅端、后台和支付能力。"))
+                        .description("呼之应平台内闭环接口契约，覆盖 C 端、师傅端、后台与支付流程。"))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components().addSecuritySchemes(
                         "bearerAuth",
@@ -37,6 +40,7 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("mobile")
                 .pathsToMatch(
+                        "/api/home",
                         "/api/auth/**",
                         "/api/users/**",
                         "/api/addresses/**",
@@ -44,12 +48,14 @@ public class OpenApiConfig {
                         "/api/services/**",
                         "/api/products/**",
                         "/api/search/**",
+                        "/api/orders/**",
                         "/api/service-orders/**",
                         "/api/product-orders/**",
                         "/api/quotations/**",
                         "/api/coupons/**",
                         "/api/members/**",
                         "/api/messages/**",
+                        "/api/files/**",
                         "/api/map/**"
                 )
                 .build();
@@ -59,7 +65,16 @@ public class OpenApiConfig {
     public GroupedOpenApi masterOpenApi() {
         return GroupedOpenApi.builder()
                 .group("master")
-                .pathsToMatch("/api/master/**", "/api/dispatch/**", "/api/notifications/**")
+                .pathsToMatch(
+                        "/api/master/**",
+                        "/api/dispatch/**",
+                        "/api/notifications/**",
+                        "/api/service-orders/**",
+                        "/api/orders/**",
+                        "/api/quotations/**",
+                        "/api/messages/**",
+                        "/api/files/**"
+                )
                 .build();
     }
 

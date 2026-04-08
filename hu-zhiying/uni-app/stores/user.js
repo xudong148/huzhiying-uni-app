@@ -13,11 +13,11 @@ function loadUserState() {
 
 function defaultProfile() {
   return {
-    id: 10001,
-    nickname: '周女士',
-    mobile: '138****5288',
+    id: null,
+    nickname: '未登录',
+    mobile: '',
     avatar: '/static/user.png',
-    level: 'SVIP 预备用户',
+    level: '',
   };
 }
 
@@ -43,7 +43,7 @@ export const useUserStore = defineStore('user', () => {
     token.value = payload.token;
     refreshToken.value = payload.refreshToken;
     role.value = payload.role || 'user';
-    profile.value = payload.profile || profile.value;
+    profile.value = payload.profile || defaultProfile();
     persist();
   }
 

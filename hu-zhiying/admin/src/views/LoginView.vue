@@ -1,20 +1,34 @@
 <template>
   <div class="login-page">
     <div class="login-card">
-      <!-- 登录卡片头部 -->
       <div class="login-card__eyebrow">Dispatch Console</div>
       <h1>呼之应运营后台</h1>
-      <p>订单调度、履约监控、财务结算与仲裁处理统一工作台。</p>
-      <el-button type="primary" size="large" :loading="loading" @click="handleLogin">进入后台</el-button>
+      <p>后台账号改为真实登录，菜单和权限随角色返回，不再使用静态演示会话。</p>
+
+      <el-form ref="formRef" :model="form" :rules="rules" label-position="top" class="login-form">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="form.username" autocomplete="username" placeholder="请输入后台用户名" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input
+            v-model="form.password"
+            type="password"
+            show-password
+            autocomplete="current-password"
+            placeholder="请输入后台密码"
+            @keyup.enter="handleLogin"
+          />
+        </el-form-item>
+        <div class="login-card__hint">默认种子账号：`admin / Admin@123456`</div>
+        <el-button type="primary" size="large" :loading="loading" class="login-card__submit" @click="handleLogin">
+          登录后台
+        </el-button>
+      </el-form>
     </div>
   </div>
 </template>
 
 <script setup>
-/**
- * 后台登录页。
- * 当前通过真实短信登录接口获取后台会话。
- */
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
@@ -24,19 +38,28 @@ import { useAdminUserStore } from '../stores/user';
 const router = useRouter();
 const store = useAdminUserStore();
 const loading = ref(false);
+const formRef = ref(null);
+const form = ref({
+  username: 'admin',
+  password: 'Admin@123456',
+});
+
+const rules = {
+  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+};
 
 async function handleLogin() {
+  const valid = await formRef.value?.validate().catch(() => false);
+  if (!valid) {
+    return;
+  }
+
   loading.value = true;
   try {
-    const session = await loginAsAdmin();
-    store.login({
-      ...session,
-      profile: {
-        name: '呼之应运营后台',
-        role: '超级管理员',
-      },
-    });
-    router.replace('/dashboard');
+    const session = await loginAsAdmin(form.value);
+    store.login(session);
+    router.replace(store.firstAllowedPath);
   } catch (error) {
     ElMessage.error(error.message || '登录失败');
   } finally {
@@ -46,7 +69,6 @@ async function handleLogin() {
 </script>
 
 <style scoped>
-/* 登录页布局 */
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -59,10 +81,10 @@ async function handleLogin() {
 }
 
 .login-card {
-  width: 440px;
+  width: 460px;
   padding: 40px;
   border-radius: 32px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
 }
 
@@ -89,5 +111,19 @@ async function handleLogin() {
   margin: 14px 0 28px;
   color: #667085;
   line-height: 1.6;
+}
+
+.login-form {
+  margin-top: 8px;
+}
+
+.login-card__hint {
+  margin: 4px 0 18px;
+  color: #667085;
+  font-size: 12px;
+}
+
+.login-card__submit {
+  width: 100%;
 }
 </style>

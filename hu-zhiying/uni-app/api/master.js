@@ -17,7 +17,7 @@ function normalizeOrder(item) {
     ...item,
     address: item.address?.detail || item.address || '待补充地址',
     price: Number(item.amount || 0),
-    statusText: statusTextMap[item.status] || '订单处理中',
+    statusText: item.statusText || statusTextMap[item.status] || '订单处理中',
     timeline: item.timeline || [],
     quotation: item.quotation || null,
   };
@@ -44,14 +44,12 @@ export async function getDispatchOrders() {
 
 /**
  * 师傅抢单。
- * @param {string} taskId
- * @param {string} masterName
  */
-export function claimDispatchOrder(taskId, masterName = '张师傅') {
+export function claimDispatchOrder(taskId, payload = {}) {
   return request({
     url: `/api/dispatch/tasks/${taskId}/claim`,
     method: 'POST',
-    data: { masterName },
+    data: payload,
   });
 }
 
@@ -63,6 +61,7 @@ export async function getMasterDashboard() {
   return {
     data: {
       ...response.data,
+      currentOrder: response.data.currentOrder ? normalizeOrder(response.data.currentOrder) : null,
       orders: (response.data.orders || []).map(normalizeOrder),
     },
   };
@@ -92,7 +91,6 @@ export function getMasterSettings() {
 
 /**
  * 保存师傅接单设置。
- * @param {{listening:boolean,maxDistance:string,privacyNumber:boolean}} payload
  */
 export function saveMasterSettings(payload) {
   return request({
@@ -104,7 +102,6 @@ export function saveMasterSettings(payload) {
 
 /**
  * 提交师傅入驻申请。
- * @param {object} payload
  */
 export function applyMaster(payload) {
   return request({
@@ -116,8 +113,6 @@ export function applyMaster(payload) {
 
 /**
  * 到场签到。
- * @param {string} orderId
- * @param {{latitude:number,longitude:number,accuracy:number}} payload
  */
 export function checkInOrder(orderId, payload) {
   return request({
@@ -129,8 +124,6 @@ export function checkInOrder(orderId, payload) {
 
 /**
  * 上传施工前媒体。
- * @param {string} orderId
- * @param {{fileIds:number[],note:string}} payload
  */
 export function uploadBeforeWorkMedia(orderId, payload) {
   return request({
@@ -142,8 +135,6 @@ export function uploadBeforeWorkMedia(orderId, payload) {
 
 /**
  * 上传完工媒体。
- * @param {string} orderId
- * @param {{fileIds:number[],note:string}} payload
  */
 export function uploadAfterWorkMedia(orderId, payload) {
   return request({

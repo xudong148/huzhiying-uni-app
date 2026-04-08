@@ -14,6 +14,8 @@ public class PlatformFacadeService {
     }
 
     public Object login(String role) { return commandService.login(role); }
+    public Object refresh(String refreshToken) { return commandService.refresh(refreshToken); }
+    public Object homeData() { return queryService.homeData(); }
     public Object categories() { return queryService.categories(); }
     public Object services() { return queryService.services(); }
     public Object serviceDetail(Long serviceItemId) { return queryService.serviceDetail(serviceItemId); }
@@ -30,7 +32,7 @@ public class PlatformFacadeService {
     public Object coupons() { return queryService.coupons(); }
     public Object currentMember() { return queryService.currentMember(); }
     public Object serviceOrders() { return queryService.serviceOrders(); }
-    public Object serviceOrder(String id) { return queryService.serviceOrder(id); }
+    public Object serviceOrder(String id) { return queryService.serviceOrderDetail(id); }
     public Object orderTracking(String id) { return queryService.orderTracking(id); }
     public Object serviceComments(Long serviceItemId) { return queryService.serviceComments(serviceItemId); }
     public Object createServiceOrder(Long serviceItemId, String title, String appointment, Long addressId, String description, boolean emergency, boolean nightService, java.util.List<Long> evidenceFileIds) {
