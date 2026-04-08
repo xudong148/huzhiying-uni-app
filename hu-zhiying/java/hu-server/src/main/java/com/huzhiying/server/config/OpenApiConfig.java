@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * OpenAPI 分组文档配置，便于在 Swagger UI 和 Apifox 中按端查看接口。
+ * OpenAPI 分组文档配置，便于在 Knife4j、Swagger UI 和 Apifox 中按端查看接口。
  */
 @Configuration
 public class OpenApiConfig {

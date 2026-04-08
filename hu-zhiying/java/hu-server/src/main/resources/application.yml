@@ -34,9 +34,11 @@ spring:
 springdoc:
   api-docs:
     path: /v3/api-docs
-  swagger-ui:
-    tags-sorter: alpha
-    operations-sorter: alpha
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
 
 management:
   endpoints:

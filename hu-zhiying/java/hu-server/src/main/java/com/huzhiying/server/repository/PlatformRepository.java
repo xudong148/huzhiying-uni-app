@@ -347,6 +347,10 @@ public class PlatformRepository {
                 .getResultList();
     }
 
+    public Optional<WalletTransactionEntity> findWalletTransaction(Long id) {
+        return Optional.ofNullable(entityManager.find(WalletTransactionEntity.class, id));
+    }
+
     public WalletTransactionEntity saveWalletTransaction(WalletTransactionEntity entity) {
         return entityManager.merge(entity);
     }
@@ -402,6 +406,10 @@ public class PlatformRepository {
     public List<ArbitrationCaseEntity> listArbitrations() {
         return entityManager.createQuery("select a from ArbitrationCaseEntity a order by a.id asc", ArbitrationCaseEntity.class)
                 .getResultList();
+    }
+
+    public Optional<ArbitrationCaseEntity> findArbitration(String id) {
+        return Optional.ofNullable(entityManager.find(ArbitrationCaseEntity.class, id));
     }
 
     public List<CouponEntity> listCoupons() {

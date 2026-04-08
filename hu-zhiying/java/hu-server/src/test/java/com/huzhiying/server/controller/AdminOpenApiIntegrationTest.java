@@ -7,9 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -26,6 +29,17 @@ class AdminOpenApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paths").exists())
                 .andExpect(jsonPath("$.paths['/api/admin/content/banners']").exists());
+    }
+
+    @Test
+    void shouldExposeKnife4jDocumentPage() throws Exception {
+        mockMvc.perform(get("/doc.html"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("knife4j")));
+
+        mockMvc.perform(get("/swagger-ui/index.html"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/doc.html"));
     }
 
     @Test
