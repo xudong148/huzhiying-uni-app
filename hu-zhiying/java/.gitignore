@@ -1,0 +1,14 @@
+.idea/
+*.iml
+
+**/target/
+logs/
+
+.project
+.classpath
+.settings/
+.factorypath
+
+.DS_Store
+hs_err_pid*
+*.log
