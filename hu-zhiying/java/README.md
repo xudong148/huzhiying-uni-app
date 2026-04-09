@@ -24,11 +24,11 @@
 
 ## 本地启动
 
-1. 进入根工程：`cd hu-zhiying`
+1. 进入 Java 工程：`cd hu-zhiying/java`
 2. 启动基础依赖：`docker compose up -d`
-3. 启动后端：`cd java/hu-server && mvn spring-boot:run "-Dspring-boot.run.profiles=test"`
-4. 启动后台：`cd ../../admin && npm.cmd install && npm.cmd run dev`
-5. 使用 HBuilderX 打开 `hu-zhiying/uni-app` 运行移动端工程
+3. 启动后端：`powershell -ExecutionPolicy Bypass -File .\scripts\start-hu-server.ps1 -Profile test`
+4. 启动后台：`cd ../admin && npm.cmd install && npm.cmd run dev`
+5. 使用 HBuilderX 打开 `../uni-app` 运行移动端工程
 
 ## 当前基线
 
@@ -58,8 +58,8 @@
 
 ## 已验证项
 
-- 后端测试：`cd hu-zhiying/java/hu-server && mvn -q test`
-- 后台构建：`cd hu-zhiying/admin && npm.cmd run build`
+- 后端测试：`cd hu-server && mvn -q test`
+- 后台构建：`cd ../admin && npm.cmd run build`
 
 ## 剩余人工验证
 

@@ -2,7 +2,7 @@
 
 > 说明
 > 1. 本文是上线审计陪跑文档，不再单独定义产品范围。
-> 2. 页面范围、角色边界、状态机与渠道能力以 [`docs/spec/PRODUCT-SPEC.md`](./docs/spec/PRODUCT-SPEC.md) 和 [`docs/spec/DOMAIN-API-SPEC.md`](./docs/spec/DOMAIN-API-SPEC.md) 为准。
+> 2. 页面范围、角色边界、状态机与渠道能力以 [`../spec/PRODUCT-SPEC.md`](../spec/PRODUCT-SPEC.md) 和 [`../spec/DOMAIN-API-SPEC.md`](../spec/DOMAIN-API-SPEC.md) 为准。
 
 ## 目标
 

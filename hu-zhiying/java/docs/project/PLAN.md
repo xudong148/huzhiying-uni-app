@@ -1,18 +1,18 @@
 # 呼之应规格包与落地路线
 
-本文件只保留规格落地路线，完整业务规格已收口到 [`docs/spec`](./docs/spec/README.md)。
+本文件只保留规格落地路线，完整业务规格已收口到 [`../spec`](../spec/README.md)。
 
 ## 规格入口
 
-- 产品摘要：[`docs/spec/PRODUCT-SUMMARY.md`](./docs/spec/PRODUCT-SUMMARY.md)
-- 主规格：[`docs/spec/PRODUCT-SPEC.md`](./docs/spec/PRODUCT-SPEC.md)
-- 领域与接口：[`docs/spec/DOMAIN-API-SPEC.md`](./docs/spec/DOMAIN-API-SPEC.md)
+- 产品摘要：[`../spec/PRODUCT-SUMMARY.md`](../spec/PRODUCT-SUMMARY.md)
+- 主规格：[`../spec/PRODUCT-SPEC.md`](../spec/PRODUCT-SPEC.md)
+- 领域与接口：[`../spec/DOMAIN-API-SPEC.md`](../spec/DOMAIN-API-SPEC.md)
 
 ## 落地顺序
 
 ### Phase 1：单一事实来源
 
-- 顶层文档改为索引入口，需求、流程、数据、接口统一收口到 `docs/spec`
+- 项目文档改为索引入口，需求、流程、数据、接口统一收口到 `../spec`
 - 页面矩阵、角色矩阵、状态机、错误码、审计规则进入正式规格
 - 文档同步规则固定下来，禁止后续再分裂成多份口头版本
 

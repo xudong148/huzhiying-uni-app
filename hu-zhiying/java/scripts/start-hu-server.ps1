@@ -5,8 +5,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
-$javaRoot = Join-Path $repoRoot 'hu-zhiying\java'
+$javaRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
 $serverRoot = Join-Path $javaRoot 'hu-server'
 
 if (-not $SkipBuild) {

@@ -35,7 +35,7 @@
 - 启动命令：
 
 ```powershell
-cd f:\呼之应-uni-app
+cd f:\呼之应-uni-app\hu-zhiying\java
 powershell -ExecutionPolicy Bypass -File .\scripts\start-hu-server.ps1 -Profile test
 ```
 
@@ -177,12 +177,12 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start-hu-server.ps1 -Profile 
 
 ### 7.2 Markdown 文档
 
-- `docs/api/README.md`
-- `docs/api/all.md`
-- `docs/api/mobile.md`
-- `docs/api/master.md`
-- `docs/api/admin.md`
-- `docs/api/payment.md`
+- `../api/README.md`
+- `../api/all.md`
+- `../api/mobile.md`
+- `../api/master.md`
+- `../api/admin.md`
+- `../api/payment.md`
 
 ## 8. 当前完成定义
 

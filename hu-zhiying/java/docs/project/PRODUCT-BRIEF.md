@@ -1,12 +1,12 @@
 # 呼之应 Product Brief
 
-本文件不再承载独立版本的完整需求，产品单一事实来源已收口到 [`docs/spec`](./docs/spec/README.md)。
+本文件不再承载独立版本的完整需求，产品单一事实来源已收口到 [`../spec`](../spec/README.md)。
 
 ## 规格入口
 
-- 产品摘要：[`docs/spec/PRODUCT-SUMMARY.md`](./docs/spec/PRODUCT-SUMMARY.md)
-- 主规格：[`docs/spec/PRODUCT-SPEC.md`](./docs/spec/PRODUCT-SPEC.md)
-- 领域与接口：[`docs/spec/DOMAIN-API-SPEC.md`](./docs/spec/DOMAIN-API-SPEC.md)
+- 产品摘要：[`../spec/PRODUCT-SUMMARY.md`](../spec/PRODUCT-SUMMARY.md)
+- 主规格：[`../spec/PRODUCT-SPEC.md`](../spec/PRODUCT-SPEC.md)
+- 领域与接口：[`../spec/DOMAIN-API-SPEC.md`](../spec/DOMAIN-API-SPEC.md)
 
 ## 当前基线
 
