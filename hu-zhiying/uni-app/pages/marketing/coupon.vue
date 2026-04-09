@@ -1,6 +1,15 @@
 <template>
   <view class="page-shell">
-    <!-- 优惠券列表 -->
+    <view class="coupon-page__hero card">
+      <view class="coupon-page__hero-title">领券中心</view>
+      <view class="coupon-page__hero-desc">平台会在下单时自动优先匹配可用优惠券，减少用户手动选券成本。</view>
+    </view>
+
+    <view v-if="!coupons.length" class="card coupon-page__empty">
+      <text class="coupon-page__empty-title">当前没有可用优惠券</text>
+      <text class="coupon-page__empty-desc">可以先去首页下单、参加活动或联系平台客服补发优惠券。</text>
+    </view>
+
     <view v-for="item in coupons" :key="item.id" class="coupon-page__card">
       <view class="coupon-page__main">
         <view>
@@ -18,25 +27,57 @@
 </template>
 
 <script setup>
-/**
- * 优惠券中心页面。
- * 1. 列表直接读取真实优惠券接口。
- * 2. 页面仅做展示，不保留本地假数据。
- */
 import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { getCouponList } from '../../api/user';
+import { safeAsync } from '../../utils/page-task';
 
 const coupons = ref([]);
 
-onShow(async () => {
+onShow(safeAsync(async () => {
   const res = await getCouponList();
   coupons.value = res.data || [];
-});
+}, '加载优惠券'));
 </script>
 
 <style scoped>
-/* 卡片布局 */
+.coupon-page__hero {
+  padding: 28rpx;
+  margin-bottom: 18rpx;
+}
+
+.coupon-page__hero-title {
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.coupon-page__hero-desc {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #667085;
+}
+
+.coupon-page__empty {
+  padding: 40rpx 28rpx;
+  text-align: center;
+}
+
+.coupon-page__empty-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.coupon-page__empty-desc {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #667085;
+}
+
 .coupon-page__card {
   overflow: hidden;
   border-radius: 32rpx;

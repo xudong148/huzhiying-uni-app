@@ -15,3 +15,8 @@ spring:
 hzy:
   redis:
     enabled: false
+
+management:
+  health:
+    redis:
+      enabled: false

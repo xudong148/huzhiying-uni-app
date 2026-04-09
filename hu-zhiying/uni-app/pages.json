@@ -22,6 +22,12 @@
       }
     },
     {
+      "path": "pages/message/index",
+      "style": {
+        "navigationBarTitleText": "消息中心"
+      }
+    },
+    {
       "path": "pages/message/chat",
       "style": {
         "navigationBarTitleText": "在线沟通"
@@ -43,6 +49,42 @@
       "path": "pages/search/index",
       "style": {
         "navigationBarTitleText": "搜索"
+      }
+    },
+    {
+      "path": "pages/academy/index",
+      "style": {
+        "navigationBarTitleText": "小应学堂"
+      }
+    },
+    {
+      "path": "pages/academy/detail",
+      "style": {
+        "navigationBarTitleText": "学堂详情"
+      }
+    },
+    {
+      "path": "pages/mall/index",
+      "style": {
+        "navigationBarTitleText": "精选商城"
+      }
+    },
+    {
+      "path": "pages/community/index",
+      "style": {
+        "navigationBarTitleText": "同城圈子"
+      }
+    },
+    {
+      "path": "pages/community/detail",
+      "style": {
+        "navigationBarTitleText": "帖子详情"
+      }
+    },
+    {
+      "path": "pages/community/publish",
+      "style": {
+        "navigationBarTitleText": "发布帖子"
       }
     },
     {
@@ -72,7 +114,7 @@
     {
       "path": "pages/order/refund",
       "style": {
-        "navigationBarTitleText": "售后申请"
+        "navigationBarTitleText": "申请售后"
       }
     },
     {
@@ -114,7 +156,7 @@
     {
       "path": "pages/marketing/coupon",
       "style": {
-        "navigationBarTitleText": "优惠券中心"
+        "navigationBarTitleText": "领券中心"
       }
     }
   ],
@@ -174,7 +216,7 @@
         "text": "订单"
       },
       {
-        "pagePath": "pages/message/chat",
+        "pagePath": "pages/message/index",
         "iconPath": "static/goods.png",
         "selectedIconPath": "static/goods.png",
         "text": "消息"

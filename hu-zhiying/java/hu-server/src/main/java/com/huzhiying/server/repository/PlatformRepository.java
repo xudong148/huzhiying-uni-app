@@ -3,15 +3,22 @@ package com.huzhiying.server.repository;
 import com.huzhiying.domain.enums.DomainEnums.RoleCode;
 import com.huzhiying.server.persistence.PersistenceEntities.AddressEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ArbitrationCaseEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.CommunityCommentEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.CommunityPostEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.CommunityReportEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.AuthSessionEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.AcademyArticleEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.AcademyCategoryEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.BannerEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.CouponEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.DispatchTaskEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.EcosystemCardEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MasterProfileEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MenuEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MemberLevelEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MediaFileEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageItemEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionReadEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.NoticeEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
@@ -458,7 +465,22 @@ public class PlatformRepository {
                 .getResultList();
     }
 
+    public Optional<MessageSessionReadEntity> findMessageSessionRead(String sessionId, String readerCode) {
+        return entityManager.createQuery(
+                        "select m from MessageSessionReadEntity m where m.sessionId = :sessionId and m.readerCode = :readerCode",
+                        MessageSessionReadEntity.class
+                )
+                .setParameter("sessionId", sessionId)
+                .setParameter("readerCode", readerCode)
+                .getResultStream()
+                .findFirst();
+    }
+
     public MessageItemEntity saveMessageItem(MessageItemEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public MessageSessionReadEntity saveMessageSessionRead(MessageSessionReadEntity entity) {
         return entityManager.merge(entity);
     }
 
@@ -486,6 +508,106 @@ public class PlatformRepository {
 
     public List<NoticeEntity> listNotices() {
         return entityManager.createQuery("select n from NoticeEntity n order by n.id asc", NoticeEntity.class).getResultList();
+    }
+
+    public List<EcosystemCardEntity> listEcosystemCards() {
+        return entityManager.createQuery(
+                        "select e from EcosystemCardEntity e order by e.sortOrder asc, e.id asc",
+                        EcosystemCardEntity.class
+                )
+                .getResultList();
+    }
+
+    public List<AcademyCategoryEntity> listAcademyCategories(boolean onlyEnabled) {
+        String queryText = onlyEnabled
+                ? "select c from AcademyCategoryEntity c where c.enabled = true order by c.sortOrder asc, c.id asc"
+                : "select c from AcademyCategoryEntity c order by c.sortOrder asc, c.id asc";
+        return entityManager.createQuery(queryText, AcademyCategoryEntity.class).getResultList();
+    }
+
+    public Optional<AcademyCategoryEntity> findAcademyCategory(Long id) {
+        return Optional.ofNullable(entityManager.find(AcademyCategoryEntity.class, id));
+    }
+
+    public List<AcademyArticleEntity> listAcademyArticles(Long categoryId, boolean onlyPublished) {
+        StringBuilder queryBuilder = new StringBuilder("select a from AcademyArticleEntity a where 1 = 1");
+        if (categoryId != null) {
+            queryBuilder.append(" and a.categoryId = :categoryId");
+        }
+        if (onlyPublished) {
+            queryBuilder.append(" and a.enabled = true and a.published = true");
+        }
+        queryBuilder.append(" order by a.sortOrder asc, a.id desc");
+        TypedQuery<AcademyArticleEntity> query = entityManager.createQuery(queryBuilder.toString(), AcademyArticleEntity.class);
+        if (categoryId != null) {
+            query.setParameter("categoryId", categoryId);
+        }
+        return query.getResultList();
+    }
+
+    public Optional<AcademyArticleEntity> findAcademyArticle(Long id) {
+        return Optional.ofNullable(entityManager.find(AcademyArticleEntity.class, id));
+    }
+
+    public List<CommunityPostEntity> listCommunityPosts(String cityName, boolean onlyPublished) {
+        StringBuilder queryBuilder = new StringBuilder("select p from CommunityPostEntity p where 1 = 1");
+        if (cityName != null && !cityName.isBlank()) {
+            queryBuilder.append(" and p.cityName = :cityName");
+        }
+        if (onlyPublished) {
+            queryBuilder.append(" and p.statusCode = 'PUBLISHED'");
+        }
+        queryBuilder.append(" order by p.createdAt desc, p.id desc");
+        TypedQuery<CommunityPostEntity> query = entityManager.createQuery(queryBuilder.toString(), CommunityPostEntity.class);
+        if (cityName != null && !cityName.isBlank()) {
+            query.setParameter("cityName", cityName);
+        }
+        return query.getResultList();
+    }
+
+    public Optional<CommunityPostEntity> findCommunityPost(Long id) {
+        return Optional.ofNullable(entityManager.find(CommunityPostEntity.class, id));
+    }
+
+    public List<CommunityCommentEntity> listCommunityComments(Long postId) {
+        return entityManager.createQuery(
+                        "select c from CommunityCommentEntity c where c.postId = :postId order by c.id asc",
+                        CommunityCommentEntity.class
+                )
+                .setParameter("postId", postId)
+                .getResultList();
+    }
+
+    public List<CommunityReportEntity> listCommunityReports() {
+        return entityManager.createQuery(
+                        "select r from CommunityReportEntity r order by r.createdAt desc, r.id desc",
+                        CommunityReportEntity.class
+                )
+                .getResultList();
+    }
+
+    public Optional<CommunityReportEntity> findCommunityReport(Long id) {
+        return Optional.ofNullable(entityManager.find(CommunityReportEntity.class, id));
+    }
+
+    public AcademyCategoryEntity saveAcademyCategory(AcademyCategoryEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public AcademyArticleEntity saveAcademyArticle(AcademyArticleEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public CommunityPostEntity saveCommunityPost(CommunityPostEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public CommunityCommentEntity saveCommunityComment(CommunityCommentEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public CommunityReportEntity saveCommunityReport(CommunityReportEntity entity) {
+        return entityManager.merge(entity);
     }
 
     public List<ArbitrationCaseEntity> listArbitrations() {

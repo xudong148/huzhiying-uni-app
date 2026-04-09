@@ -15,9 +15,6 @@ export const useLocationStore = defineStore('location', () => {
     ...DEFAULT_CITY,
   });
 
-  /**
-   * 调用平台地图接口刷新当前位置。
-   */
   async function locate() {
     return new Promise((resolve) => {
       uni.getLocation({
@@ -53,9 +50,6 @@ export const useLocationStore = defineStore('location', () => {
     });
   }
 
-  /**
-   * 手动覆盖当前位置。
-   */
   function setLocation(payload) {
     current.value = {
       ...current.value,

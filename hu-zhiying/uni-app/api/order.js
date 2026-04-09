@@ -78,9 +78,6 @@ function normalizeProductOrder(item) {
   };
 }
 
-/**
- * 查询订单列表。
- */
 export async function getOrderList() {
   const [serviceRes, productRes] = await Promise.all([
     request({ url: '/api/service-orders' }),
@@ -95,9 +92,6 @@ export async function getOrderList() {
   };
 }
 
-/**
- * 查询订单详情。
- */
 export async function getOrderDetail(orderId) {
   const response = orderId.startsWith('PO')
     ? await request({ url: `/api/product-orders/${orderId}` })
@@ -110,16 +104,10 @@ export async function getOrderDetail(orderId) {
   };
 }
 
-/**
- * 查询订单轨迹。
- */
 export function getOrderTracking(orderId) {
   return request({ url: `/api/orders/${orderId}/tracking` });
 }
 
-/**
- * 查询预约时段。
- */
 export async function getTimeSlots() {
   const response = await request({ url: '/api/service-orders/time-slots' });
   return {
@@ -127,9 +115,6 @@ export async function getTimeSlots() {
   };
 }
 
-/**
- * 创建服务订单。
- */
 export function createServiceOrder(payload) {
   return request({
     url: '/api/service-orders',
@@ -138,9 +123,6 @@ export function createServiceOrder(payload) {
   });
 }
 
-/**
- * 创建商品订单。
- */
 export function createProductOrder(payload) {
   return request({
     url: '/api/product-orders',
@@ -149,9 +131,6 @@ export function createProductOrder(payload) {
   });
 }
 
-/**
- * 创建微信预支付单。
- */
 export function requestWechatPrepay(orderId) {
   return request({
     url: '/api/payments/wechat/prepay',
@@ -160,9 +139,6 @@ export function requestWechatPrepay(orderId) {
   });
 }
 
-/**
- * 确认增项报价。
- */
 export function confirmQuotation(quotationId) {
   return request({
     url: `/api/quotations/${quotationId}/confirm`,
@@ -170,9 +146,6 @@ export function confirmQuotation(quotationId) {
   });
 }
 
-/**
- * 更新服务订单状态。
- */
 export function updateServiceOrderStatus(orderId, status) {
   return request({
     url: `/api/service-orders/${orderId}/status`,
@@ -181,9 +154,6 @@ export function updateServiceOrderStatus(orderId, status) {
   });
 }
 
-/**
- * 创建增项报价。
- */
 export function createQuotation(orderId, remark) {
   return request({
     url: '/api/quotations',
@@ -192,20 +162,17 @@ export function createQuotation(orderId, remark) {
   });
 }
 
-/**
- * 发起退款。
- */
-export function refundOrder(orderId) {
+export function refundOrder(orderId, payload = {}) {
   return request({
     url: '/api/payments/wechat/refund',
     method: 'POST',
-    data: { orderId },
+    data: {
+      orderId,
+      ...payload,
+    },
   });
 }
 
-/**
- * 取消订单。
- */
 export function cancelOrder(orderId, reason) {
   return request({
     url: `/api/orders/${orderId}/cancel`,
@@ -214,9 +181,6 @@ export function cancelOrder(orderId, reason) {
   });
 }
 
-/**
- * 催单。
- */
 export function urgeOrder(orderId, remark) {
   return request({
     url: `/api/orders/${orderId}/urge`,

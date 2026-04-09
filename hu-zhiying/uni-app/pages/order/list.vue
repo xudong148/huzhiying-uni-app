@@ -1,6 +1,5 @@
 <template>
   <view class="page-shell">
-    <!-- 订单筛选 -->
     <view class="order-list__tabs">
       <view
         v-for="tab in tabs"
@@ -13,15 +12,14 @@
       </view>
     </view>
 
-    <!-- 订单卡片 -->
     <view v-for="item in filteredOrders" :key="item.id" class="card order-list__card pressable" @tap="goDetail(item.id)">
       <view class="order-list__top">
         <view class="order-list__title">{{ item.title }}</view>
         <text class="chip">{{ item.statusText }}</text>
       </view>
-      <view class="order-list__desc">{{ item.type === 'product' ? '商城订单' : '上门服务订单' }}</view>
-      <view class="order-list__meta">预约：{{ item.appointment || '待确认' }}</view>
-      <view class="order-list__meta">地址：{{ item.address }}</view>
+      <view class="order-list__desc">{{ item.type === 'product' ? '商城商品订单' : '上门服务订单' }}</view>
+      <view class="order-list__meta">预约时间：{{ item.appointment || '待确认' }}</view>
+      <view class="order-list__meta">服务地址：{{ item.address }}</view>
       <view class="order-list__bottom">
         <view class="order-list__tags">
           <text v-for="tag in item.tags" :key="tag" class="tag">{{ tag }}</text>
@@ -30,20 +28,18 @@
       </view>
     </view>
 
-    <view v-if="!filteredOrders.length" class="card order-list__empty">当前没有符合条件的订单</view>
+    <view v-if="!filteredOrders.length" class="card order-list__empty">
+      当前没有符合条件的订单。可从首页下单，或检查筛选标签是否过窄。
+    </view>
   </view>
 </template>
 
 <script setup>
-/**
- * 订单列表页。
- * 1. 服务单和商品单通过同一接口适配层聚合展示。
- * 2. 前端只做状态筛选，不再拼接本地假数据。
- */
 import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import PriceFormat from '../../components/price-format.vue';
 import { getOrderList } from '../../api/order';
+import { safeAsync } from '../../utils/page-task';
 
 const tabs = [
   { label: '全部', value: 'all' },
@@ -81,11 +77,10 @@ async function loadOrders() {
   orders.value = res.data || [];
 }
 
-onShow(loadOrders);
+onShow(safeAsync(loadOrders, '加载订单列表'));
 </script>
 
 <style scoped>
-/* 筛选标签 */
 .order-list__tabs {
   display: flex;
   gap: 12rpx;
@@ -108,7 +103,6 @@ onShow(loadOrders);
   color: #ffffff;
 }
 
-/* 订单卡片 */
 .order-list__card {
   padding: 26rpx;
 }
@@ -152,5 +146,6 @@ onShow(loadOrders);
   padding: 40rpx 28rpx;
   color: #667085;
   text-align: center;
+  line-height: 1.7;
 }
 </style>

@@ -71,6 +71,12 @@ public class MasterController {
         return ApiResponse.success(platformFacadeService.messageItems(sessionId));
     }
 
+    @PostMapping("/api/messages/{sessionId}/read")
+    @Operation(summary = "回写会话已读状态")
+    public ApiResponse<?> markRead(@PathVariable("sessionId") String sessionId) {
+        return ApiResponse.success(platformFacadeService.markMessageSessionRead(sessionId));
+    }
+
     @PostMapping("/api/messages/{sessionId}/items")
     @Operation(summary = "发送聊天消息")
     public ApiResponse<?> send(@PathVariable("sessionId") String sessionId, @RequestBody SupportDtos.SendMessageRequest request) {

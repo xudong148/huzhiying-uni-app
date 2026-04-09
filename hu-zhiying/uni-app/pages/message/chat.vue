@@ -1,7 +1,15 @@
 <template>
   <view class="page-container chat-page">
-    <!-- 消息列表 -->
-    <scroll-view scroll-y class="chat-page__scroll" :show-scrollbar="false" :scroll-into-view="scrollIntoView">
+    <view class="chat-page__network" :class="`chat-page__network--${socketState}`">
+      {{ socketStateText }}
+    </view>
+
+    <scroll-view
+      scroll-y
+      class="chat-page__scroll"
+      :show-scrollbar="false"
+      :scroll-into-view="scrollIntoView"
+    >
       <view class="page-shell">
         <view
           v-for="item in messages"
@@ -27,34 +35,34 @@
       <view class="safe-bottom"></view>
     </scroll-view>
 
-    <!-- 输入工具栏 -->
     <view class="chat-page__input">
       <view class="chat-page__toolbar">
-        <view class="chip" :class="{ 'chat-page__chip--loading': uploadingImage }" @tap="sendImage">图片</view>
-        <view class="chip" :class="{ 'chat-page__chip--loading': uploadingAudio }" @tap="sendAudio">语音</view>
-        <view class="chip" @tap="urgeByChat">催单</view>
+        <view class="chip" :class="{ 'chat-page__chip--loading': uploadingImage }" @tap="safeSendImage">图片</view>
+        <view class="chip" :class="{ 'chat-page__chip--loading': uploadingAudio }" @tap="safeSendAudio">语音</view>
+        <view class="chip" @tap="safeUrgeByChat">催单</view>
       </view>
       <view class="chat-page__composer">
         <input v-model="draft" placeholder="请输入消息内容" />
-        <button class="primary-btn chat-page__send" :loading="sending" @tap="sendText">发送</button>
+        <button class="primary-btn chat-page__send" :loading="sending" @tap="safeSendText">发送</button>
       </view>
     </view>
   </view>
 </template>
 
 <script setup>
-/**
- * 订单聊天页。
- * 1. 首屏消息通过 HTTP 拉取，增量消息通过 WebSocket 同步。
- * 2. 图片和语音先走真实上传接口，再将文件地址作为消息内容发送。
- * 3. 消息气泡方向由 sender 决定，消息展示类型由 type 决定，避免图片/语音消息丢失左右布局。
- */
-import { nextTick, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { onHide, onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 import { uploadMedia } from '../../api/file';
 import { urgeOrder } from '../../api/order';
-import { getChatMessages, sendChatMessage } from '../../api/user';
+import {
+  getChatMessages,
+  getMessageSessions,
+  markChatSessionRead,
+  sendChatMessage,
+} from '../../api/user';
 import { useUserStore } from '../../stores/user';
+import { safeAsync } from '../../utils/page-task';
+import { setPendingChatTarget, syncMessageBadgeBySessions } from '../../utils/message-center';
 import { buildWsUrl } from '../../utils/request';
 
 const store = useUserStore();
@@ -67,9 +75,21 @@ const sessionId = ref('MS-001');
 const orderId = ref('');
 const messages = ref([]);
 const pageVisible = ref(false);
+const socketState = ref('offline');
 
 let socketTask = null;
 let reconnectTimer = null;
+let sessionRefreshTimer = null;
+
+const socketStateText = computed(() => {
+  if (socketState.value === 'online') {
+    return '实时消息已连接';
+  }
+  if (socketState.value === 'connecting') {
+    return '连接中断，正在重连';
+  }
+  return '当前处于离线兜底模式，消息会在刷新后同步';
+});
 
 function normalizeSenderCode() {
   return store.role === 'master' ? 'master' : 'user';
@@ -94,31 +114,66 @@ function previewImage(url) {
   });
 }
 
+async function syncSessionBadge() {
+  const res = await getMessageSessions();
+  syncMessageBadgeBySessions(res.data || []);
+}
+
+async function markCurrentSessionRead() {
+  if (!sessionId.value) {
+    return;
+  }
+  await markChatSessionRead(sessionId.value);
+  await syncSessionBadge();
+}
+
 async function loadMessages() {
   const res = await getChatMessages(sessionId.value);
   messages.value = res.data || [];
-  scrollToBottom();
+  await scrollToBottom();
+  await markCurrentSessionRead();
 }
 
-function clearReconnectTimer() {
+const safeLoadMessages = safeAsync(loadMessages, '加载聊天记录');
+
+function clearTimers() {
   if (reconnectTimer) {
     clearTimeout(reconnectTimer);
     reconnectTimer = null;
   }
+  if (sessionRefreshTimer) {
+    clearTimeout(sessionRefreshTimer);
+    sessionRefreshTimer = null;
+  }
+}
+
+function queueSessionBadgeRefresh() {
+  if (sessionRefreshTimer) {
+    return;
+  }
+  sessionRefreshTimer = setTimeout(async () => {
+    sessionRefreshTimer = null;
+    await safeAsync(syncSessionBadge, '同步消息角标')();
+  }, 180);
 }
 
 function scheduleReconnect() {
   if (!pageVisible.value || socketTask) {
     return;
   }
-  clearReconnectTimer();
+  socketState.value = 'connecting';
+  if (reconnectTimer) {
+    return;
+  }
   reconnectTimer = setTimeout(() => {
+    reconnectTimer = null;
     connectSocket();
   }, 1200);
 }
 
 function closeSocket() {
-  clearReconnectTimer();
+  clearTimers();
+  socketState.value = 'offline';
   if (socketTask) {
     socketTask.close({});
     socketTask = null;
@@ -130,23 +185,36 @@ function connectSocket() {
     return;
   }
 
+  socketState.value = 'connecting';
   socketTask = uni.connectSocket({
     url: buildWsUrl('/ws/chat'),
   });
 
   socketTask.onOpen(() => {
+    socketState.value = 'online';
     socketTask?.send({ data: 'ping' });
   });
 
   socketTask.onMessage((event) => {
     try {
       const payload = JSON.parse(event.data || '{}');
-      if (payload.event !== 'chat_message' || payload.payload?.sessionId !== sessionId.value) {
+      if (payload.event !== 'chat_message') {
+        return;
+      }
+
+      const incomingSessionId = payload.payload?.sessionId;
+      if (!incomingSessionId) {
+        return;
+      }
+
+      if (incomingSessionId !== sessionId.value) {
+        queueSessionBadgeRefresh();
         return;
       }
 
       const message = payload.payload.message;
       if (!message || messages.value.some((item) => item.id === message.id)) {
+        queueSessionBadgeRefresh();
         return;
       }
 
@@ -158,6 +226,7 @@ function connectSocket() {
         time: message.time || '刚刚',
       });
       scrollToBottom();
+      safeAsync(markCurrentSessionRead, '同步会话已读')();
     } catch (error) {
       console.log('聊天消息解析失败', error);
     }
@@ -176,8 +245,11 @@ function connectSocket() {
 
 async function submitMessage(payload) {
   const res = await sendChatMessage(sessionId.value, payload);
-  messages.value.push(res.data);
-  scrollToBottom();
+  if (res.data && !messages.value.some((item) => item.id === res.data.id)) {
+    messages.value.push(res.data);
+  }
+  await scrollToBottom();
+  await markCurrentSessionRead();
 }
 
 async function sendText() {
@@ -255,16 +327,26 @@ async function urgeByChat() {
   uni.showToast({ title: '已提醒平台处理', icon: 'none' });
 }
 
+const safeSendText = safeAsync(sendText, '发送文本消息');
+const safeSendImage = safeAsync(sendImage, '发送图片消息');
+const safeSendAudio = safeAsync(sendAudio, '发送语音消息');
+const safeUrgeByChat = safeAsync(urgeByChat, '聊天催单');
+
 onLoad((options) => {
   sessionId.value = options.sessionId || uni.getStorageSync('hzy-chat-session') || 'MS-001';
   orderId.value = options.orderId || uni.getStorageSync('hzy-chat-order-id') || '';
+  setPendingChatTarget({
+    sessionId: sessionId.value,
+    orderId: orderId.value,
+    autoOpen: false,
+  });
 });
 
-onShow(async () => {
+onShow(safeAsync(async () => {
   pageVisible.value = true;
-  await loadMessages();
+  await safeLoadMessages();
   connectSocket();
-});
+}, '初始化聊天页'));
 
 onHide(() => {
   pageVisible.value = false;
@@ -278,16 +360,29 @@ onUnload(() => {
 </script>
 
 <style scoped>
-/* 页面结构 */
 .chat-page {
   background: #f4f6f9;
 }
 
-.chat-page__scroll {
-  height: calc(100vh - 178rpx);
+.chat-page__network {
+  padding: 14rpx 24rpx;
+  font-size: 22rpx;
+  color: #8b90a0;
+  background: rgba(255, 255, 255, 0.9);
 }
 
-/* 消息气泡 */
+.chat-page__network--online {
+  color: #00b578;
+}
+
+.chat-page__network--connecting {
+  color: #ff7d00;
+}
+
+.chat-page__scroll {
+  height: calc(100vh - 228rpx);
+}
+
 .chat-page__row {
   margin-bottom: 18rpx;
 }
@@ -341,14 +436,13 @@ onUnload(() => {
   color: #8b90a0;
 }
 
-/* 输入区 */
 .chat-page__input {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   padding: 16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .chat-page__toolbar {

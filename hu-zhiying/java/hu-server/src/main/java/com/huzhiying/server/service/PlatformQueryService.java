@@ -6,12 +6,20 @@ import com.huzhiying.domain.model.DomainModels.SearchDocument;
 import com.huzhiying.domain.model.DomainModels.ServiceCategory;
 import com.huzhiying.domain.model.DomainModels.ServiceItem;
 import com.huzhiying.domain.model.DomainModels.ServiceOrder;
+import com.huzhiying.server.dto.ContentDtos;
 import com.huzhiying.server.dto.MapDtos;
 import com.huzhiying.server.dto.SupportDtos;
+import com.huzhiying.server.persistence.PersistenceEntities.AcademyArticleEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.AcademyCategoryEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.CommentEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.CommunityCommentEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.CommunityPostEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.EcosystemCardEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MasterProfileEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MediaFileEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.MessageItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionReadEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceItemEntity;
@@ -24,9 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -318,17 +328,15 @@ public class PlatformQueryService {
     public List<?> messageSessions() {
         AuthSessionService.SessionIdentity identity = authSessionService.currentIdentity(DomainEnums.RoleCode.USER);
         return platformRepository.listMessageSessions().stream()
-                .filter(session -> identity.roleCode() == DomainEnums.RoleCode.MASTER
-                        ? platformRepository.findServiceOrder(session.orderId)
-                                .map(order -> identity.userId().equals(order.masterUserId))
-                                .orElse(false)
-                        : identity.userId().equals(session.participantUserId))
-                .map(session -> assembler.toMessageSession(session, platformRepository.findUser(session.participantUserId).orElse(null)))
+                .filter(session -> canAccessMessageSession(session, identity))
+                .sorted(Comparator.comparingLong((MessageSessionEntity session) -> latestMessageId(session.id)).reversed())
+                .map(session -> buildMessageSessionPayload(session, identity))
                 .toList();
     }
 
     public List<?> messageItems(String sessionId) {
-        return platformRepository.listMessageItems(sessionId).stream().map(assembler::toMessageItem).toList();
+        MessageSessionEntity session = requireAccessibleMessageSession(sessionId, authSessionService.currentIdentity(DomainEnums.RoleCode.USER));
+        return platformRepository.listMessageItems(session.id).stream().map(assembler::toMessageItem).toList();
     }
 
     public List<?> notices() {
@@ -539,10 +547,10 @@ public class PlatformQueryService {
             return null;
         }
 
-        List<com.huzhiying.server.persistence.PersistenceEntities.MessageItemEntity> items = platformRepository.listMessageItems(session.id);
-        String latest = items.isEmpty() ? "" : items.get(items.size() - 1).contentText;
-        String participant = platformRepository.findUser(session.participantUserId).map(user -> user.nickname).orElse("");
-        return new SupportDtos.MessageSummaryPayload(session.id, session.title, participant, items.size(), latest);
+        List<MessageItemEntity> items = platformRepository.listMessageItems(session.id);
+        MessageItemEntity latest = items.isEmpty() ? null : items.get(items.size() - 1);
+        String participant = resolveSessionParticipant(session, authSessionService.currentIdentity(DomainEnums.RoleCode.USER).roleCode());
+        return new SupportDtos.MessageSummaryPayload(session.id, session.title, participant, items.size(), summarizeMessage(latest));
     }
 
     private List<SupportDtos.MediaFilePayload> collectOrderMedia(String orderId) {
@@ -551,6 +559,29 @@ public class PlatformQueryService {
         entities.addAll(platformRepository.listMediaFilesByBiz("before_work_media", orderId));
         entities.addAll(platformRepository.listMediaFilesByBiz("after_work_media", orderId));
         return entities.stream().map(this::toMediaPayload).toList();
+    }
+
+    private SupportDtos.MessageSessionPayload buildMessageSessionPayload(MessageSessionEntity session, AuthSessionService.SessionIdentity identity) {
+        List<MessageItemEntity> items = platformRepository.listMessageItems(session.id);
+        MessageItemEntity latest = items.isEmpty() ? null : items.get(items.size() - 1);
+        String readerCode = messageReaderCode(identity.roleCode());
+        MessageSessionReadEntity readState = platformRepository.findMessageSessionRead(session.id, readerCode).orElse(null);
+        long lastReadMessageId = readState == null || readState.lastReadMessageId == null ? 0L : readState.lastReadMessageId;
+        int unreadCount = (int) items.stream()
+                .filter(item -> item.id != null && item.id > lastReadMessageId)
+                .filter(item -> !readerCode.equals(normalizeMessageSender(item.senderCode)))
+                .count();
+
+        return new SupportDtos.MessageSessionPayload(
+                session.id,
+                session.orderId,
+                session.title,
+                resolveSessionParticipant(session, identity.roleCode()),
+                summarizeMessage(latest),
+                latest == null ? "" : latest.messageTime,
+                unreadCount,
+                items.size()
+        );
     }
 
     private SupportDtos.MediaFilePayload toMediaPayload(MediaFileEntity entity) {
@@ -565,6 +596,67 @@ public class PlatformQueryService {
                 entity.sizeBytes,
                 entity.createdAt
         );
+    }
+
+    private MessageSessionEntity requireAccessibleMessageSession(String sessionId, AuthSessionService.SessionIdentity identity) {
+        MessageSessionEntity session = platformRepository.findMessageSession(sessionId).orElseThrow();
+        if (!canAccessMessageSession(session, identity)) {
+            throw new IllegalStateException("当前会话不可访问");
+        }
+        return session;
+    }
+
+    private boolean canAccessMessageSession(MessageSessionEntity session, AuthSessionService.SessionIdentity identity) {
+        return identity.roleCode() == DomainEnums.RoleCode.MASTER
+                ? platformRepository.findServiceOrder(session.orderId)
+                        .map(order -> identity.userId().equals(order.masterUserId))
+                        .orElse(false)
+                : identity.userId().equals(session.participantUserId);
+    }
+
+    private String resolveSessionParticipant(MessageSessionEntity session, DomainEnums.RoleCode roleCode) {
+        if (roleCode == DomainEnums.RoleCode.MASTER) {
+            return platformRepository.findUser(session.participantUserId)
+                    .map(user -> user.nickname)
+                    .orElse("用户");
+        }
+        return platformRepository.findServiceOrder(session.orderId)
+                .flatMap(order -> Optional.ofNullable(order.masterUserId))
+                .flatMap(platformRepository::findUser)
+                .map(user -> user.nickname)
+                .orElse("平台客服");
+    }
+
+    private String summarizeMessage(MessageItemEntity item) {
+        if (item == null) {
+            return "";
+        }
+        String type = item.messageType == null ? "text" : item.messageType.trim().toLowerCase();
+        return switch (type) {
+            case "image" -> "[图片]";
+            case "audio" -> "[语音]";
+            default -> item.contentText == null ? "" : item.contentText;
+        };
+    }
+
+    private long latestMessageId(String sessionId) {
+        List<MessageItemEntity> items = platformRepository.listMessageItems(sessionId);
+        if (items.isEmpty()) {
+            return 0L;
+        }
+        MessageItemEntity latest = items.get(items.size() - 1);
+        return latest.id == null ? 0L : latest.id;
+    }
+
+    private String messageReaderCode(DomainEnums.RoleCode roleCode) {
+        return roleCode == DomainEnums.RoleCode.MASTER ? "master" : "user";
+    }
+
+    private String normalizeMessageSender(String senderCode) {
+        if (senderCode == null || senderCode.isBlank()) {
+            return "system";
+        }
+        return senderCode.trim().toLowerCase();
     }
 
     private String buildDistanceText(String orderId) {

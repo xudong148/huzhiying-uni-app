@@ -53,7 +53,9 @@
  * 2. 首页选中的类目通过事件总线同步到当前页。
  */
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import { getCategoryTree } from '../../api/service';
+import { safeAsync } from '../../utils/page-task';
 
 const categories = ref([]);
 const activeIndex = ref(0);
@@ -69,17 +71,49 @@ function goGoods(id) {
   uni.navigateTo({ url: `/pages/goods/detail?id=${id}` });
 }
 
-function handleCategorySelected(id) {
-  const index = categories.value.findIndex((item) => item.id === id);
+function findCategoryIndex(identifier) {
+  if (identifier === undefined || identifier === null || identifier === '') {
+    return -1;
+  }
+
+  const normalized = String(identifier);
+  return categories.value.findIndex((item) => (
+    String(item.id) === normalized
+    || item.name === normalized
+    || (item.subs || []).includes(normalized)
+  ));
+}
+
+function handleCategorySelected(identifier) {
+  const index = findCategoryIndex(identifier);
   if (index >= 0) {
     activeIndex.value = index;
   }
 }
 
-onMounted(async () => {
+function applyPendingCategory() {
+  const selected = uni.getStorageSync('hzy-category-selection');
+  if (!selected) {
+    return;
+  }
+
+  uni.removeStorageSync('hzy-category-selection');
+  handleCategorySelected(selected);
+}
+
+const safeLoadCategories = safeAsync(async () => {
   const res = await getCategoryTree();
   categories.value = res.data || [];
+  applyPendingCategory();
+}, '加载分类页');
+
+onMounted(() => {
   uni.$on('category-selected', handleCategorySelected);
+  safeLoadCategories();
+});
+
+onShow(() => {
+  applyPendingCategory();
 });
 
 onUnmounted(() => {

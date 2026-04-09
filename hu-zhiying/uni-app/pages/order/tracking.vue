@@ -1,8 +1,7 @@
 <template>
   <view class="page-shell">
-    <!-- 地图轨迹 -->
     <view class="card tracking__map">
-      <view class="tracking__map-badge">{{ tracking.eta || '待确认 ETA' }}</view>
+      <view class="tracking__map-badge">{{ tracking.eta || 'ETA 待确认' }}</view>
       <map
         class="tracking__map-core"
         :latitude="mapCenter.latitude"
@@ -14,11 +13,10 @@
       />
     </view>
 
-    <!-- 订单摘要 -->
     <view class="card tracking__section">
       <view class="section-title">
         <text class="section-title__text">履约节点</text>
-        <text class="section-title__desc" @tap="refreshTracking">刷新 ETA</text>
+        <text class="section-title__desc" @tap="safeRefreshTracking">刷新 ETA</text>
       </view>
       <view class="tracking__row"><text>预约时间</text><text>{{ tracking.appointment || '待确认' }}</text></view>
       <view class="tracking__row"><text>服务地址</text><text>{{ tracking.address || '待补充地址' }}</text></view>
@@ -26,24 +24,25 @@
       <view class="tracking__row"><text>预计距离</text><text>{{ tracking.distance || '待确认' }}</text></view>
     </view>
 
-    <!-- 轨迹时间线 -->
     <view class="card tracking__section">
       <view class="section-title">
         <text class="section-title__text">轨迹明细</text>
       </view>
-      <view v-for="item in tracking.points" :key="item.id" class="tracking__timeline-item">
-        <view class="tracking__timeline-dot"></view>
-        <view class="tracking__timeline-body">
-          <view class="tracking__timeline-top">
-            <text class="tracking__timeline-title">{{ item.label }}</text>
-            <text class="muted">{{ formatTime(item.time) }}</text>
+      <view v-if="tracking.points?.length">
+        <view v-for="item in tracking.points" :key="item.id" class="tracking__timeline-item">
+          <view class="tracking__timeline-dot"></view>
+          <view class="tracking__timeline-body">
+            <view class="tracking__timeline-top">
+              <text class="tracking__timeline-title">{{ item.label }}</text>
+              <text class="muted">{{ formatTime(item.time) }}</text>
+            </view>
+            <view class="tracking__timeline-desc">{{ item.description }}</view>
           </view>
-          <view class="tracking__timeline-desc">{{ item.description }}</view>
         </view>
       </view>
+      <view v-else class="tracking__empty">还没有轨迹点。师傅接单、出发、到达后会陆续回传履约进度。</view>
     </view>
 
-    <!-- 现场凭证 -->
     <view v-if="tracking.mediaFiles?.length" class="card tracking__section">
       <view class="section-title">
         <text class="section-title__text">现场凭证</text>
@@ -66,15 +65,11 @@
 </template>
 
 <script setup>
-/**
- * 订单轨迹页。
- * 1. 轨迹点从真实订单轨迹接口获取。
- * 2. ETA 和距离提示通过地图接口刷新，避免页面只展示静态文案。
- */
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { getOrderEta } from '../../api/map';
 import { getOrderTracking } from '../../api/order';
+import { safeAsync } from '../../utils/page-task';
 import { buildAbsoluteUrl } from '../../utils/request';
 
 const orderId = ref('');
@@ -187,14 +182,15 @@ async function refreshTracking() {
   };
 }
 
-onLoad(async (options) => {
+const safeRefreshTracking = safeAsync(refreshTracking, '刷新订单轨迹');
+
+onLoad(safeAsync(async (options) => {
   orderId.value = options.id || '';
-  await refreshTracking();
-});
+  await safeRefreshTracking();
+}, '加载订单轨迹'));
 </script>
 
 <style scoped>
-/* 地图区块 */
 .tracking__map {
   position: relative;
   height: 420rpx;
@@ -218,7 +214,6 @@ onLoad(async (options) => {
   font-size: 22rpx;
 }
 
-/* 节点与时间线 */
 .tracking__section {
   margin-top: 20rpx;
   padding: 28rpx;
@@ -233,6 +228,12 @@ onLoad(async (options) => {
 
 .tracking__row + .tracking__row {
   margin-top: 16rpx;
+}
+
+.tracking__empty {
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #667085;
 }
 
 .tracking__timeline-item {

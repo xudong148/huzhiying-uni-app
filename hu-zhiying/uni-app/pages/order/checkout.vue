@@ -2,19 +2,19 @@
   <view class="page-container">
     <scroll-view scroll-y class="order-checkout__scroll" :show-scrollbar="false">
       <view class="page-shell">
-        <!-- 地址区块 -->
         <view class="card order-checkout__section pressable" @tap="goAddress">
           <view class="section-title">
             <text class="section-title__text">服务地址</text>
+            <text class="section-title__desc">{{ selectedAddress.id ? '可点击切换' : '请先选择地址' }}</text>
           </view>
           <view class="order-checkout__title">{{ selectedAddress.address || '请选择服务地址' }}</view>
           <view class="muted">{{ selectedAddress.name || '联系人' }} / {{ selectedAddress.mobile || '手机号' }}</view>
         </view>
 
-        <!-- 预约时段 -->
         <view class="card order-checkout__section">
           <view class="section-title">
             <text class="section-title__text">预约时间</text>
+            <text class="section-title__desc">默认取平台最近可约时段</text>
           </view>
           <view class="order-checkout__chips">
             <view
@@ -29,7 +29,6 @@
           </view>
         </view>
 
-        <!-- 服务信息 -->
         <view class="card order-checkout__section">
           <view class="section-title">
             <text class="section-title__text">服务信息</text>
@@ -38,7 +37,7 @@
           <textarea
             v-model="description"
             class="order-checkout__textarea"
-            placeholder="请描述故障现象，方便师傅提前准备工具和辅材"
+            placeholder="请描述故障现象、使用年限或已尝试过的处理方式，方便师傅提前准备工具和备件。"
           />
           <view class="order-checkout__switch-row">
             <view class="order-checkout__switch-item">
@@ -52,7 +51,6 @@
           </view>
         </view>
 
-        <!-- 图片凭证 -->
         <view class="card order-checkout__section">
           <view class="section-title">
             <text class="section-title__text">图片凭证</text>
@@ -68,14 +66,13 @@
               <image class="order-checkout__media-image" :src="item.url" mode="aspectFill" />
               <view class="order-checkout__media-delete" @tap.stop="removeImage(item.fileId)">×</view>
             </view>
-            <view class="order-checkout__media-add" @tap="chooseImages">
+            <view class="order-checkout__media-add" @tap="safeChooseImages">
               <text class="order-checkout__media-add-icon">+</text>
               <text class="order-checkout__media-add-text">{{ uploadingImages ? '上传中' : '上传图片' }}</text>
             </view>
           </view>
         </view>
 
-        <!-- 录音凭证 -->
         <view class="card order-checkout__section">
           <view class="section-title">
             <text class="section-title__text">录音凭证</text>
@@ -84,52 +81,48 @@
           <view class="order-checkout__audio">
             <view class="order-checkout__audio-info">
               <text class="order-checkout__audio-name">{{ audioFile?.originalName || '未上传录音文件' }}</text>
-              <text class="muted">{{ audioFile ? '已绑定到本次工单' : '支持 mp3 / m4a / amr' }}</text>
+              <text class="muted">{{ audioFile ? '将随本次工单一起提交' : '支持 mp3 / m4a / amr' }}</text>
             </view>
             <view class="order-checkout__audio-actions">
-              <button class="secondary-btn" size="mini" :loading="uploadingAudio" @tap="chooseAudio">上传录音</button>
+              <button class="secondary-btn" size="mini" :loading="uploadingAudio" @tap="safeChooseAudio">上传录音</button>
               <button v-if="audioFile" class="secondary-btn" size="mini" @tap="clearAudio">清除</button>
             </view>
           </view>
         </view>
 
-        <!-- 费用说明 -->
         <view class="card order-checkout__section">
           <view class="section-title">
             <text class="section-title__text">费用说明</text>
+            <text class="section-title__desc">支付成功后平台开始派单</text>
           </view>
           <view class="order-checkout__fee-row"><text>预计服务费</text><text>¥{{ estimatedPrice.toFixed(2) }}</text></view>
           <view class="order-checkout__fee-row"><text>支付方式</text><text>微信支付</text></view>
-          <view class="order-checkout__fee-row"><text>支付能力</text><text>{{ payEnabled ? '已配置商户' : '未配置商户' }}</text></view>
+          <view class="order-checkout__fee-row"><text>支付能力</text><text>{{ payCapabilityText }}</text></view>
         </view>
       </view>
       <view class="safe-bottom"></view>
     </scroll-view>
 
-    <!-- 提交栏 -->
     <view class="order-checkout__submit">
       <view>
         <view class="muted">需支付预付款</view>
         <price-format :value="estimatedPrice" />
       </view>
-      <button class="primary-btn order-checkout__submit-btn" :loading="submitting" @tap="submitOrder">确认并支付</button>
+      <button class="primary-btn order-checkout__submit-btn" :loading="submitting" @tap="safeSubmitOrder">确认并支付</button>
     </view>
   </view>
 </template>
 
 <script setup>
-/**
- * 服务下单页。
- * 1. 地址、时段、支付单都走真实接口。
- * 2. 图片和录音先上传文件，再把文件 ID 一并提交给订单接口。
- */
-import { computed, ref } from 'vue';
-import { onLoad, onShow } from '@dcloudio/uni-app';
+import { computed, ref, watch } from 'vue';
+import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 import PriceFormat from '../../components/price-format.vue';
 import { uploadMedia } from '../../api/file';
 import { createServiceOrder, getTimeSlots, requestWechatPrepay } from '../../api/order';
 import { getAddressList } from '../../api/user';
-import { launchWechatPay } from '../../utils/wechat-pay';
+import { safeAsync } from '../../utils/page-task';
+import { getRequestErrorMessage } from '../../utils/request';
+import { isWechatPayCanceled, launchWechatPay } from '../../utils/wechat-pay';
 
 const serviceItemId = ref(201);
 const serviceTitle = ref('空调上门维修');
@@ -145,7 +138,8 @@ const audioFile = ref(null);
 const uploadingImages = ref(false);
 const uploadingAudio = ref(false);
 const submitting = ref(false);
-const payEnabled = ref(false);
+const submitted = ref(false);
+const payEnabled = ref(null);
 
 const estimatedPrice = computed(() => {
   let amount = 58;
@@ -153,6 +147,48 @@ const estimatedPrice = computed(() => {
   if (nightService.value) amount += 20;
   return amount;
 });
+
+const payCapabilityText = computed(() => {
+  if (payEnabled.value === null) {
+    return '待检测';
+  }
+  return payEnabled.value ? '已配置商户' : '未配置商户';
+});
+
+function getDraftKey() {
+  return `hzy-checkout-draft-${serviceItemId.value}`;
+}
+
+function loadDraft() {
+  try {
+    const draft = uni.getStorageSync(getDraftKey());
+    if (!draft) {
+      return;
+    }
+    selectedSlot.value = draft.selectedSlot || selectedSlot.value;
+    description.value = draft.description || description.value;
+    emergency.value = Boolean(draft.emergency);
+    nightService.value = Boolean(draft.nightService);
+  } catch (error) {
+    // ignore
+  }
+}
+
+function persistDraft() {
+  if (submitted.value) {
+    return;
+  }
+  uni.setStorageSync(getDraftKey(), {
+    selectedSlot: selectedSlot.value,
+    description: description.value,
+    emergency: emergency.value,
+    nightService: nightService.value,
+  });
+}
+
+function clearDraft() {
+  uni.removeStorageSync(getDraftKey());
+}
 
 function goAddress() {
   uni.navigateTo({ url: '/pages/setting/address-list?select=1' });
@@ -190,11 +226,16 @@ function syncSelectedAddress() {
 
 async function loadBaseData() {
   const [addressRes, slotRes] = await Promise.all([getAddressList(), getTimeSlots()]);
-  addressList.value = addressRes.data;
-  slots.value = slotRes.data;
-  selectedSlot.value = selectedSlot.value || slotRes.data[0];
+  addressList.value = addressRes.data || [];
+  slots.value = slotRes.data || [];
+  if (!selectedSlot.value && slots.value.length) {
+    selectedSlot.value = slots.value[0];
+  }
   syncSelectedAddress();
+  loadDraft();
 }
+
+const safeLoadBaseData = safeAsync(loadBaseData, '加载下单页');
 
 async function chooseImages() {
   if (imageFiles.value.length >= 3) {
@@ -236,6 +277,9 @@ async function chooseAudio() {
   }
 }
 
+const safeChooseImages = safeAsync(chooseImages, '上传报修图片');
+const safeChooseAudio = safeAsync(chooseAudio, '上传录音凭证');
+
 async function submitOrder() {
   if (!selectedAddress.value.id) {
     uni.showToast({ title: '请先选择服务地址', icon: 'none' });
@@ -275,11 +319,18 @@ async function submitOrder() {
       });
     } catch (error) {
       payEnabled.value = false;
-      if (error?.errMsg?.includes('cancel')) {
+      if (isWechatPayCanceled(error)) {
         uni.showToast({ title: '你已取消支付，可稍后在订单详情继续支付', icon: 'none' });
+      } else {
+        uni.showToast({
+          title: getRequestErrorMessage(error, '支付暂不可用'),
+          icon: 'none',
+        });
       }
     }
 
+    submitted.value = true;
+    clearDraft();
     setTimeout(() => {
       uni.redirectTo({ url: `/pages/order/detail?id=${orderId}` });
     }, 400);
@@ -288,16 +339,27 @@ async function submitOrder() {
   }
 }
 
+const safeSubmitOrder = safeAsync(submitOrder, '提交服务订单');
+
+watch([selectedSlot, description, emergency, nightService], () => {
+  persistDraft();
+});
+
 onLoad((options) => {
   serviceItemId.value = Number(options.serviceItemId || 201);
   serviceTitle.value = decodeURIComponent(options.title || '空调上门维修');
 });
 
-onShow(loadBaseData);
+onShow(safeLoadBaseData);
+
+onUnload(() => {
+  if (!submitted.value) {
+    persistDraft();
+  }
+});
 </script>
 
 <style scoped>
-/* 页面滚动与分区 */
 .order-checkout__scroll {
   height: calc(100vh - 132rpx);
 }
@@ -331,6 +393,7 @@ onShow(loadBaseData);
   width: 100%;
   min-height: 200rpx;
   padding: 20rpx;
+  box-sizing: border-box;
   border-radius: 24rpx;
   background: #f4f6f9;
   font-size: 26rpx;
@@ -353,7 +416,6 @@ onShow(loadBaseData);
   font-size: 24rpx;
 }
 
-/* 媒体上传区 */
 .order-checkout__media-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -416,6 +478,10 @@ onShow(loadBaseData);
   gap: 20rpx;
 }
 
+.order-checkout__audio-info {
+  flex: 1;
+}
+
 .order-checkout__audio-name {
   display: block;
   font-size: 26rpx;
@@ -427,7 +493,6 @@ onShow(loadBaseData);
   gap: 12rpx;
 }
 
-/* 费用与底部提交 */
 .order-checkout__fee-row {
   display: flex;
   justify-content: space-between;

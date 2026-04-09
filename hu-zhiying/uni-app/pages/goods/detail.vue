@@ -2,27 +2,23 @@
   <view class="page-container goods-page">
     <scroll-view scroll-y class="goods-page__scroll" :show-scrollbar="false">
       <swiper class="goods-page__swiper" circular autoplay indicator-dots>
-        <swiper-item v-for="item in detail.images" :key="item">
+        <swiper-item v-for="item in galleryImages" :key="item">
           <image class="goods-page__image" :src="item" mode="aspectFill" />
         </swiper-item>
       </swiper>
 
       <view class="page-shell goods-page__body">
-        <!-- 基础信息 -->
         <view class="card goods-page__summary">
-          <view class="goods-page__title">{{ detail.title }}</view>
-          <view class="goods-page__subtitle">{{ detail.subtitle }}</view>
+          <view class="goods-page__title">{{ detail.title || (isProduct ? '精选商品' : '上门服务') }}</view>
+          <view class="goods-page__subtitle">{{ detail.subtitle || defaultSubtitle }}</view>
 
           <view class="goods-page__price-row">
-            <price-format :value="displayPrice" :suffix="isProduct ? '起' : '基础检测费'"></price-format>
-            <template v-if="isProduct">
-              <text class="goods-page__guide">{{ detail.deliveryDesc }}</text>
-              <text v-if="detail.createInstallOrder" class="goods-page__guide">购买成功后自动生成安装工单</text>
-            </template>
-            <template v-else>
-              <text class="goods-page__guide">上门费 ¥{{ detail.doorPrice }} / 指导价 {{ detail.guidePrice }}</text>
-              <text class="goods-page__guide">质保说明：{{ detail.warranty }}</text>
-            </template>
+            <price-format :value="displayPrice" :suffix="priceSuffix"></price-format>
+            <text v-if="showOriginalPrice" class="goods-page__origin-price">¥{{ Number(detail.tagPrice || detail.price || 0).toFixed(2) }}</text>
+          </view>
+
+          <view class="goods-page__guides">
+            <text v-for="item in guideLines" :key="item" class="goods-page__guide">{{ item }}</text>
           </view>
 
           <view class="goods-page__guarantees">
@@ -30,13 +26,12 @@
           </view>
         </view>
 
-        <!-- SKU 选择 -->
         <view v-if="isProduct" class="card goods-page__section">
           <view class="section-title">
             <text class="section-title__text">规格选择</text>
-            <text class="section-title__desc">库存实时校验</text>
+            <text class="section-title__desc">下单前请确认型号、价格和库存</text>
           </view>
-          <view class="goods-page__sku-list">
+          <view v-if="detail.skus?.length" class="goods-page__sku-list">
             <view
               v-for="item in detail.skus"
               :key="item.id"
@@ -48,48 +43,57 @@
               <view class="goods-page__sku-meta">¥{{ Number(item.price || 0).toFixed(2) }} / 库存 {{ item.stock }}</view>
             </view>
           </view>
+          <view v-else class="goods-page__empty">当前商品暂未配置规格，建议联系平台先确认后再下单。</view>
         </view>
 
-        <!-- 流程说明 -->
         <view class="card goods-page__section">
           <view class="section-title">
-            <text class="section-title__text">{{ isProduct ? '履约说明' : '服务流程' }}</text>
+            <text class="section-title__text">{{ isProduct ? '下单后会发生什么' : '服务流程' }}</text>
+            <text class="section-title__desc">{{ isProduct ? '把收货、安装和售后路径说清楚' : '让用户知道预约后下一步是什么' }}</text>
           </view>
           <view v-for="(item, index) in processList" :key="`${index}-${item}`" class="goods-page__process-item">
             <view class="goods-page__process-index">{{ index + 1 }}</view>
-            <text>{{ item }}</text>
+            <text class="goods-page__process-text">{{ item }}</text>
           </view>
         </view>
 
-        <!-- 评论区 -->
+        <view class="card goods-page__section">
+          <view class="section-title">
+            <text class="section-title__text">{{ isProduct ? '购买提醒' : '服务承诺' }}</text>
+          </view>
+          <view v-for="item in assuranceList" :key="item" class="goods-page__assurance">{{ item }}</view>
+        </view>
+
         <view v-if="!isProduct" class="card goods-page__section">
           <view class="section-title">
             <text class="section-title__text">用户评价</text>
             <text class="section-title__desc" @tap="goComment">查看全部</text>
           </view>
-          <view v-for="item in previewComments" :key="item.id" class="goods-page__comment">
-            <view class="goods-page__comment-top">
-              <text class="goods-page__comment-user">{{ item.user }}</text>
-              <text class="muted">{{ item.date }}</text>
+          <view v-if="previewComments.length">
+            <view v-for="item in previewComments" :key="item.id" class="goods-page__comment">
+              <view class="goods-page__comment-top">
+                <text class="goods-page__comment-user">{{ item.user }}</text>
+                <text class="muted">{{ item.date }}</text>
+              </view>
+              <view class="goods-page__comment-content">{{ item.content }}</view>
+              <image
+                v-if="item.images?.length"
+                class="goods-page__comment-image"
+                :src="item.images[0]"
+                mode="aspectFill"
+              />
             </view>
-            <view class="goods-page__comment-content">{{ item.content }}</view>
-            <image
-              v-if="item.images?.length"
-              class="goods-page__comment-image"
-              :src="item.images[0]"
-              mode="aspectFill"
-            />
           </view>
+          <view v-else class="goods-page__empty">还没有评价，首批下单用户的反馈会同步展示在这里。</view>
         </view>
 
         <view class="safe-bottom"></view>
       </view>
     </scroll-view>
 
-    <!-- 底部操作栏 -->
     <view class="goods-page__dock">
       <view class="goods-page__dock-actions">
-        <view class="goods-page__dock-item" @tap="goChat">客服</view>
+        <view class="goods-page__dock-item" @tap="goChat">{{ isProduct ? '售前咨询' : '在线客服' }}</view>
         <view class="goods-page__dock-item" @tap="isProduct ? goOrderList() : goComment()">{{ isProduct ? '订单' : '评价' }}</view>
       </view>
       <button class="primary-btn goods-page__dock-btn" :loading="submitting" @tap="handlePrimaryAction">
@@ -100,17 +104,15 @@
 </template>
 
 <script setup>
-/**
- * 商品 / 服务详情页。
- * 1. 服务详情和商品详情都走真实接口。
- * 2. 商品购买走真实商品订单与预支付接口，服务详情直达下单页。
- */
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import PriceFormat from '../../components/price-format.vue';
 import { createProductOrder, requestWechatPrepay } from '../../api/order';
 import { getProductDetail, getServiceComments, getServiceDetail } from '../../api/service';
-import { launchWechatPay } from '../../utils/wechat-pay';
+import { setPendingChatTarget } from '../../utils/message-center';
+import { safeAsync } from '../../utils/page-task';
+import { getRequestErrorMessage } from '../../utils/request';
+import { isWechatPayCanceled, launchWechatPay } from '../../utils/wechat-pay';
 
 const detailMode = ref('service');
 const currentId = ref(201);
@@ -120,7 +122,6 @@ const detail = ref({
   images: [],
   guarantees: [],
   process: [],
-  comments: [],
   skus: [],
   highlights: [],
 });
@@ -129,17 +130,57 @@ const comments = ref([]);
 const isProduct = computed(() => detailMode.value === 'product');
 const selectedSku = computed(() => detail.value.skus?.find((item) => item.id === selectedSkuId.value) || detail.value.skus?.[0] || null);
 const displayPrice = computed(() => (isProduct.value ? selectedSku.value?.price : detail.value.basePrice) || detail.value.price || 0);
+const priceSuffix = computed(() => (isProduct.value ? '起' : '基础检测费'));
+const showOriginalPrice = computed(() => isProduct.value && Number(detail.value.tagPrice || 0) > Number(displayPrice.value || 0));
+const galleryImages = computed(() => detail.value.images?.length ? detail.value.images : ['/static/icons/screwdriver.svg']);
 const tags = computed(() => (isProduct.value ? detail.value.highlights || [] : detail.value.guarantees || []));
 const previewComments = computed(() => comments.value.slice(0, 2));
+
+const defaultSubtitle = computed(() => (
+  isProduct.value
+    ? '平台精选商品，支持下单后查看发货与安装进度。'
+    : '平台严选上门服务，支持预约、支付、订单跟踪和售后处理。'
+));
+
+const guideLines = computed(() => {
+  if (isProduct.value) {
+    return [
+      detail.value.deliveryDesc || '下单后自动进入商品订单，平台同步跟踪发货进度。',
+      detail.value.createInstallOrder ? '支付成功后会自动生成安装工单，避免你重复下单。' : '如需安装服务，可在订单完成后继续预约上门。',
+    ];
+  }
+  return [
+    `上门费 ¥${Number(detail.value.doorPrice || 0).toFixed(2)} / 指导价 ¥${Number(detail.value.guidePrice || 0).toFixed(2)}`,
+    `质保说明：${detail.value.warranty || '按平台服务规范执行售后保障。'}`,
+  ];
+});
+
 const processList = computed(() => {
   if (!isProduct.value) {
-    return detail.value.process || [];
+    return detail.value.process?.length
+      ? detail.value.process
+      : ['提交预约并支付预付款', '平台派单并同步师傅联系你', '上门检测施工并回传履约进度', '订单完成后可继续评价或申请售后'];
   }
   return [
     '完成支付后系统自动生成商品订单',
-    detail.value.createInstallOrder ? '平台同步生成安装工单并推送附近师傅' : '仓库开始备货并安排发货',
-    detail.value.createInstallOrder ? '师傅联系用户确认上门时间并执行安装' : '物流送达后可在订单页查看状态',
-    '订单全程可在订单中心查看进度',
+    detail.value.createInstallOrder ? '平台同步生成安装工单并匹配附近师傅' : '仓库开始备货并安排发货',
+    detail.value.createInstallOrder ? '师傅会联系你确认上门时间并完成安装' : '商品送达后可在订单页查看物流与售后入口',
+    '订单全程都能在订单中心查看进度',
+  ];
+});
+
+const assuranceList = computed(() => {
+  if (isProduct.value) {
+    return [
+      '商品订单支持支付后查看状态，取消支付也不会丢单。',
+      '如商品关联安装，安装工单会自动创建并贯通到订单体系。',
+      '售后入口统一走订单详情，避免用户重复找入口。',
+    ];
+  }
+  return [
+    '下单后会进入真实派单链路，不再停留在演示数据。',
+    '支付失败或取消后，可以在订单详情继续支付，不会重复创建工单。',
+    '如服务未达标，可直接从订单详情进入售后申请。',
   ];
 });
 
@@ -156,6 +197,8 @@ async function loadPage() {
   }
 }
 
+const safeLoadPage = safeAsync(loadPage, '加载详情页');
+
 function goComment() {
   uni.navigateTo({
     url: `/pages/goods/comment?serviceItemId=${currentId.value}`,
@@ -167,8 +210,12 @@ function goOrderList() {
 }
 
 function goChat() {
-  uni.setStorageSync('hzy-chat-session', 'MS-001');
-  uni.switchTab({ url: '/pages/message/chat' });
+  setPendingChatTarget({
+    sessionId: 'MS-001',
+    orderId: '',
+    autoOpen: true,
+  });
+  uni.switchTab({ url: '/pages/message/index' });
 }
 
 function goCheckout() {
@@ -197,8 +244,13 @@ async function buyProduct() {
         icon: 'none',
       });
     } catch (error) {
-      if (error?.errMsg?.includes('cancel')) {
+      if (isWechatPayCanceled(error)) {
         uni.showToast({ title: '你已取消支付，可稍后在订单详情继续支付', icon: 'none' });
+      } else {
+        uni.showToast({
+          title: getRequestErrorMessage(error, '支付暂不可用'),
+          icon: 'none',
+        });
       }
     }
     setTimeout(() => {
@@ -209,9 +261,11 @@ async function buyProduct() {
   }
 }
 
-function handlePrimaryAction() {
+const safeBuyProduct = safeAsync(buyProduct, '创建商品订单');
+
+async function handlePrimaryAction() {
   if (isProduct.value) {
-    buyProduct();
+    await safeBuyProduct();
     return;
   }
   goCheckout();
@@ -220,12 +274,11 @@ function handlePrimaryAction() {
 onLoad((options) => {
   detailMode.value = options.type === 'product' ? 'product' : 'service';
   currentId.value = Number(options.id || (detailMode.value === 'product' ? 1001 : 201));
-  loadPage();
+  safeLoadPage();
 });
 </script>
 
 <style scoped>
-/* 页面主体 */
 .goods-page {
   background: #f4f6f9;
 }
@@ -266,6 +319,19 @@ onLoad((options) => {
 
 .goods-page__price-row {
   margin-top: 20rpx;
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+
+.goods-page__origin-price {
+  font-size: 24rpx;
+  color: #98a2b3;
+  text-decoration: line-through;
+}
+
+.goods-page__guides {
+  margin-top: 12rpx;
 }
 
 .goods-page__guide {
@@ -273,6 +339,7 @@ onLoad((options) => {
   margin-top: 10rpx;
   font-size: 22rpx;
   color: #8b90a0;
+  line-height: 1.6;
 }
 
 .goods-page__guarantees {
@@ -286,7 +353,6 @@ onLoad((options) => {
   margin-top: 20rpx;
 }
 
-/* SKU 与流程 */
 .goods-page__sku-list {
   display: flex;
   flex-direction: column;
@@ -339,7 +405,18 @@ onLoad((options) => {
   font-weight: 700;
 }
 
-/* 评论区域 */
+.goods-page__process-text,
+.goods-page__assurance,
+.goods-page__empty {
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #475467;
+}
+
+.goods-page__assurance + .goods-page__assurance {
+  margin-top: 12rpx;
+}
+
 .goods-page__comment + .goods-page__comment {
   margin-top: 24rpx;
   padding-top: 24rpx;
@@ -370,7 +447,6 @@ onLoad((options) => {
   border-radius: 18rpx;
 }
 
-/* 底部操作栏 */
 .goods-page__dock {
   position: fixed;
   left: 0;

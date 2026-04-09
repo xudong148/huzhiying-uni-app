@@ -46,6 +46,7 @@
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { getServiceComments } from '../../api/service';
+import { safeAsync } from '../../utils/page-task';
 
 const filters = ['全部', '好评', '中评', '差评'];
 const active = ref('全部');
@@ -69,11 +70,11 @@ function previewImages(urls, current) {
   uni.previewImage({ urls, current });
 }
 
-onLoad(async (options) => {
+onLoad(safeAsync(async (options) => {
   serviceItemId.value = Number(options.serviceItemId || 201);
   const res = await getServiceComments(serviceItemId.value);
   list.value = res.data || [];
-});
+}, '加载服务评价'));
 </script>
 
 <style scoped>

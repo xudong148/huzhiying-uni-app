@@ -21,6 +21,7 @@ import com.huzhiying.server.persistence.PersistenceEntities.DispatchTaskEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MasterProfileEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MediaFileEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageItemEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionReadEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductEntity;
@@ -313,16 +314,28 @@ public class PlatformCommandService {
     }
 
     public MessageItem sendMessage(String sessionId, String senderCode, String messageType, String content) {
+        AuthSessionService.SessionIdentity identity = authSessionService.currentIdentity(RoleCode.USER);
+        MessageSessionEntity session = requireAccessibleMessageSession(sessionId);
+        String actualSenderCode = messageReaderCode(identity.roleCode());
         MessageItemEntity entity = new MessageItemEntity();
         entity.sessionId = sessionId;
-        entity.senderCode = senderCode;
+        entity.senderCode = actualSenderCode;
         entity.messageType = messageType == null || messageType.isBlank() ? "text" : messageType;
         entity.contentText = content;
         entity.messageTime = LocalDateTime.now().format(MESSAGE_TIME);
         MessageItem message = assembler.toMessageItem(platformRepository.saveMessageItem(entity));
-        MessageSessionEntity session = platformRepository.findMessageSession(sessionId).orElse(null);
+        touchMessageRead(sessionId, actualSenderCode, message.id());
         webSocketEventGateway.publishChatMessage(Map.of("sessionId", sessionId, "orderId", session == null ? "" : session.orderId, "message", message));
         return message;
+    }
+
+    public SupportDtos.MessageReadPayload markMessageSessionRead(String sessionId) {
+        MessageSessionEntity session = requireAccessibleMessageSession(sessionId);
+        List<MessageItemEntity> items = platformRepository.listMessageItems(session.id);
+        Long latestMessageId = items.isEmpty() ? null : items.get(items.size() - 1).id;
+        String readerCode = messageReaderCode(authSessionService.currentIdentity(RoleCode.USER).roleCode());
+        touchMessageRead(session.id, readerCode, latestMessageId);
+        return new SupportDtos.MessageReadPayload(session.id, latestMessageId, 0);
     }
 
     public Map<String, Object> refundOrder(String orderId) {
@@ -526,6 +539,34 @@ public class PlatformCommandService {
         if (order.masterUserId != null && !order.masterUserId.equals(currentMasterUserId)) {
             throw new IllegalStateException("当前工单不属于当前登录师傅");
         }
+    }
+
+    private MessageSessionEntity requireAccessibleMessageSession(String sessionId) {
+        AuthSessionService.SessionIdentity identity = authSessionService.currentIdentity(RoleCode.USER);
+        MessageSessionEntity session = platformRepository.findMessageSession(sessionId).orElseThrow();
+        boolean accessible = identity.roleCode() == RoleCode.MASTER
+                ? platformRepository.findServiceOrder(session.orderId)
+                        .map(order -> identity.userId().equals(order.masterUserId))
+                        .orElse(false)
+                : identity.userId().equals(session.participantUserId);
+        if (!accessible) {
+            throw new IllegalStateException("当前会话不可访问");
+        }
+        return session;
+    }
+
+    private void touchMessageRead(String sessionId, String readerCode, Long latestMessageId) {
+        MessageSessionReadEntity entity = platformRepository.findMessageSessionRead(sessionId, readerCode)
+                .orElseGet(MessageSessionReadEntity::new);
+        entity.sessionId = sessionId;
+        entity.readerCode = readerCode;
+        entity.lastReadMessageId = latestMessageId;
+        entity.readAt = LocalDateTime.now();
+        platformRepository.saveMessageSessionRead(entity);
+    }
+
+    private String messageReaderCode(RoleCode roleCode) {
+        return roleCode == RoleCode.MASTER ? "master" : "user";
     }
 
     private void createDispatchTaskIfNeeded(ServiceOrderEntity order) {

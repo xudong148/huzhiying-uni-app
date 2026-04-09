@@ -35,8 +35,8 @@
 - 启动命令：
 
 ```powershell
-cd f:\呼之应-uni-app\hu-zhiying\java\hu-server
-mvn spring-boot:run "-Dspring-boot.run.profiles=test"
+cd f:\呼之应-uni-app
+powershell -ExecutionPolicy Bypass -File .\scripts\start-hu-server.ps1 -Profile test
 ```
 
 ## 3. 角色定义
@@ -222,3 +222,11 @@ mvn spring-boot:run "-Dspring-boot.run.profiles=test"
 
 - 路由页存在且标题正常
 - 首页、搜索、详情、下单、订单详情、聊天、轨迹、师傅抢单、工作台、钱包、设置可冒烟
+
+### 9.4 联调稳定性补充要求
+
+- `uni-app` 必须支持在运行时修改后端地址，默认展示当前联调地址
+- 非 H5 端如果后端地址仍为 `localhost / 127.0.0.1`，页面必须明确提示改成电脑局域网 IP
+- 页面生命周期中的异步请求失败时，不得产生未处理 Promise 异常
+- 微信支付未配置、当前端不支持或参数不完整时，必须给出可理解的失败提示
+- Java 多模块工程的测试与启动以 `java` 根目录聚合执行为准，避免 `hu-server` 单模块陈旧依赖导致运行时错误

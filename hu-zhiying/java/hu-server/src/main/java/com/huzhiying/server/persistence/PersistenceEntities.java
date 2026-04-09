@@ -406,6 +406,24 @@ public final class PersistenceEntities {
         public MessageItemEntity() {}
     }
 
+    @Entity(name = "MessageSessionReadEntity")
+    @Table(name = "message_session_reads")
+    public static class MessageSessionReadEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "session_id")
+        public String sessionId;
+        @Column(name = "reader_code")
+        public String readerCode;
+        @Column(name = "last_read_message_id")
+        public Long lastReadMessageId;
+        @Column(name = "read_at")
+        public LocalDateTime readAt;
+
+        public MessageSessionReadEntity() {}
+    }
+
     @Entity(name = "BannerEntity")
     @Table(name = "banners")
     public static class BannerEntity {
@@ -435,6 +453,137 @@ public final class PersistenceEntities {
         public Boolean enabled;
 
         public NoticeEntity() {}
+    }
+
+    @Entity(name = "EcosystemCardEntity")
+    @Table(name = "ecosystem_cards")
+    public static class EcosystemCardEntity {
+        @Id
+        public Long id;
+        public String name;
+        @Column(name = "description_text")
+        public String descriptionText;
+        public String icon;
+        public String color;
+        public String link;
+        @Column(name = "sort_order")
+        public Integer sortOrder;
+        public Boolean enabled;
+
+        public EcosystemCardEntity() {}
+    }
+
+    @Entity(name = "AcademyCategoryEntity")
+    @Table(name = "academy_categories")
+    public static class AcademyCategoryEntity {
+        @Id
+        public Long id;
+        public String name;
+        @Column(name = "description_text")
+        public String descriptionText;
+        public String icon;
+        @Column(name = "sort_order")
+        public Integer sortOrder;
+        public Boolean enabled;
+
+        public AcademyCategoryEntity() {}
+    }
+
+    @Entity(name = "AcademyArticleEntity")
+    @Table(name = "academy_articles")
+    public static class AcademyArticleEntity {
+        @Id
+        public Long id;
+        @Column(name = "category_id")
+        public Long categoryId;
+        public String title;
+        @Column(name = "summary_text")
+        public String summaryText;
+        @Column(name = "cover_image")
+        public String coverImage;
+        @Lob
+        @Column(name = "content_text")
+        public String contentText;
+        @Column(name = "author_name")
+        public String authorName;
+        @Column(name = "sort_order")
+        public Integer sortOrder;
+        public Boolean published;
+        public Boolean enabled;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+        @Column(name = "updated_at")
+        public LocalDateTime updatedAt;
+
+        public AcademyArticleEntity() {}
+    }
+
+    @Entity(name = "CommunityPostEntity")
+    @Table(name = "community_posts")
+    public static class CommunityPostEntity {
+        @Id
+        public Long id;
+        @Column(name = "user_id")
+        public Long userId;
+        @Column(name = "city_name")
+        public String cityName;
+        public String title;
+        @Lob
+        @Column(name = "content_text")
+        public String contentText;
+        @Lob
+        @Column(name = "images_text")
+        public String imagesText;
+        @Column(name = "like_count")
+        public Integer likeCount;
+        @Column(name = "comment_count")
+        public Integer commentCount;
+        @Column(name = "status_code")
+        public String statusCode;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+        @Column(name = "updated_at")
+        public LocalDateTime updatedAt;
+
+        public CommunityPostEntity() {}
+    }
+
+    @Entity(name = "CommunityCommentEntity")
+    @Table(name = "community_comments")
+    public static class CommunityCommentEntity {
+        @Id
+        public Long id;
+        @Column(name = "post_id")
+        public Long postId;
+        @Column(name = "user_id")
+        public Long userId;
+        @Column(name = "content_text")
+        public String contentText;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+
+        public CommunityCommentEntity() {}
+    }
+
+    @Entity(name = "CommunityReportEntity")
+    @Table(name = "community_reports")
+    public static class CommunityReportEntity {
+        @Id
+        public Long id;
+        @Column(name = "post_id")
+        public Long postId;
+        @Column(name = "reporter_user_id")
+        public Long reporterUserId;
+        @Column(name = "reason_text")
+        public String reasonText;
+        @Column(name = "status_code")
+        public String statusCode;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+        @Column(name = "handled_at")
+        public LocalDateTime handledAt;
+
+        public CommunityReportEntity() {}
     }
 
     @Entity(name = "ArbitrationCaseEntity")

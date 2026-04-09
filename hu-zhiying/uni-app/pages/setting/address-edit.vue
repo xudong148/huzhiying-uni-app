@@ -1,6 +1,5 @@
 <template>
   <view class="page-shell">
-    <!-- 地址表单 -->
     <view class="card address-edit__section">
       <view class="address-edit__row">
         <text>联系人</text>
@@ -8,7 +7,7 @@
       </view>
       <view class="address-edit__row">
         <text>手机号</text>
-        <input v-model="form.mobile" placeholder="请输入手机号" />
+        <input v-model="form.mobile" type="number" maxlength="11" placeholder="请输入手机号" />
       </view>
       <view class="address-edit__row">
         <text>标签</text>
@@ -16,7 +15,7 @@
       </view>
       <view class="address-edit__row address-edit__row--column">
         <text>详细地址</text>
-        <textarea v-model="form.address" class="address-edit__textarea" placeholder="支持地图选点与智能解析"></textarea>
+        <textarea v-model="form.address" class="address-edit__textarea" placeholder="支持用当前位置回填，也支持按当前城市做服务范围校验。" />
       </view>
       <view class="address-edit__row">
         <text>设为默认</text>
@@ -24,28 +23,22 @@
       </view>
     </view>
 
-    <!-- 快捷操作 -->
     <view class="address-edit__actions">
-      <button class="secondary-btn" @tap="pickLocation">使用当前位置</button>
-      <button class="secondary-btn" @tap="parseAddress">智能解析</button>
+      <button class="secondary-btn" @tap="safePickLocation">使用当前位置</button>
+      <button class="secondary-btn" @tap="safeParseAddress">服务范围校验</button>
     </view>
 
-    <button class="primary-btn" :loading="submitting" @tap="save">保存地址</button>
+    <button class="primary-btn" :loading="submitting" @tap="safeSave">保存地址</button>
   </view>
 </template>
 
 <script setup>
-/**
- * 地址编辑页。
- * 1. 支持从定位仓库直接带入当前位置。
- * 2. 智能解析会调用真实的服务范围校验接口，提前提示是否可服务。
- * 3. 保存和编辑都走真实地址接口。
- */
 import { reactive, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { checkServiceArea } from '../../api/map';
 import { getAddressList, saveAddress } from '../../api/user';
 import { useLocationStore } from '../../stores/location';
+import { safeAsync, showActionError } from '../../utils/page-task';
 
 const location = useLocationStore();
 const editingId = ref('');
@@ -98,35 +91,48 @@ async function parseAddress() {
   });
 }
 
+function isValidMobile(value) {
+  return /^1\d{10}$/.test(String(value || '').trim());
+}
+
 async function save() {
   if (!form.name || !form.mobile || !form.address) {
     uni.showToast({ title: '请补全地址信息', icon: 'none' });
+    return;
+  }
+  if (!isValidMobile(form.mobile)) {
+    uni.showToast({ title: '请输入正确的手机号', icon: 'none' });
     return;
   }
   submitting.value = true;
   try {
     await saveAddress(form);
     uni.showToast({ title: '地址已保存', icon: 'none' });
-    setTimeout(() => uni.navigateBack(), 500);
+    setTimeout(() => uni.navigateBack(), 400);
+  } catch (error) {
+    showActionError(error, '保存地址失败');
   } finally {
     submitting.value = false;
   }
 }
 
-onLoad(async (options) => {
+const safePickLocation = safeAsync(pickLocation, '填入当前位置');
+const safeParseAddress = safeAsync(parseAddress, '校验服务范围');
+const safeSave = safeAsync(save, '保存地址');
+
+onLoad(safeAsync(async (options) => {
   editingId.value = options.id || '';
   if (!editingId.value) {
     applyForm();
     return;
   }
   const res = await getAddressList();
-  const current = res.data.find((item) => String(item.id) === editingId.value);
+  const current = (res.data || []).find((item) => String(item.id) === editingId.value);
   applyForm(current);
-});
+}, '初始化地址表单'));
 </script>
 
 <style scoped>
-/* 表单布局 */
 .address-edit__section {
   padding: 28rpx;
 }
@@ -162,6 +168,7 @@ onLoad(async (options) => {
   border-radius: 18rpx;
   background: #f4f6f9;
   font-size: 26rpx;
+  box-sizing: border-box;
 }
 
 .address-edit__actions {

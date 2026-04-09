@@ -1,6 +1,15 @@
 <template>
   <view class="page-shell">
-    <!-- 地址列表 -->
+    <view v-if="selectMode" class="card address-page__notice">
+      <text class="address-page__notice-title">请选择本次服务地址</text>
+      <text class="address-page__notice-desc">选择后会自动回填到下单页，不需要重复输入。</text>
+    </view>
+
+    <view v-if="!list.length" class="card address-page__empty">
+      <text class="address-page__empty-title">还没有地址</text>
+      <text class="address-page__empty-desc">建议至少保存 1 个常用地址，避免下单时被地址步骤卡住。</text>
+    </view>
+
     <view
       v-for="item in list"
       :key="item.id"
@@ -8,7 +17,7 @@
     >
       <view class="address-page__body pressable" @tap="handleTap(item)">
         <view class="address-page__top">
-          <view class="address-page__tag">{{ item.tag }}</view>
+          <view class="address-page__tag">{{ item.tag || '常用地址' }}</view>
           <text class="chip" v-if="item.default">默认</text>
         </view>
         <view class="address-page__address">{{ item.address }}</view>
@@ -21,20 +30,15 @@
       </view>
     </view>
 
-    <!-- 新增按钮 -->
     <button class="primary-btn address-page__btn" @tap="goEdit()">新增地址</button>
   </view>
 </template>
 
 <script setup>
-/**
- * 地址列表页。
- * 1. 支持地址选择、编辑和删除。
- * 2. 所有操作都走真实地址接口，不依赖本地假数据。
- */
 import { ref } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import { deleteAddress, getAddressList } from '../../api/user';
+import { safeAsync, showActionError } from '../../utils/page-task';
 
 const list = ref([]);
 const selectMode = ref(false);
@@ -55,36 +59,64 @@ function handleTap(item) {
 
 async function loadAddresses() {
   const res = await getAddressList();
-  list.value = res.data;
+  list.value = res.data || [];
 }
+
+const safeLoadAddresses = safeAsync(loadAddresses, '加载地址列表');
 
 async function handleDelete(id) {
   const modal = await new Promise((resolve) => {
     uni.showModal({
       title: '删除地址',
-      content: '确认删除这条地址吗？',
+      content: '确认删除这条地址吗？删除后下单页将无法继续引用它。',
       success: resolve,
     });
   });
   if (!modal.confirm) {
     return;
   }
-  await deleteAddress(id);
-  uni.showToast({ title: '删除成功', icon: 'none' });
-  await loadAddresses();
+  try {
+    await deleteAddress(id);
+    uni.showToast({ title: '删除成功', icon: 'none' });
+    await safeLoadAddresses();
+  } catch (error) {
+    showActionError(error, '删除地址失败');
+  }
 }
 
 onLoad((options) => {
   selectMode.value = options.select === '1';
 });
 
-onShow(loadAddresses);
+onShow(safeLoadAddresses);
 </script>
 
 <style scoped>
-/* 地址卡片布局 */
+.address-page__notice,
+.address-page__empty,
 .address-page__card {
   padding: 26rpx;
+}
+
+.address-page__notice {
+  margin-bottom: 16rpx;
+}
+
+.address-page__notice-title,
+.address-page__empty-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.address-page__notice-desc,
+.address-page__empty-desc {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #667085;
 }
 
 .address-page__card + .address-page__card {

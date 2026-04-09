@@ -67,6 +67,7 @@ public class PlatformFacadeService {
     }
     public Object messageSessions() { return queryService.messageSessions(); }
     public Object messageItems(String sessionId) { return queryService.messageItems(sessionId); }
+    public Object markMessageSessionRead(String sessionId) { return commandService.markMessageSessionRead(sessionId); }
     public Object sendMessage(String sessionId, String senderCode, String messageType, String content) { return commandService.sendMessage(sessionId, senderCode, messageType, content); }
     public Object notices() { return queryService.notices(); }
     public Object adminDashboard() { return queryService.adminDashboard(); }

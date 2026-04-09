@@ -52,6 +52,8 @@ public class OpenApiConfig {
                         "/api/service-orders/**",
                         "/api/product-orders/**",
                         "/api/quotations/**",
+                        "/api/academy/**",
+                        "/api/community/**",
                         "/api/coupons/**",
                         "/api/members/**",
                         "/api/messages/**",

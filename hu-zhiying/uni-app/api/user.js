@@ -10,10 +10,20 @@ function normalizeMessages(list = []) {
   }));
 }
 
-/**
- * 用户或师傅登录。
- * @param {'user'|'master'} role
- */
+function normalizeMessageSessions(list = []) {
+  return list.map((item) => ({
+    id: item.id || item.sessionId,
+    sessionId: item.sessionId || item.id,
+    orderId: item.orderId || '',
+    title: item.title || '在线沟通',
+    participant: item.participant || '平台客服',
+    latestMessage: item.latestMessage || '',
+    latestTime: item.latestTime || '',
+    unreadCount: Number(item.unreadCount || 0),
+    messageCount: Number(item.messageCount || 0),
+  }));
+}
+
 export function loginWithRole(role = 'user') {
   const api = role === 'user' ? '/api/auth/wechat-login' : '/api/auth/sms-login';
   return request({
@@ -23,17 +33,10 @@ export function loginWithRole(role = 'user') {
   });
 }
 
-/**
- * 查询当前登录用户信息。
- */
 export function getCurrentUser() {
   return request({ url: '/api/users/me' });
 }
 
-/**
- * 更新用户资料。
- * @param {{nickname:string,mobile:string}} payload
- */
 export function updateProfile(payload) {
   return request({
     url: '/api/users/me',
@@ -42,9 +45,6 @@ export function updateProfile(payload) {
   });
 }
 
-/**
- * 查询地址列表。
- */
 export async function getAddressList() {
   const response = await request({ url: '/api/addresses' });
   return {
@@ -56,10 +56,6 @@ export async function getAddressList() {
   };
 }
 
-/**
- * 新增或更新地址。
- * @param {{id?:number|string,tag:string,name:string,mobile:string,address:string,default:boolean}} payload
- */
 export function saveAddress(payload) {
   return request({
     url: '/api/addresses',
@@ -75,10 +71,6 @@ export function saveAddress(payload) {
   });
 }
 
-/**
- * 删除地址。
- * @param {number|string} id
- */
 export function deleteAddress(id) {
   return request({
     url: `/api/addresses/${id}`,
@@ -86,25 +78,21 @@ export function deleteAddress(id) {
   });
 }
 
-/**
- * 查询优惠券列表。
- */
 export function getCouponList() {
   return request({ url: '/api/coupons' });
 }
 
-/**
- * 兼容旧页面查询可服务城市。
- */
 export function getCityList() {
   return request({ url: '/api/map/service-cities' });
 }
 
-/**
- * 查询聊天消息列表。
- * @param {string} sessionId
- * @returns {Promise<{data:Array}>}
- */
+export async function getMessageSessions() {
+  const response = await request({ url: '/api/messages/sessions' });
+  return {
+    data: normalizeMessageSessions(response.data || []),
+  };
+}
+
 export async function getChatMessages(sessionId = 'MS-001') {
   const response = await request({ url: `/api/messages/${sessionId}/items` });
   return {
@@ -112,12 +100,14 @@ export async function getChatMessages(sessionId = 'MS-001') {
   };
 }
 
-/**
- * 发送聊天消息。
- * @param {string} sessionId
- * @param {{senderCode:string,messageType:string,content:string}} payload
- * @returns {Promise<{data:object}>}
- */
+export function markChatSessionRead(sessionId) {
+  return request({
+    url: `/api/messages/${sessionId}/read`,
+    method: 'POST',
+    showErrorToast: false,
+  });
+}
+
 export async function sendChatMessage(sessionId, payload) {
   const response = await request({
     url: `/api/messages/${sessionId}/items`,

@@ -9,11 +9,18 @@
 
 ## 仓库结构
 
-- `hu.md`：产品需求文档与当前交付基线说明。
+- `docs/spec`：项目规格包单一事实来源。
+- `hu.md`：历史基线说明。
 - `hu-zhiying/uni-app`：C 端与师傅端共用的 uni-app 工程。
 - `hu-zhiying/admin`：Vue 3 + Element Plus 管理后台。
 - `hu-zhiying/java`：Spring Boot 后端工程。
 - `docs/api`：根据 OpenAPI 导出的 Markdown 接口文档。
+
+## 规格文档
+
+- 产品摘要：`docs/spec/PRODUCT-SUMMARY.md`
+- 主规格：`docs/spec/PRODUCT-SPEC.md`
+- 领域与接口：`docs/spec/DOMAIN-API-SPEC.md`
 
 ## 本地启动
 

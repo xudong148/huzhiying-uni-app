@@ -1,6 +1,7 @@
 package com.huzhiying.server.controller;
 
 import com.huzhiying.domain.dto.ApiResponse;
+import com.huzhiying.server.service.ContentQueryService;
 import com.huzhiying.server.service.PlatformFacadeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,18 +12,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Tag(name = "mobile-catalog", description = "移动端类目、商品、首页与搜索接口")
-public class CatalogController {
+public class CatalogController extends ApiControllerSupport {
 
     private final PlatformFacadeService platformFacadeService;
+    private final ContentQueryService contentQueryService;
 
-    public CatalogController(PlatformFacadeService platformFacadeService) {
+    public CatalogController(PlatformFacadeService platformFacadeService,
+                             ContentQueryService contentQueryService) {
         this.platformFacadeService = platformFacadeService;
+        this.contentQueryService = contentQueryService;
     }
 
     @GetMapping("/api/home")
     @Operation(summary = "查询首页聚合数据")
     public ApiResponse<?> home() {
-        return ApiResponse.success(platformFacadeService.homeData());
+        return ApiResponse.success(contentQueryService.homeData());
     }
 
     @GetMapping("/api/categories")

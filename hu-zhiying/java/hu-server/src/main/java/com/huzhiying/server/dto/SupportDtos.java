@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 通用支持类 DTO，供首页、订单跟踪、文件、支付和消息接口复用。
+ * 通用支持类 DTO，供首页、订单、文件、支付与消息接口复用。
  */
 public final class SupportDtos {
 
@@ -146,6 +146,38 @@ public final class SupportDtos {
             int messageCount,
             @Schema(description = "最后一条消息", example = "师傅 30 分钟内到达")
             String latestMessage
+    ) {
+    }
+
+    @Schema(name = "MessageSessionPayload", description = "消息会话摘要")
+    public record MessageSessionPayload(
+            @Schema(description = "会话 ID", example = "MS-001")
+            String sessionId,
+            @Schema(description = "关联订单号", example = "SO20260407009")
+            String orderId,
+            @Schema(description = "会话标题", example = "智能锁安装沟通")
+            String title,
+            @Schema(description = "会话对方", example = "李师傅")
+            String participant,
+            @Schema(description = "最后一条消息预览", example = "师傅已出发，约 30 分钟到达")
+            String latestMessage,
+            @Schema(description = "最后消息时间", example = "04-09 14:06")
+            String latestTime,
+            @Schema(description = "未读消息数量", example = "2")
+            int unreadCount,
+            @Schema(description = "消息总数", example = "6")
+            int messageCount
+    ) {
+    }
+
+    @Schema(name = "MessageReadPayload", description = "会话已读回写结果")
+    public record MessageReadPayload(
+            @Schema(description = "会话 ID", example = "MS-001")
+            String sessionId,
+            @Schema(description = "已读到的最后消息 ID", example = "8")
+            Long lastReadMessageId,
+            @Schema(description = "当前未读消息数量", example = "0")
+            int unreadCount
     ) {
     }
 

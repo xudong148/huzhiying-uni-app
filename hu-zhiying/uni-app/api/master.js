@@ -15,7 +15,9 @@ const statusTextMap = {
 function normalizeOrder(item) {
   return {
     ...item,
+    title: item.title || item.serviceName || '待确认服务工单',
     address: item.address?.detail || item.address || '待补充地址',
+    appointment: item.appointment || item.scheduleTime || '以订单详情为准',
     price: Number(item.amount || 0),
     statusText: item.statusText || statusTextMap[item.status] || '订单处理中',
     timeline: item.timeline || [],
@@ -23,9 +25,15 @@ function normalizeOrder(item) {
   };
 }
 
-/**
- * 查询抢派单大厅列表。
- */
+function normalizeTransaction(item = {}) {
+  return {
+    ...item,
+    title: item.title || item.type || '钱包流水',
+    time: item.time || item.createdAt || '',
+    amount: Number(item.amount || 0),
+  };
+}
+
 export async function getDispatchOrders() {
   const response = await request({ url: '/api/dispatch/tasks' });
   return {
@@ -34,17 +42,14 @@ export async function getDispatchOrders() {
       orderId: item.orderId,
       title: item.title,
       income: Number(item.income || 0),
-      distance: item.distance,
-      address: item.area,
-      currentMaster: item.currentMaster,
+      distance: item.distance || '',
+      address: item.area || '',
+      currentMaster: item.currentMaster || '',
       tags: item.tags || [],
     })),
   };
 }
 
-/**
- * 师傅抢单。
- */
 export function claimDispatchOrder(taskId, payload = {}) {
   return request({
     url: `/api/dispatch/tasks/${taskId}/claim`,
@@ -53,9 +58,6 @@ export function claimDispatchOrder(taskId, payload = {}) {
   });
 }
 
-/**
- * 查询师傅工作台。
- */
 export async function getMasterDashboard() {
   const response = await request({ url: '/api/master/dashboard' });
   return {
@@ -67,9 +69,6 @@ export async function getMasterDashboard() {
   };
 }
 
-/**
- * 查询师傅钱包数据。
- */
 export async function getWalletData() {
   const response = await request({ url: '/api/master/wallet' });
   return {
@@ -77,32 +76,37 @@ export async function getWalletData() {
       balance: Number(response.data.account.available || 0),
       frozen: Number(response.data.account.frozen || 0),
       todayIncome: Number(response.data.account.todayIncome || 0),
-      transactions: response.data.transactions || [],
+      transactions: (response.data.transactions || []).map(normalizeTransaction),
     },
   };
 }
 
-/**
- * 查询师傅接单设置。
- */
-export function getMasterSettings() {
-  return request({ url: '/api/master/settings' });
+export async function getMasterSettings() {
+  const response = await request({ url: '/api/master/settings' });
+  return {
+    data: {
+      listening: response.data?.listening !== false,
+      maxDistance: response.data?.maxDistance || '20km',
+      privacyNumber: response.data?.privacyNumber !== false,
+    },
+  };
 }
 
-/**
- * 保存师傅接单设置。
- */
-export function saveMasterSettings(payload) {
-  return request({
+export async function saveMasterSettings(payload) {
+  const response = await request({
     url: '/api/master/settings',
     method: 'POST',
     data: payload,
   });
+  return {
+    data: {
+      listening: response.data?.listening !== false,
+      maxDistance: response.data?.maxDistance || payload.maxDistance || '20km',
+      privacyNumber: response.data?.privacyNumber !== false,
+    },
+  };
 }
 
-/**
- * 提交师傅入驻申请。
- */
 export function applyMaster(payload) {
   return request({
     url: '/api/master/apply',
@@ -111,9 +115,6 @@ export function applyMaster(payload) {
   });
 }
 
-/**
- * 到场签到。
- */
 export function checkInOrder(orderId, payload) {
   return request({
     url: `/api/master/orders/${orderId}/check-in`,
@@ -122,9 +123,6 @@ export function checkInOrder(orderId, payload) {
   });
 }
 
-/**
- * 上传施工前媒体。
- */
 export function uploadBeforeWorkMedia(orderId, payload) {
   return request({
     url: `/api/master/orders/${orderId}/before-work-media`,
@@ -133,9 +131,6 @@ export function uploadBeforeWorkMedia(orderId, payload) {
   });
 }
 
-/**
- * 上传完工媒体。
- */
 export function uploadAfterWorkMedia(orderId, payload) {
   return request({
     url: `/api/master/orders/${orderId}/after-work-media`,

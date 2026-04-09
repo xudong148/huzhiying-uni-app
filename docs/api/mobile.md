@@ -12,7 +12,7 @@
 - 文档标题：`呼之应开放接口文档`
 - 版本：`v1`
 - 分组：`mobile`
-- 接口数量：`41`
+- 接口数量：`57`
 - OpenAPI 地址：`http://localhost:8080/v3/api-docs/mobile`
 
 ## 鉴权说明
@@ -21,13 +21,28 @@
 
 ## 接口目录
 
+- [GET /api/academy/articles](#get-api-academy-articles)
+- [GET /api/academy/articles/{id}](#get-api-academy-articles-id)
+- [GET /api/academy/categories](#get-api-academy-categories)
 - [GET /api/addresses](#get-api-addresses)
 - [POST /api/addresses](#post-api-addresses)
 - [DELETE /api/addresses/{id}](#delete-api-addresses-id)
+- [POST /api/auth/admin-login](#post-api-auth-admin-login)
+- [POST /api/auth/mobile-login](#post-api-auth-mobile-login)
 - [POST /api/auth/refresh](#post-api-auth-refresh)
+- [POST /api/auth/register](#post-api-auth-register)
+- [POST /api/auth/send-code](#post-api-auth-send-code)
+- [GET /api/auth/session](#get-api-auth-session)
 - [POST /api/auth/sms-login](#post-api-auth-sms-login)
 - [POST /api/auth/wechat-login](#post-api-auth-wechat-login)
 - [GET /api/categories](#get-api-categories)
+- [GET /api/community/posts](#get-api-community-posts)
+- [POST /api/community/posts](#post-api-community-posts)
+- [GET /api/community/posts/{id}](#get-api-community-posts-id)
+- [GET /api/community/posts/{id}/comments](#get-api-community-posts-id-comments)
+- [POST /api/community/posts/{id}/comments](#post-api-community-posts-id-comments)
+- [POST /api/community/posts/{id}/like](#post-api-community-posts-id-like)
+- [POST /api/community/posts/{id}/report](#post-api-community-posts-id-report)
 - [GET /api/coupons](#get-api-coupons)
 - [GET /api/files/{id}](#get-api-files-id)
 - [GET /api/files/{id}/content](#get-api-files-id-content)
@@ -40,6 +55,7 @@
 - [GET /api/members/current](#get-api-members-current)
 - [GET /api/messages/{sessionId}/items](#get-api-messages-sessionid-items)
 - [POST /api/messages/{sessionId}/items](#post-api-messages-sessionid-items)
+- [POST /api/messages/{sessionId}/read](#post-api-messages-sessionid-read)
 - [GET /api/messages/sessions](#get-api-messages-sessions)
 - [POST /api/orders/{id}/cancel](#post-api-orders-id-cancel)
 - [GET /api/orders/{id}/tracking](#get-api-orders-id-tracking)
@@ -62,6 +78,127 @@
 - [GET /api/services/{id}/comments](#get-api-services-id-comments)
 - [GET /api/users/me](#get-api-users-me)
 - [PUT /api/users/me](#put-api-users-me)
+
+## GET /api/academy/articles
+
+- 摘要：查询学堂文章
+- 标签：mobile-content
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `GET` |
+| 路径 | `/api/academy/articles` |
+| OperationId | `academyArticles` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `categoryId` | query | 否 | `integer` | - |
+
+### 请求体
+
+- 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/academy/articles/{id}
+
+- 摘要：查询学堂文章详情
+- 标签：mobile-content
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `GET` |
+| 路径 | `/api/academy/articles/{id}` |
+| OperationId | `academyArticle` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/academy/categories
+
+- 摘要：查询学堂栏目
+- 标签：mobile-content
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `GET` |
+| 路径 | `/api/academy/categories` |
+| OperationId | `academyCategories` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+- 当前接口没有显式参数。
+
+### 请求体
+
+- 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
 
 ## GET /api/addresses
 
@@ -193,6 +330,137 @@
 | `data` | `object` | 否 | - |
 | `data` | `object` | 否 | - |
 
+## POST /api/auth/admin-login
+
+- 摘要：后台账号密码登录
+- 标签：auth
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/auth/admin-login` |
+| OperationId | `adminLogin` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+- 当前接口没有显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `username` | `string` | 是 | - |
+| `password` | `string` | 是 | - |
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `AuthSessionPayload` | 否 | - |
+| `data.token` | `string` | 否 | 访问令牌 |
+| `data.refreshToken` | `string` | 否 | 刷新令牌 |
+| `data.role` | `string` | 否 | 当前登录角色 |
+| `data.accessExpiresAt` | `string` | 否 | 访问令牌过期时间 |
+| `data.refreshExpiresAt` | `string` | 否 | 刷新令牌过期时间 |
+| `data.profile` | `AuthProfilePayload` | 否 | - |
+| `data.profile.id` | `integer` | 否 | 用户 ID |
+| `data.profile.username` | `string` | 否 | 登录用户名 |
+| `data.profile.name` | `string` | 否 | 显示名称 |
+| `data.profile.mobile` | `string` | 否 | 手机号 |
+| `data.profile.roleCode` | `string` | 否 | 角色编码 |
+| `data.profile.roleName` | `string` | 否 | 角色名称 |
+| `data.menus` | `array<AuthMenuPayload>` | 否 | - |
+| `data.menus` | `array<AuthMenuPayload>` | 否 | - |
+| `data.menus[].id` | `integer` | 否 | 菜单 ID |
+| `data.menus[].name` | `string` | 否 | 菜单名称 |
+| `data.menus[].path` | `string` | 否 | 菜单路径 |
+| `data.menus[].icon` | `string` | 否 | 图标 |
+| `data.permissions` | `array<string>` | 否 | - |
+| `data.permissions` | `array<string>` | 否 | - |
+
+## POST /api/auth/mobile-login
+
+- 摘要：手机号验证码登录
+- 标签：auth
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/auth/mobile-login` |
+| OperationId | `mobileLogin` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+- 当前接口没有显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `mobile` | `string` | 是 | - |
+| `code` | `string` | 是 | - |
+| `role` | `string` | 否 | - |
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `AuthSessionPayload` | 否 | - |
+| `data.token` | `string` | 否 | 访问令牌 |
+| `data.refreshToken` | `string` | 否 | 刷新令牌 |
+| `data.role` | `string` | 否 | 当前登录角色 |
+| `data.accessExpiresAt` | `string` | 否 | 访问令牌过期时间 |
+| `data.refreshExpiresAt` | `string` | 否 | 刷新令牌过期时间 |
+| `data.profile` | `AuthProfilePayload` | 否 | - |
+| `data.profile.id` | `integer` | 否 | 用户 ID |
+| `data.profile.username` | `string` | 否 | 登录用户名 |
+| `data.profile.name` | `string` | 否 | 显示名称 |
+| `data.profile.mobile` | `string` | 否 | 手机号 |
+| `data.profile.roleCode` | `string` | 否 | 角色编码 |
+| `data.profile.roleName` | `string` | 否 | 角色名称 |
+| `data.menus` | `array<AuthMenuPayload>` | 否 | - |
+| `data.menus` | `array<AuthMenuPayload>` | 否 | - |
+| `data.menus[].id` | `integer` | 否 | 菜单 ID |
+| `data.menus[].name` | `string` | 否 | 菜单名称 |
+| `data.menus[].path` | `string` | 否 | 菜单路径 |
+| `data.menus[].icon` | `string` | 否 | 图标 |
+| `data.permissions` | `array<string>` | 否 | - |
+| `data.permissions` | `array<string>` | 否 | - |
+
 ## POST /api/auth/refresh
 
 - 摘要：刷新登录态
@@ -220,6 +488,7 @@
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `refreshToken` | `string` | 是 | - |
+| `clientType` | `string` | 否 | - |
 
 ### 响应说明
 
@@ -235,12 +504,203 @@
 | --- | --- | --- | --- |
 | `success` | `boolean` | 否 | - |
 | `message` | `string` | 否 | - |
-| `data` | `object` | 否 | - |
-| `data` | `object` | 否 | - |
+| `data` | `AuthSessionPayload` | 否 | - |
+| `data.token` | `string` | 否 | 访问令牌 |
+| `data.refreshToken` | `string` | 否 | 刷新令牌 |
+| `data.role` | `string` | 否 | 当前登录角色 |
+| `data.accessExpiresAt` | `string` | 否 | 访问令牌过期时间 |
+| `data.refreshExpiresAt` | `string` | 否 | 刷新令牌过期时间 |
+| `data.profile` | `AuthProfilePayload` | 否 | - |
+| `data.profile.id` | `integer` | 否 | 用户 ID |
+| `data.profile.username` | `string` | 否 | 登录用户名 |
+| `data.profile.name` | `string` | 否 | 显示名称 |
+| `data.profile.mobile` | `string` | 否 | 手机号 |
+| `data.profile.roleCode` | `string` | 否 | 角色编码 |
+| `data.profile.roleName` | `string` | 否 | 角色名称 |
+| `data.menus` | `array<AuthMenuPayload>` | 否 | - |
+| `data.menus` | `array<AuthMenuPayload>` | 否 | - |
+| `data.menus[].id` | `integer` | 否 | 菜单 ID |
+| `data.menus[].name` | `string` | 否 | 菜单名称 |
+| `data.menus[].path` | `string` | 否 | 菜单路径 |
+| `data.menus[].icon` | `string` | 否 | 图标 |
+| `data.permissions` | `array<string>` | 否 | - |
+| `data.permissions` | `array<string>` | 否 | - |
+
+## POST /api/auth/register
+
+- 摘要：手机号注册
+- 标签：auth
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/auth/register` |
+| OperationId | `register` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+- 当前接口没有显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `mobile` | `string` | 是 | - |
+| `code` | `string` | 是 | - |
+| `nickname` | `string` | 是 | - |
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `AuthSessionPayload` | 否 | - |
+| `data.token` | `string` | 否 | 访问令牌 |
+| `data.refreshToken` | `string` | 否 | 刷新令牌 |
+| `data.role` | `string` | 否 | 当前登录角色 |
+| `data.accessExpiresAt` | `string` | 否 | 访问令牌过期时间 |
+| `data.refreshExpiresAt` | `string` | 否 | 刷新令牌过期时间 |
+| `data.profile` | `AuthProfilePayload` | 否 | - |
+| `data.profile.id` | `integer` | 否 | 用户 ID |
+| `data.profile.username` | `string` | 否 | 登录用户名 |
+| `data.profile.name` | `string` | 否 | 显示名称 |
+| `data.profile.mobile` | `string` | 否 | 手机号 |
+| `data.profile.roleCode` | `string` | 否 | 角色编码 |
+| `data.profile.roleName` | `string` | 否 | 角色名称 |
+| `data.menus` | `array<AuthMenuPayload>` | 否 | - |
+| `data.menus` | `array<AuthMenuPayload>` | 否 | - |
+| `data.menus[].id` | `integer` | 否 | 菜单 ID |
+| `data.menus[].name` | `string` | 否 | 菜单名称 |
+| `data.menus[].path` | `string` | 否 | 菜单路径 |
+| `data.menus[].icon` | `string` | 否 | 图标 |
+| `data.permissions` | `array<string>` | 否 | - |
+| `data.permissions` | `array<string>` | 否 | - |
+
+## POST /api/auth/send-code
+
+- 摘要：发送手机验证码
+- 标签：auth
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/auth/send-code` |
+| OperationId | `sendCode` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+- 当前接口没有显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `mobile` | `string` | 是 | - |
+| `purpose` | `string` | 是 | - |
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `SmsCodePayload` | 否 | - |
+| `data.mobile` | `string` | 否 | 手机号 |
+| `data.purpose` | `string` | 否 | 用途 |
+| `data.expiresInSeconds` | `integer` | 否 | 过期秒数 |
+
+## GET /api/auth/session
+
+- 摘要：读取当前登录态
+- 标签：auth
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `GET` |
+| 路径 | `/api/auth/session` |
+| OperationId | `session` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+- 当前接口没有显式参数。
+
+### 请求体
+
+- 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `AuthSessionPayload` | 否 | - |
+| `data.token` | `string` | 否 | 访问令牌 |
+| `data.refreshToken` | `string` | 否 | 刷新令牌 |
+| `data.role` | `string` | 否 | 当前登录角色 |
+| `data.accessExpiresAt` | `string` | 否 | 访问令牌过期时间 |
+| `data.refreshExpiresAt` | `string` | 否 | 刷新令牌过期时间 |
+| `data.profile` | `AuthProfilePayload` | 否 | - |
+| `data.profile.id` | `integer` | 否 | 用户 ID |
+| `data.profile.username` | `string` | 否 | 登录用户名 |
+| `data.profile.name` | `string` | 否 | 显示名称 |
+| `data.profile.mobile` | `string` | 否 | 手机号 |
+| `data.profile.roleCode` | `string` | 否 | 角色编码 |
+| `data.profile.roleName` | `string` | 否 | 角色名称 |
+| `data.menus` | `array<AuthMenuPayload>` | 否 | - |
+| `data.menus` | `array<AuthMenuPayload>` | 否 | - |
+| `data.menus[].id` | `integer` | 否 | 菜单 ID |
+| `data.menus[].name` | `string` | 否 | 菜单名称 |
+| `data.menus[].path` | `string` | 否 | 菜单路径 |
+| `data.menus[].icon` | `string` | 否 | 图标 |
+| `data.permissions` | `array<string>` | 否 | - |
+| `data.permissions` | `array<string>` | 否 | - |
 
 ## POST /api/auth/sms-login
 
-- 摘要：短信登录
+- 摘要：兼容保留：短信登录
 - 标签：auth
 
 ### 请求信息
@@ -264,7 +724,7 @@
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `role` | `string` | 是 | - |
+| `role` | `string` | 否 | - |
 
 ### 响应说明
 
@@ -285,7 +745,7 @@
 
 ## POST /api/auth/wechat-login
 
-- 摘要：微信登录
+- 摘要：兼容保留：微信登录
 - 标签：auth
 
 ### 请求信息
@@ -309,7 +769,7 @@
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `role` | `string` | 是 | - |
+| `role` | `string` | 否 | - |
 
 ### 响应说明
 
@@ -349,6 +809,314 @@
 ### 请求体
 
 - 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/community/posts
+
+- 摘要：查询圈子帖子
+- 标签：mobile-content
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `GET` |
+| 路径 | `/api/community/posts` |
+| OperationId | `communityPosts` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `cityName` | query | 否 | `string` | - |
+
+### 请求体
+
+- 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/community/posts
+
+- 摘要：发布圈子帖子
+- 标签：mobile-content
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/community/posts` |
+| OperationId | `createCommunityPost` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+- 当前接口没有显式参数。
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `cityName` | `string` | 否 | 城市 |
+| `title` | `string` | 否 | 标题 |
+| `content` | `string` | 否 | 正文 |
+| `images` | `array<string>` | 否 | - |
+| `images` | `array<string>` | 否 | - |
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/community/posts/{id}
+
+- 摘要：查询圈子帖子详情
+- 标签：mobile-content
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `GET` |
+| 路径 | `/api/community/posts/{id}` |
+| OperationId | `communityPost` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/community/posts/{id}/comments
+
+- 摘要：查询圈子评论
+- 标签：mobile-content
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `GET` |
+| 路径 | `/api/community/posts/{id}/comments` |
+| OperationId | `communityComments` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/community/posts/{id}/comments
+
+- 摘要：发布圈子评论
+- 标签：mobile-content
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/community/posts/{id}/comments` |
+| OperationId | `createCommunityComment` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `content` | `string` | 否 | 评论内容 |
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/community/posts/{id}/like
+
+- 摘要：点赞圈子帖子
+- 标签：mobile-content
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/community/posts/{id}/like` |
+| OperationId | `likeCommunityPost` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/community/posts/{id}/report
+
+- 摘要：举报圈子帖子
+- 标签：mobile-content
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/community/posts/{id}/report` |
+| OperationId | `reportCommunityPost` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | path | 是 | `integer` | - |
+
+### 请求体
+
+#### Content-Type: `application/json`
+
+#### 请求字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `reason` | `string` | 否 | 举报原因 |
+| `detail` | `string` | 否 | 补充说明 |
 
 ### 响应说明
 
@@ -868,6 +1636,47 @@
 | `senderCode` | `string` | 否 | 发送方编码 |
 | `messageType` | `string` | 否 | 消息类型 |
 | `content` | `string` | 否 | 消息内容，文本消息为正文，图片或语音消息为文件 URL |
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/messages/{sessionId}/read
+
+- 摘要：回写会话已读状态
+- 标签：master
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/messages/{sessionId}/read` |
+| OperationId | `markRead` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `sessionId` | path | 是 | `string` | - |
+
+### 请求体
+
+- 当前接口没有请求体。
 
 ### 响应说明
 

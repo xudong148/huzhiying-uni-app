@@ -12,7 +12,7 @@
 - 文档标题：`呼之应开放接口文档`
 - 版本：`v1`
 - 分组：`master`
-- 接口数量：`28`
+- 接口数量：`29`
 - OpenAPI 地址：`http://localhost:8080/v3/api-docs/master`
 
 ## 鉴权说明
@@ -37,6 +37,7 @@
 - [GET /api/master/wallet](#get-api-master-wallet)
 - [GET /api/messages/{sessionId}/items](#get-api-messages-sessionid-items)
 - [POST /api/messages/{sessionId}/items](#post-api-messages-sessionid-items)
+- [POST /api/messages/{sessionId}/read](#post-api-messages-sessionid-read)
 - [GET /api/messages/sessions](#get-api-messages-sessions)
 - [GET /api/notifications](#get-api-notifications)
 - [POST /api/orders/{id}/cancel](#post-api-orders-id-cancel)
@@ -739,6 +740,47 @@
 | `senderCode` | `string` | 否 | 发送方编码 |
 | `messageType` | `string` | 否 | 消息类型 |
 | `content` | `string` | 否 | 消息内容，文本消息为正文，图片或语音消息为文件 URL |
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/messages/{sessionId}/read
+
+- 摘要：回写会话已读状态
+- 标签：master
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/messages/{sessionId}/read` |
+| OperationId | `markRead` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `sessionId` | path | 是 | `string` | - |
+
+### 请求体
+
+- 当前接口没有请求体。
 
 ### 响应说明
 
