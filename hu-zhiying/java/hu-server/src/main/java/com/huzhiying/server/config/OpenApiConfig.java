@@ -56,6 +56,7 @@ public class OpenApiConfig {
                         "/api/community/**",
                         "/api/coupons/**",
                         "/api/members/**",
+                        "/api/notifications/**",
                         "/api/messages/**",
                         "/api/files/**",
                         "/api/map/**"

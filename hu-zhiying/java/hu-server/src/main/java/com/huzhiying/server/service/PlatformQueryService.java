@@ -1,6 +1,7 @@
 package com.huzhiying.server.service;
 
 import com.huzhiying.domain.enums.DomainEnums;
+import com.huzhiying.server.dto.AdminOverviewDtos;
 import com.huzhiying.domain.model.DomainModels.MemberLevel;
 import com.huzhiying.domain.model.DomainModels.SearchDocument;
 import com.huzhiying.domain.model.DomainModels.ServiceCategory;
@@ -11,6 +12,7 @@ import com.huzhiying.server.dto.MapDtos;
 import com.huzhiying.server.dto.SupportDtos;
 import com.huzhiying.server.persistence.PersistenceEntities.AcademyArticleEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.AcademyCategoryEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.AuditLogEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.CommentEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.CommunityCommentEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.CommunityPostEntity;
@@ -20,8 +22,11 @@ import com.huzhiying.server.persistence.PersistenceEntities.MediaFileEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionReadEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.NotificationTaskEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.ProductOrderEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.RefundRequestEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceOrderEntity;
 import com.huzhiying.server.repository.PlatformRepository;
@@ -33,10 +38,12 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,6 +56,7 @@ public class PlatformQueryService {
     private final PlatformDomainSupport domainSupport;
     private final MapService mapService;
     private final AuthSessionService authSessionService;
+    private final NotificationDispatchService notificationDispatchService;
     private final boolean wechatPayEnabled;
     private final String wechatAppId;
     private final String wechatMerchantId;
@@ -58,6 +66,7 @@ public class PlatformQueryService {
                                 PlatformDomainSupport domainSupport,
                                 MapService mapService,
                                 AuthSessionService authSessionService,
+                                NotificationDispatchService notificationDispatchService,
                                 @Value("${hzy.wechat.pay-enabled:false}") boolean wechatPayEnabled,
                                 @Value("${hzy.wechat.app-id:}") String wechatAppId,
                                 @Value("${hzy.wechat.mch-id:}") String wechatMerchantId) {
@@ -66,6 +75,7 @@ public class PlatformQueryService {
         this.domainSupport = domainSupport;
         this.mapService = mapService;
         this.authSessionService = authSessionService;
+        this.notificationDispatchService = notificationDispatchService;
         this.wechatPayEnabled = wechatPayEnabled;
         this.wechatAppId = wechatAppId;
         this.wechatMerchantId = wechatMerchantId;
@@ -255,13 +265,39 @@ public class PlatformQueryService {
         return buildServiceOrderDetailPayload(order);
     }
 
+    public SupportDtos.AfterSalesPayload afterSalesDetail(String orderId) {
+        RefundRequestEntity refundRequest = platformRepository.findLatestRefundRequestByOrderId(orderId)
+                .orElseThrow(() -> new IllegalStateException("当前订单暂无售后申请"));
+        List<MediaFileEntity> evidenceFiles = platformRepository.listMediaFilesByBiz("refund_evidence", refundRequest.bizNo);
+        return new SupportDtos.AfterSalesPayload(
+                refundRequest.bizNo,
+                refundRequest.orderId,
+                "SERVICE".equalsIgnoreCase(refundRequest.orderType) ? "service" : "product",
+                refundRequest.status == null ? "" : refundRequest.status.name(),
+                refundStatusText(refundRequest),
+                refundRequest.reasonText == null ? "" : refundRequest.reasonText,
+                refundRequest.channel == null ? "" : refundRequest.channel,
+                refundRequest.amount,
+                refundRequest.createdAt,
+                refundRequest.approvedAt,
+                refundRequest.completedAt,
+                buildAfterSalesReviewRemark(refundRequest),
+                evidenceFiles.stream().map(this::toMediaPayload).toList(),
+                buildAfterSalesTimeline(refundRequest),
+                refundRequest.status != DomainEnums.RefundRequestStatus.COMPLETED
+        );
+    }
+
     public SupportDtos.OrderTrackingPayload orderTracking(String orderId) {
         ServiceOrderEntity entity = domainSupport.findServiceOrderEntity(orderId);
+        var paymentRecord = platformRepository.findLatestPaymentRecordByOrderId(orderId).orElse(null);
         List<SupportDtos.OrderTrackPointPayload> points = platformRepository.listTrackPoints(orderId).stream()
                 .map(this::toTrackPointPayload)
                 .toList();
         return new SupportDtos.OrderTrackingPayload(
                 entity.id,
+                paymentRecord == null ? "" : paymentRecord.channel,
+                paymentRecord == null ? "" : paymentRecord.bizNo,
                 domainSupport.statusLabel(entity.status),
                 entity.appointment,
                 platformRepository.findAddress(entity.addressId).map(address -> address.detailAddress).orElse(""),
@@ -281,7 +317,7 @@ public class PlatformQueryService {
     }
 
     public Object productOrder(String id) {
-        return domainSupport.buildProductOrder(platformRepository.findProductOrder(id).orElseThrow());
+        return buildProductOrderDetailPayload(platformRepository.findProductOrder(id).orElseThrow());
     }
 
     public List<?> dispatchTasks() {
@@ -327,9 +363,12 @@ public class PlatformQueryService {
 
     public List<?> messageSessions() {
         AuthSessionService.SessionIdentity identity = authSessionService.currentIdentity(DomainEnums.RoleCode.USER);
+        materializePendingInboxNotifications(identity);
         return platformRepository.listMessageSessions().stream()
                 .filter(session -> canAccessMessageSession(session, identity))
-                .sorted(Comparator.comparingLong((MessageSessionEntity session) -> latestMessageId(session.id)).reversed())
+                .sorted(Comparator
+                        .comparing((MessageSessionEntity session) -> !"system".equals(messageSessionType(session)))
+                        .thenComparing(Comparator.comparingLong((MessageSessionEntity session) -> latestMessageId(session.id)).reversed()))
                 .map(session -> buildMessageSessionPayload(session, identity))
                 .toList();
     }
@@ -337,6 +376,16 @@ public class PlatformQueryService {
     public List<?> messageItems(String sessionId) {
         MessageSessionEntity session = requireAccessibleMessageSession(sessionId, authSessionService.currentIdentity(DomainEnums.RoleCode.USER));
         return platformRepository.listMessageItems(session.id).stream().map(assembler::toMessageItem).toList();
+    }
+
+    public List<?> notifications() {
+        AuthSessionService.SessionIdentity identity = authSessionService.currentIdentity(DomainEnums.RoleCode.USER);
+        materializePendingInboxNotifications(identity);
+        return platformRepository.listMessageSessions().stream()
+                .filter(this::isSystemSession)
+                .filter(session -> canAccessMessageSession(session, identity))
+                .map(session -> buildMessageSessionPayload(session, identity))
+                .toList();
     }
 
     public List<?> notices() {
@@ -423,6 +472,30 @@ public class PlatformQueryService {
     public List<?> financeRows() {
         Long accountId = platformRepository.findWalletAccountByMasterUserId(PlatformDomainSupport.DEFAULT_MASTER_USER_ID).orElseThrow().id;
         List<Map<String, Object>> rows = new ArrayList<>();
+        platformRepository.listSettlementBills().forEach(item -> rows.add(Map.of(
+                "billNo", "SETTLE-" + item.id,
+                "type", "甯堝倕缁撶畻",
+                "amount", item.amount,
+                "status", switch (item.status) {
+                    case PENDING_REVIEW -> "待结算";
+                    case APPROVED -> "已结算";
+                    case REVERSED -> "已冲减";
+                }
+        )));
+        platformRepository.listRefundRequests().forEach(item -> rows.add(Map.of(
+                "billNo", "REFUND-" + item.orderId,
+                "type", "閫€娆惧崟",
+                "amount", item.amount,
+                "status", switch (item.status) {
+                    case PENDING_REVIEW -> "待审核";
+                    case APPROVED -> "待退款";
+                    case REJECTED -> "已拒绝";
+                    case COMPLETED -> "已退款";
+                }
+        )));
+        if (!rows.isEmpty()) {
+            return rows;
+        }
         platformRepository.listWalletTransactions(accountId).forEach(item -> rows.add(Map.of(
                 "billNo", "SETTLE-" + item.id,
                 "type", "师傅结算",
@@ -439,6 +512,146 @@ public class PlatformQueryService {
                         "status", "处理中"
                 )));
         return rows;
+    }
+
+    public java.util.List<AdminOverviewDtos.FinanceRow> adminFinanceRows() {
+        Long accountId = platformRepository.findWalletAccountByMasterUserId(PlatformDomainSupport.DEFAULT_MASTER_USER_ID)
+                .orElseThrow()
+                .id;
+        List<AdminOverviewDtos.FinanceRow> rows = new ArrayList<>();
+        platformRepository.listSettlementBills().forEach(item -> rows.add(new AdminOverviewDtos.FinanceRow(
+                "SETTLE-" + item.id,
+                "甯堝倕缁撶畻",
+                switch (item.status) {
+                    case PENDING_REVIEW -> "待结算";
+                    case APPROVED -> "已结算";
+                    case REVERSED -> "已冲减";
+                },
+                item.amount,
+                item.orderId,
+                item.remarkText == null || item.remarkText.isBlank() ? item.orderId : item.remarkText,
+                adminResolveUserName(item.masterId),
+                item.updatedAt == null ? "" : item.updatedAt.toString(),
+                item.bizNo == null ? "" : item.bizNo
+        )));
+        platformRepository.listRefundRequests().forEach(item -> rows.add(new AdminOverviewDtos.FinanceRow(
+                "REFUND-" + item.orderId,
+                "SERVICE".equalsIgnoreCase(item.orderType) ? "鏈嶅姟閫€娆?" : "鍟嗗搧閫€娆?",
+                switch (item.status) {
+                    case PENDING_REVIEW -> "待审核";
+                    case APPROVED -> "待退款";
+                    case REJECTED -> "已拒绝";
+                    case COMPLETED -> "已退款";
+                },
+                item.amount,
+                item.orderId,
+                adminResolveFinanceTitle(item.orderId),
+                adminResolveUserName(item.masterId),
+                item.updatedAt == null ? "" : item.updatedAt.toString(),
+                item.bizNo == null ? "" : item.bizNo
+        )));
+        if (!rows.isEmpty()) {
+            return rows;
+        }
+
+        platformRepository.listWalletTransactions(accountId).forEach(item -> rows.add(new AdminOverviewDtos.FinanceRow(
+                "SETTLE-" + item.id,
+                "甯堝倕缁撶畻",
+                item.statusText == null || item.statusText.isBlank() ? "待结算" : item.statusText,
+                item.amount,
+                adminExtractOrderId(item.title),
+                item.title,
+                adminResolveWalletMasterName(accountId),
+                item.transactionTime == null ? "" : item.transactionTime,
+                ""
+        )));
+        platformRepository.listServiceOrders().stream()
+                .filter(order -> order.paymentStatus == DomainEnums.PaymentStatus.REFUNDING
+                        || order.status == DomainEnums.ServiceOrderStatus.REFUNDING)
+                .forEach(order -> rows.add(new AdminOverviewDtos.FinanceRow(
+                        "REFUND-" + order.id,
+                        "閫€娆惧崟",
+                        "处理中",
+                        order.amount,
+                        order.id,
+                        order.title,
+                        adminResolveUserName(order.masterUserId),
+                        order.updatedAt == null ? "" : order.updatedAt.toString(),
+                        ""
+                )));
+        return rows;
+    }
+
+    public java.util.List<AdminOverviewDtos.NotificationTaskItem> notificationTasks() {
+        return platformRepository.listNotificationTasks().stream()
+                .map(this::toNotificationTaskItem)
+                .toList();
+    }
+
+    private String adminResolveUserName(Long userId) {
+        if (userId == null) {
+            return "";
+        }
+        return platformRepository.findUser(userId)
+                .map(user -> user.nickname)
+                .orElse("");
+    }
+
+    private String adminResolveFinanceTitle(String orderId) {
+        if (orderId == null || orderId.isBlank()) {
+            return "";
+        }
+        if (orderId.startsWith("SO")) {
+            return platformRepository.findServiceOrder(orderId)
+                    .map(order -> order.title)
+                    .orElse(orderId);
+        }
+        if (orderId.startsWith("PO")) {
+            return platformRepository.findProductOrder(orderId)
+                    .map(order -> order.title)
+                    .orElse(orderId);
+        }
+        return orderId;
+    }
+
+    private String adminResolveWalletMasterName(Long walletAccountId) {
+        if (walletAccountId == null) {
+            return "";
+        }
+        return platformRepository.findWalletAccount(walletAccountId)
+                .flatMap(account -> platformRepository.findUser(account.masterUserId))
+                .map(user -> user.nickname)
+                .orElse("");
+    }
+
+    private String adminExtractOrderId(String title) {
+        if (title == null || title.isBlank()) {
+            return "";
+        }
+        for (String token : title.split("\\s+")) {
+            if (token.startsWith("SO") || token.startsWith("PO")) {
+                return token.trim();
+            }
+        }
+        return "";
+    }
+
+    private AdminOverviewDtos.NotificationTaskItem toNotificationTaskItem(NotificationTaskEntity entity) {
+        return new AdminOverviewDtos.NotificationTaskItem(
+                entity.id,
+                entity.bizNo,
+                entity.bizType,
+                entity.bizId,
+                entity.targetRole,
+                entity.targetUserId,
+                entity.channel,
+                entity.templateCode,
+                entity.status == null ? "" : entity.status.name(),
+                entity.traceId,
+                entity.createdAt == null ? "" : entity.createdAt.toString(),
+                entity.updatedAt == null ? "" : entity.updatedAt.toString(),
+                entity.sentAt == null ? "" : entity.sentAt.toString()
+        );
     }
 
     public SupportDtos.WechatPrepayPayload createWechatPrepay(String orderId) {
@@ -506,7 +719,43 @@ public class PlatformQueryService {
                 buildTimelinePayload(order.id),
                 collectOrderMedia(order.id),
                 buildQuotationPayload(order.id),
+                buildAfterSalesSummary(order.id),
                 buildMessageSummary(order.id)
+        );
+    }
+
+    private SupportDtos.OrderDetailPayload buildProductOrderDetailPayload(ProductOrderEntity order) {
+        var user = platformRepository.findUser(order.userId).orElse(null);
+        String address = platformRepository.findAddress(order.addressId).map(item -> item.detailAddress).orElse("");
+        boolean canPay = order.status == DomainEnums.ProductOrderStatus.PENDING_PAYMENT;
+        boolean canRefund = order.paymentStatus == DomainEnums.PaymentStatus.PAID
+                || order.paymentStatus == DomainEnums.PaymentStatus.REFUNDING
+                || order.paymentStatus == DomainEnums.PaymentStatus.REFUNDED;
+
+        return new SupportDtos.OrderDetailPayload(
+                order.id,
+                "product",
+                order.title,
+                order.status == null ? "" : order.status.name(),
+                order.paymentStatus == null ? "" : order.paymentStatus.name(),
+                productStatusText(order),
+                user == null ? "" : user.nickname,
+                "",
+                address,
+                Boolean.TRUE.equals(order.createInstallOrder) ? "支付完成后同步安排安装时间" : "预计 1-2 天内送达",
+                "",
+                order.amount,
+                order.installServiceOrderId,
+                "",
+                canPay,
+                false,
+                false,
+                canRefund,
+                List.of(),
+                List.of(),
+                null,
+                buildAfterSalesSummary(order.id),
+                null
         );
     }
 
@@ -553,6 +802,126 @@ public class PlatformQueryService {
         return new SupportDtos.MessageSummaryPayload(session.id, session.title, participant, items.size(), summarizeMessage(latest));
     }
 
+    private SupportDtos.AfterSalesSummaryPayload buildAfterSalesSummary(String orderId) {
+        RefundRequestEntity refundRequest = platformRepository.findLatestRefundRequestByOrderId(orderId).orElse(null);
+        if (refundRequest == null) {
+            return null;
+        }
+        boolean active = refundRequest.status == DomainEnums.RefundRequestStatus.PENDING_REVIEW
+                || refundRequest.status == DomainEnums.RefundRequestStatus.APPROVED;
+        return new SupportDtos.AfterSalesSummaryPayload(
+                active,
+                refundRequest.bizNo,
+                refundRequest.status == null ? "" : refundRequest.status.name(),
+                refundStatusText(refundRequest)
+        );
+    }
+
+    private List<SupportDtos.TimelineItemPayload> buildAfterSalesTimeline(RefundRequestEntity refundRequest) {
+        List<SupportDtos.TimelineItemPayload> timeline = new ArrayList<>();
+        Set<String> recordedKeys = new HashSet<>();
+
+        timeline.add(new SupportDtos.TimelineItemPayload(
+                "refund_requested",
+                "售后申请已提交",
+                refundRequest.reasonText == null || refundRequest.reasonText.isBlank() ? "平台已收到你的售后申请" : refundRequest.reasonText,
+                true,
+                refundRequest.createdAt
+        ));
+        recordedKeys.add("refund_requested");
+
+        for (AuditLogEntity auditLog : platformRepository.listAuditLogsByBiz(refundRequest.orderType, refundRequest.orderId)) {
+            String key = switch (auditLog.actionCode) {
+                case "REFUND_REQUEST_APPROVED" -> "refund_approved";
+                case "REFUND_CALLBACK_FAILED" -> "refund_rejected";
+                case "REFUND_APPROVED" -> "refund_completed";
+                default -> "";
+            };
+            if (key.isBlank() || !recordedKeys.add(key)) {
+                continue;
+            }
+            timeline.add(new SupportDtos.TimelineItemPayload(
+                    key,
+                    switch (key) {
+                        case "refund_approved" -> "审核通过";
+                        case "refund_rejected" -> "审核驳回";
+                        case "refund_completed" -> "退款完成";
+                        default -> "售后更新";
+                    },
+                    auditLog.detailText == null || auditLog.detailText.isBlank() ? "平台已更新售后进度" : auditLog.detailText,
+                    true,
+                    auditLog.createdAt
+            ));
+        }
+
+        for (OrderTrackPointEntity trackPoint : platformRepository.listTrackPoints(refundRequest.orderId)) {
+            if (!"REFUNDING".equalsIgnoreCase(trackPoint.pointType)
+                    && !"REFUND_COMPLETED".equalsIgnoreCase(trackPoint.pointType)) {
+                continue;
+            }
+            String key = "REFUND_COMPLETED".equalsIgnoreCase(trackPoint.pointType) ? "refund_completed" : "refund_tracking";
+            if (!recordedKeys.add(key)) {
+                continue;
+            }
+            timeline.add(new SupportDtos.TimelineItemPayload(
+                    key,
+                    trackPoint.labelText == null || trackPoint.labelText.isBlank() ? "售后处理中" : trackPoint.labelText,
+                    trackPoint.descriptionText == null || trackPoint.descriptionText.isBlank() ? "平台正在处理当前售后申请" : trackPoint.descriptionText,
+                    true,
+                    trackPoint.createdAt
+            ));
+        }
+
+        if (refundRequest.approvedAt != null && recordedKeys.add("refund_approved")) {
+            timeline.add(new SupportDtos.TimelineItemPayload(
+                    "refund_approved",
+                    "审核通过",
+                    "平台已审核通过当前退款申请，正在处理退款。",
+                    true,
+                    refundRequest.approvedAt
+            ));
+        }
+
+        if (refundRequest.completedAt != null && recordedKeys.add("refund_completed")) {
+            timeline.add(new SupportDtos.TimelineItemPayload(
+                    "refund_completed",
+                    "退款完成",
+                    "平台已完成退款处理，请留意原支付渠道到账。",
+                    true,
+                    refundRequest.completedAt
+            ));
+        }
+
+        return timeline.stream()
+                .sorted(Comparator.comparing(SupportDtos.TimelineItemPayload::time, Comparator.nullsLast(Comparator.naturalOrder())))
+                .toList();
+    }
+
+    private String buildAfterSalesReviewRemark(RefundRequestEntity refundRequest) {
+        List<AuditLogEntity> auditLogs = platformRepository.listAuditLogsByBiz(refundRequest.orderType, refundRequest.orderId);
+        for (int index = auditLogs.size() - 1; index >= 0; index--) {
+            AuditLogEntity auditLog = auditLogs.get(index);
+            if ("REFUND_REQUEST_APPROVED".equals(auditLog.actionCode)
+                    || "REFUND_CALLBACK_FAILED".equals(auditLog.actionCode)
+                    || "REFUND_APPROVED".equals(auditLog.actionCode)) {
+                return auditLog.detailText == null ? "" : auditLog.detailText;
+            }
+        }
+        return refundRequest.status == DomainEnums.RefundRequestStatus.REJECTED
+                ? (refundRequest.reasonText == null ? "" : refundRequest.reasonText)
+                : "";
+    }
+
+    private void materializePendingInboxNotifications(AuthSessionService.SessionIdentity identity) {
+        if (identity == null) {
+            return;
+        }
+        if (identity.roleCode() != DomainEnums.RoleCode.USER && identity.roleCode() != DomainEnums.RoleCode.MASTER) {
+            return;
+        }
+        notificationDispatchService.dispatchPendingTasksToInbox(identity.roleCode(), identity.userId(), 100);
+    }
+
     private List<SupportDtos.MediaFilePayload> collectOrderMedia(String orderId) {
         List<MediaFileEntity> entities = new ArrayList<>();
         entities.addAll(platformRepository.listMediaFilesByBiz("order_evidence", orderId));
@@ -574,6 +943,7 @@ public class PlatformQueryService {
 
         return new SupportDtos.MessageSessionPayload(
                 session.id,
+                messageSessionType(session),
                 session.orderId,
                 session.title,
                 resolveSessionParticipant(session, identity.roleCode()),
@@ -607,6 +977,10 @@ public class PlatformQueryService {
     }
 
     private boolean canAccessMessageSession(MessageSessionEntity session, AuthSessionService.SessionIdentity identity) {
+        if (isSystemSession(session)) {
+            return identity.userId().equals(session.participantUserId)
+                    && systemSessionRole(session.id) == identity.roleCode();
+        }
         return identity.roleCode() == DomainEnums.RoleCode.MASTER
                 ? platformRepository.findServiceOrder(session.orderId)
                         .map(order -> identity.userId().equals(order.masterUserId))
@@ -615,6 +989,9 @@ public class PlatformQueryService {
     }
 
     private String resolveSessionParticipant(MessageSessionEntity session, DomainEnums.RoleCode roleCode) {
+        if (isSystemSession(session)) {
+            return "系统通知";
+        }
         if (roleCode == DomainEnums.RoleCode.MASTER) {
             return platformRepository.findUser(session.participantUserId)
                     .map(user -> user.nickname)
@@ -659,6 +1036,25 @@ public class PlatformQueryService {
         return senderCode.trim().toLowerCase();
     }
 
+    private boolean isSystemSession(MessageSessionEntity session) {
+        return session.orderId == null || session.orderId.isBlank();
+    }
+
+    private String messageSessionType(MessageSessionEntity session) {
+        return isSystemSession(session) ? "system" : "order";
+    }
+
+    private DomainEnums.RoleCode systemSessionRole(String sessionId) {
+        if (sessionId == null || sessionId.isBlank()) {
+            return DomainEnums.RoleCode.USER;
+        }
+        String[] parts = sessionId.split("-");
+        if (parts.length < 3) {
+            return DomainEnums.RoleCode.USER;
+        }
+        return "MASTER".equalsIgnoreCase(parts[1]) ? DomainEnums.RoleCode.MASTER : DomainEnums.RoleCode.USER;
+    }
+
     private String buildDistanceText(String orderId) {
         return mapService.eta(new MapDtos.EtaRequest(orderId, null, null)).distance();
     }
@@ -676,6 +1072,32 @@ public class PlatformQueryService {
             case REFUNDING -> "退款处理中";
             case CANCELLED -> "订单已取消";
             case AFTER_SALES -> "售后处理中";
+        };
+    }
+
+    private String productStatusText(ProductOrderEntity order) {
+        if (order.status == null) {
+            return "商品订单处理中";
+        }
+        return switch (order.status) {
+            case PENDING_PAYMENT -> "等待完成支付确认";
+            case PAID -> "支付成功，等待仓库备货";
+            case PENDING_SHIPMENT -> "仓库已打包，等待出库";
+            case SHIPPED -> "商品已发货，可关注物流进度";
+            case COMPLETED -> "商品已完成签收";
+            case REFUNDING -> "售后处理中";
+        };
+    }
+
+    private String refundStatusText(RefundRequestEntity refundRequest) {
+        if (refundRequest.status == null) {
+            return "售后处理中";
+        }
+        return switch (refundRequest.status) {
+            case PENDING_REVIEW -> "等待平台审核";
+            case APPROVED -> "审核通过，退款处理中";
+            case REJECTED -> "审核驳回";
+            case COMPLETED -> "退款完成";
         };
     }
 

@@ -50,7 +50,7 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wxe77261446408e6dc",
+        "appid" : "wx6c9aa1979bf41d91",
         "permission" : {
             "scope.userLocation" : {
                 "desc" : "您的位置将用于为您提供附近的精准服务"
@@ -88,5 +88,7 @@
                 }
             }
         }
-    }
+    },
+    "locale" : "zh-Hans",
+    "fallbackLocale" : "zh-Hans"
 }

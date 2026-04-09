@@ -14,6 +14,7 @@ function normalizeMessageSessions(list = []) {
   return list.map((item) => ({
     id: item.id || item.sessionId,
     sessionId: item.sessionId || item.id,
+    sessionType: item.sessionType || 'order',
     orderId: item.orderId || '',
     title: item.title || '在线沟通',
     participant: item.participant || '平台客服',

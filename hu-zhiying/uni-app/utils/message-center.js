@@ -1,4 +1,5 @@
 const CHAT_SESSION_KEY = 'hzy-chat-session';
+const CHAT_SESSION_TYPE_KEY = 'hzy-chat-session-type';
 const CHAT_ORDER_KEY = 'hzy-chat-order-id';
 const CHAT_AUTO_OPEN_KEY = 'hzy-chat-autojump';
 const MESSAGE_TAB_INDEX = 3;
@@ -6,16 +7,23 @@ const MESSAGE_TAB_INDEX = 3;
 export function getPendingChatTarget() {
   return {
     sessionId: uni.getStorageSync(CHAT_SESSION_KEY) || '',
+    sessionType: uni.getStorageSync(CHAT_SESSION_TYPE_KEY) || 'order',
     orderId: uni.getStorageSync(CHAT_ORDER_KEY) || '',
     autoOpen: uni.getStorageSync(CHAT_AUTO_OPEN_KEY) === '1',
   };
 }
 
-export function setPendingChatTarget({ sessionId = '', orderId = '', autoOpen = false } = {}) {
+export function setPendingChatTarget({ sessionId = '', sessionType = 'order', orderId = '', autoOpen = false } = {}) {
   if (sessionId) {
     uni.setStorageSync(CHAT_SESSION_KEY, sessionId);
   } else {
     uni.removeStorageSync(CHAT_SESSION_KEY);
+  }
+
+  if (sessionId) {
+    uni.setStorageSync(CHAT_SESSION_TYPE_KEY, sessionType || 'order');
+  } else {
+    uni.removeStorageSync(CHAT_SESSION_TYPE_KEY);
   }
 
   if (orderId) {

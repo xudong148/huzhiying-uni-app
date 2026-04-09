@@ -24,10 +24,12 @@ import com.huzhiying.server.persistence.PersistenceEntities.MessageItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionReadEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.PaymentRecordEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductOrderEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.QuotationEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.QuotationItemEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.RefundRequestEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceOrderEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.UserEntity;
@@ -170,6 +172,8 @@ public class PlatformCommandService {
         entity.createdAt = LocalDateTime.now();
         entity.updatedAt = LocalDateTime.now();
         platformRepository.saveServiceOrder(entity);
+        domainSupport.saveAuditLog("SERVICE", entity.id, "SERVICE_ORDER_CREATED", entity.status.name(), "USER",
+                entity.userId, entity.userId, null, "order-create-" + entity.id, entity.title);
         domainSupport.saveStep(entity.id, "created", "订单创建", "用户已提交工单，等待完成预付款", true);
         domainSupport.saveStep(entity.id, "payment_required", "待支付", "支付成功后系统才会开始派单", false);
         createTrackPoint(entity.id, "CREATED", "订单创建", "订单已创建，等待完成预付款", address.latitude, address.longitude);
@@ -195,6 +199,8 @@ public class PlatformCommandService {
         entity.createInstallOrder = Boolean.TRUE.equals(product.createInstallOrder);
         entity.createdAt = LocalDateTime.now();
         platformRepository.saveProductOrder(entity);
+        domainSupport.saveAuditLog("PRODUCT", entity.id, "PRODUCT_ORDER_CREATED", entity.status.name(), "USER",
+                entity.userId, entity.userId, null, "order-create-" + entity.id, entity.title);
         return domainSupport.buildProductOrder(entity);
     }
 
@@ -316,6 +322,9 @@ public class PlatformCommandService {
     public MessageItem sendMessage(String sessionId, String senderCode, String messageType, String content) {
         AuthSessionService.SessionIdentity identity = authSessionService.currentIdentity(RoleCode.USER);
         MessageSessionEntity session = requireAccessibleMessageSession(sessionId);
+        if (isSystemSession(session)) {
+            throw new IllegalStateException("系统通知会话不支持发送消息");
+        }
         String actualSenderCode = messageReaderCode(identity.roleCode());
         MessageItemEntity entity = new MessageItemEntity();
         entity.sessionId = sessionId;
@@ -339,23 +348,72 @@ public class PlatformCommandService {
     }
 
     public Map<String, Object> refundOrder(String orderId) {
+        return refundOrder(orderId, null, null, null, List.of());
+    }
+
+    public Map<String, Object> refundOrder(String orderId, String reason) {
+        return refundOrder(orderId, reason, null, null, List.of());
+    }
+
+    public Map<String, Object> refundOrder(String orderId, String reason, String remark, String source, List<Long> evidenceFileIds) {
+        String finalReason = buildRefundReason(reason, remark);
+        List<Long> finalEvidenceFileIds = evidenceFileIds == null ? List.of() : evidenceFileIds;
         Optional<ServiceOrderEntity> serviceOrder = platformRepository.findServiceOrder(orderId);
         if (serviceOrder.isPresent()) {
             ServiceOrderEntity entity = serviceOrder.get();
+            RefundRequestEntity existing = activeRefundRequest(orderId);
+            if (existing != null) {
+                if (!finalEvidenceFileIds.isEmpty()) {
+                    markFilesAsBound(finalEvidenceFileIds, "refund_evidence", existing.bizNo);
+                }
+                return Map.of("orderId", orderId, "status", existing.status.name(), "refundRequestNo", existing.bizNo);
+            }
             entity.paymentStatus = PaymentStatus.REFUNDING;
             entity.status = ServiceOrderStatus.REFUNDING;
             entity.updatedAt = LocalDateTime.now();
             platformRepository.saveServiceOrder(entity);
+            RefundRequestEntity refundRequest = domainSupport.createRefundRequestIfNeeded(
+                    entity.id,
+                    "SERVICE",
+                    entity.amount,
+                    entity.userId,
+                    entity.masterUserId,
+                    finalReason,
+                    normalizeRefundSource(source)
+            );
+            if (!finalEvidenceFileIds.isEmpty()) {
+                markFilesAsBound(finalEvidenceFileIds, "refund_evidence", refundRequest.bizNo);
+            }
             domainSupport.saveStep(entity.id, "refunding", "退款处理中", "用户已发起退款申请", true);
             createTrackPoint(entity.id, "REFUNDING", "退款处理中", "用户已提交售后退款申请", null, null);
             webSocketEventGateway.publishOrderStatusChanged(entity.id, domainSupport.buildServiceOrder(entity));
-            return Map.of("orderId", orderId, "status", "ACCEPTED");
+            return Map.of("orderId", orderId, "status", "ACCEPTED", "refundRequestNo", refundRequest.bizNo);
         }
+
         ProductOrderEntity productOrder = platformRepository.findProductOrder(orderId).orElseThrow();
+        RefundRequestEntity existing = activeRefundRequest(orderId);
+        if (existing != null) {
+            if (!finalEvidenceFileIds.isEmpty()) {
+                markFilesAsBound(finalEvidenceFileIds, "refund_evidence", existing.bizNo);
+            }
+            return Map.of("orderId", orderId, "status", existing.status.name(), "refundRequestNo", existing.bizNo);
+        }
         productOrder.status = ProductOrderStatus.REFUNDING;
         productOrder.paymentStatus = PaymentStatus.REFUNDING;
         platformRepository.saveProductOrder(productOrder);
-        return Map.of("orderId", orderId, "status", "ACCEPTED");
+        RefundRequestEntity refundRequest = domainSupport.createRefundRequestIfNeeded(
+                productOrder.id,
+                "PRODUCT",
+                productOrder.amount,
+                productOrder.userId,
+                null,
+                finalReason,
+                normalizeRefundSource(source)
+        );
+        if (!finalEvidenceFileIds.isEmpty()) {
+            markFilesAsBound(finalEvidenceFileIds, "refund_evidence", refundRequest.bizNo);
+        }
+        return Map.of("orderId", orderId, "status", "ACCEPTED", "refundRequestNo", refundRequest.bizNo);
     }
 
     public ServiceOrder cancelOrder(String orderId, String reason) {
@@ -415,29 +473,83 @@ public class PlatformCommandService {
     }
 
     public Map<String, Object> handleWechatCallback(String orderId) {
-        platformRepository.findServiceOrder(orderId).ifPresent(order -> {
-            if (order.status == ServiceOrderStatus.PENDING_PAYMENT && order.paymentStatus == PaymentStatus.UNPAID) {
-                order.paymentStatus = PaymentStatus.PARTIAL_PAID;
-                order.status = ServiceOrderStatus.PENDING_DISPATCH;
-                order.etaText = order.emergency ? "15 分钟" : "30 分钟";
-                order.updatedAt = LocalDateTime.now();
-                platformRepository.saveServiceOrder(order);
-                domainSupport.saveStep(order.id, "payment_completed", "预付款完成", "预付款已到账，订单进入派单队列", true);
-                domainSupport.saveStep(order.id, "dispatch", "等待派单", "平台正在匹配可服务的师傅", false);
-                createTrackPoint(order.id, "PAYMENT", "预付款完成", "微信支付回调成功，平台开始派单", null, null);
-                createDispatchTaskIfNeeded(order);
-                webSocketEventGateway.publishOrderStatusChanged(order.id, domainSupport.buildServiceOrder(order));
-            } else if (order.status == ServiceOrderStatus.WAITING_SUPPLEMENT_PAYMENT && order.paymentStatus != PaymentStatus.PAID) {
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("缺少订单号");
+        }
+        if (orderId.startsWith("SO")) {
+            ServiceOrderEntity order = domainSupport.findServiceOrderEntity(orderId);
+            String paymentStage = order.status == ServiceOrderStatus.WAITING_SUPPLEMENT_PAYMENT ? "SUPPLEMENT" : "INITIAL";
+            PaymentRecordEntity paymentRecord = domainSupport.preparePaymentRecord(
+                    order.id,
+                    "SERVICE",
+                    order.amount,
+                    order.userId,
+                    order.masterUserId,
+                    paymentStage,
+                    "WECHAT",
+                    "manual-wechat-callback"
+            );
+            handleWechatPaymentSuccess(paymentRecord, "MOCK-" + System.currentTimeMillis(), "manual-wechat-callback");
+            return Map.of("orderId", orderId, "status", "SUCCESS", "paymentRecordNo", paymentRecord.bizNo);
+        }
+        if (orderId.startsWith("PO")) {
+            ProductOrderEntity order = platformRepository.findProductOrder(orderId).orElseThrow();
+            PaymentRecordEntity paymentRecord = domainSupport.preparePaymentRecord(
+                    order.id,
+                    "PRODUCT",
+                    order.amount,
+                    order.userId,
+                    null,
+                    "INITIAL",
+                    "WECHAT",
+                    "manual-wechat-callback"
+            );
+            handleWechatPaymentSuccess(paymentRecord, "MOCK-" + System.currentTimeMillis(), "manual-wechat-callback");
+            return Map.of("orderId", orderId, "status", "SUCCESS", "paymentRecordNo", paymentRecord.bizNo);
+        }
+        throw new IllegalArgumentException("不支持的订单号格式");
+    }
+
+    public void handleWechatPaymentSuccess(PaymentRecordEntity paymentRecord, String externalTransactionNo, String remark) {
+        PaymentRecordEntity savedPayment = domainSupport.recordPayment(paymentRecord, externalTransactionNo, remark);
+        LocalDateTime now = LocalDateTime.now();
+
+        if ("SERVICE".equalsIgnoreCase(savedPayment.orderType)) {
+            ServiceOrderEntity order = domainSupport.findServiceOrderEntity(savedPayment.orderId);
+            if ("SUPPLEMENT".equalsIgnoreCase(savedPayment.paymentStage)) {
+                if (order.paymentStatus == PaymentStatus.PAID && order.status == ServiceOrderStatus.IN_SERVICE) {
+                    return;
+                }
                 order.paymentStatus = PaymentStatus.PAID;
                 order.status = ServiceOrderStatus.IN_SERVICE;
-                order.updatedAt = LocalDateTime.now();
+                order.updatedAt = now;
                 platformRepository.saveServiceOrder(order);
                 domainSupport.saveStep(order.id, "supplement_paid", "补款完成", "用户已完成增项补款，订单继续施工", true);
                 createTrackPoint(order.id, "SUPPLEMENT_PAID", "补款完成", "微信支付回调成功，师傅可继续施工", null, null);
                 webSocketEventGateway.publishOrderStatusChanged(order.id, domainSupport.buildServiceOrder(order));
+                return;
             }
-        });
-        platformRepository.findProductOrder(orderId).ifPresent(order -> {
+
+            if (order.paymentStatus == PaymentStatus.PARTIAL_PAID && order.status == ServiceOrderStatus.PENDING_DISPATCH) {
+                createDispatchTaskIfNeeded(order);
+                return;
+            }
+
+            order.paymentStatus = PaymentStatus.PARTIAL_PAID;
+            order.status = ServiceOrderStatus.PENDING_DISPATCH;
+            order.etaText = order.emergency ? "15 分钟" : "30 分钟";
+            order.updatedAt = now;
+            platformRepository.saveServiceOrder(order);
+            domainSupport.saveStep(order.id, "payment_completed", "预付款完成", "预付款已到账，订单进入派单队列", true);
+            domainSupport.saveStep(order.id, "dispatch", "等待派单", "平台正在匹配可服务的师傅", false);
+            createTrackPoint(order.id, "PAYMENT", "预付款完成", "微信支付回调成功，平台开始派单", null, null);
+            createDispatchTaskIfNeeded(order);
+            webSocketEventGateway.publishOrderStatusChanged(order.id, domainSupport.buildServiceOrder(order));
+            return;
+        }
+
+        if ("PRODUCT".equalsIgnoreCase(savedPayment.orderType)) {
+            ProductOrderEntity order = platformRepository.findProductOrder(savedPayment.orderId).orElseThrow();
             order.paymentStatus = PaymentStatus.PAID;
             if (order.status == ProductOrderStatus.PENDING_PAYMENT) {
                 order.status = ProductOrderStatus.PENDING_SHIPMENT;
@@ -446,8 +558,43 @@ public class PlatformCommandService {
                 order.installServiceOrderId = createInstallServiceOrder(order);
             }
             platformRepository.saveProductOrder(order);
+        }
+    }
+
+    public void handleWechatRefundSuccess(RefundRequestEntity refundRequest, String refundId, String remark) {
+        RefundRequestEntity current = refundRequest.id == null
+                ? refundRequest
+                : platformRepository.findRefundRequest(refundRequest.id).orElse(refundRequest);
+        String finalRemark = mergeRefundRemark(refundId, remark);
+        Long operatorId = current.operatorId == null ? 90001L : current.operatorId;
+        RefundRequestEntity completed = domainSupport.completeRefund(current, operatorId, finalRemark);
+
+        platformRepository.findServiceOrder(completed.orderId).ifPresent(order -> {
+            order.paymentStatus = PaymentStatus.REFUNDED;
+            if (order.status == ServiceOrderStatus.REFUNDING) {
+                order.status = ServiceOrderStatus.CANCELLED;
+            }
+            order.updatedAt = LocalDateTime.now();
+            platformRepository.saveServiceOrder(order);
+            domainSupport.saveStep(order.id, "refund_completed", "退款完成", "平台已完成原路退款", true);
+            createTrackPoint(order.id, "REFUND_COMPLETED", "退款完成", finalRemark, null, null);
+            webSocketEventGateway.publishOrderStatusChanged(order.id, domainSupport.buildServiceOrder(order));
         });
-        return Map.of("orderId", orderId, "status", "SUCCESS");
+
+        platformRepository.findProductOrder(completed.orderId).ifPresent(order -> {
+            order.paymentStatus = PaymentStatus.REFUNDED;
+            platformRepository.saveProductOrder(order);
+        });
+    }
+
+    private String mergeRefundRemark(String refundId, String remark) {
+        if (refundId == null || refundId.isBlank()) {
+            return remark;
+        }
+        if (remark == null || remark.isBlank()) {
+            return "wechatRefundId=" + refundId;
+        }
+        return remark + " | wechatRefundId=" + refundId;
     }
 
     private DispatchTask assignTask(String id, MasterProfileEntity master, boolean forceAssign) {
@@ -544,11 +691,17 @@ public class PlatformCommandService {
     private MessageSessionEntity requireAccessibleMessageSession(String sessionId) {
         AuthSessionService.SessionIdentity identity = authSessionService.currentIdentity(RoleCode.USER);
         MessageSessionEntity session = platformRepository.findMessageSession(sessionId).orElseThrow();
-        boolean accessible = identity.roleCode() == RoleCode.MASTER
-                ? platformRepository.findServiceOrder(session.orderId)
-                        .map(order -> identity.userId().equals(order.masterUserId))
-                        .orElse(false)
-                : identity.userId().equals(session.participantUserId);
+        boolean accessible;
+        if (isSystemSession(session)) {
+            accessible = identity.userId().equals(session.participantUserId)
+                    && systemSessionRole(session.id) == identity.roleCode();
+        } else {
+            accessible = identity.roleCode() == RoleCode.MASTER
+                    ? platformRepository.findServiceOrder(session.orderId)
+                            .map(order -> identity.userId().equals(order.masterUserId))
+                            .orElse(false)
+                    : identity.userId().equals(session.participantUserId);
+        }
         if (!accessible) {
             throw new IllegalStateException("当前会话不可访问");
         }
@@ -567,6 +720,41 @@ public class PlatformCommandService {
 
     private String messageReaderCode(RoleCode roleCode) {
         return roleCode == RoleCode.MASTER ? "master" : "user";
+    }
+
+    private RefundRequestEntity activeRefundRequest(String orderId) {
+        return platformRepository.findLatestRefundRequestByOrderId(orderId)
+                .filter(item -> item.status == com.huzhiying.domain.enums.DomainEnums.RefundRequestStatus.PENDING_REVIEW
+                        || item.status == com.huzhiying.domain.enums.DomainEnums.RefundRequestStatus.APPROVED
+                        || item.status == com.huzhiying.domain.enums.DomainEnums.RefundRequestStatus.COMPLETED)
+                .orElse(null);
+    }
+
+    private String buildRefundReason(String reason, String remark) {
+        String normalizedReason = reason == null || reason.isBlank() ? "用户主动申请退款" : reason.trim();
+        if (remark == null || remark.isBlank()) {
+            return normalizedReason;
+        }
+        return normalizedReason + "：" + remark.trim();
+    }
+
+    private String normalizeRefundSource(String source) {
+        return source == null || source.isBlank() ? "uni-app" : source.trim();
+    }
+
+    private boolean isSystemSession(MessageSessionEntity session) {
+        return session.orderId == null || session.orderId.isBlank();
+    }
+
+    private RoleCode systemSessionRole(String sessionId) {
+        if (sessionId == null || sessionId.isBlank()) {
+            return RoleCode.USER;
+        }
+        String[] parts = sessionId.split("-");
+        if (parts.length < 3) {
+            return RoleCode.USER;
+        }
+        return "MASTER".equalsIgnoreCase(parts[1]) ? RoleCode.MASTER : RoleCode.USER;
     }
 
     private void createDispatchTaskIfNeeded(ServiceOrderEntity order) {

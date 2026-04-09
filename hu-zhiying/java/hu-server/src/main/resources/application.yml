@@ -58,6 +58,15 @@ hzy:
     pay-enabled: ${HZY_WX_PAY_ENABLED:false}
     app-id: ${HZY_WX_APP_ID:}
     mch-id: ${HZY_WX_MCH_ID:}
+    merchant-serial-number: ${HZY_WX_MERCHANT_SERIAL_NUMBER:}
+    private-key: ${HZY_WX_PRIVATE_KEY:}
+    private-key-path: ${HZY_WX_PRIVATE_KEY_PATH:}
+    api-v3-key: ${HZY_WX_API_V3_KEY:}
+    app-secret: ${HZY_WX_APP_SECRET:}
+    notify-base-url: ${HZY_WX_NOTIFY_BASE_URL:}
+    transaction-notify-path: ${HZY_WX_TRANSACTION_NOTIFY_PATH:/api/payments/wechat/notify/transactions}
+    refund-notify-path: ${HZY_WX_REFUND_NOTIFY_PATH:/api/payments/wechat/notify/refunds}
+    expire-minutes: ${HZY_WX_PAY_EXPIRE_MINUTES:30}
   redis:
     enabled: ${HZY_REDIS_ENABLED:true}
   storage:

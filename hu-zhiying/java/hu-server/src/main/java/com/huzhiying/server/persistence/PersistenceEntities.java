@@ -1,11 +1,17 @@
 package com.huzhiying.server.persistence;
 
 import com.huzhiying.domain.enums.DomainEnums.DispatchMode;
+import com.huzhiying.domain.enums.DomainEnums.NotificationTaskStatus;
 import com.huzhiying.domain.enums.DomainEnums.PaymentStatus;
+import com.huzhiying.domain.enums.DomainEnums.PaymentRecordStatus;
 import com.huzhiying.domain.enums.DomainEnums.ProductOrderStatus;
 import com.huzhiying.domain.enums.DomainEnums.QuotationStatus;
+import com.huzhiying.domain.enums.DomainEnums.RefundRequestStatus;
 import com.huzhiying.domain.enums.DomainEnums.RoleCode;
+import com.huzhiying.domain.enums.DomainEnums.SettlementBillStatus;
 import com.huzhiying.domain.enums.DomainEnums.ServiceOrderStatus;
+import com.huzhiying.domain.enums.DomainEnums.WalletLedgerDirection;
+import com.huzhiying.domain.enums.DomainEnums.WalletLedgerStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -370,6 +376,239 @@ public final class PersistenceEntities {
         public String statusText;
 
         public WalletTransactionEntity() {}
+    }
+
+    @Entity(name = "PaymentRecordEntity")
+    @Table(name = "payment_records")
+    public static class PaymentRecordEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "biz_no")
+        public String bizNo;
+        @Column(name = "order_id")
+        public String orderId;
+        @Column(name = "order_type")
+        public String orderType;
+        @Enumerated(EnumType.STRING)
+        public PaymentRecordStatus status;
+        public String channel;
+        public BigDecimal amount;
+        @Column(name = "user_id")
+        public Long userId;
+        @Column(name = "master_id")
+        public Long masterId;
+        @Column(name = "operator_id")
+        public Long operatorId;
+        @Column(name = "trace_id")
+        public String traceId;
+        @Column(name = "external_transaction_no")
+        public String externalTransactionNo;
+        @Column(name = "payment_stage")
+        public String paymentStage;
+        @Column(name = "remark_text")
+        public String remarkText;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+        @Column(name = "updated_at")
+        public LocalDateTime updatedAt;
+
+        public PaymentRecordEntity() {}
+    }
+
+    @Entity(name = "RefundRequestEntity")
+    @Table(name = "refund_requests")
+    public static class RefundRequestEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "biz_no")
+        public String bizNo;
+        @Column(name = "order_id")
+        public String orderId;
+        @Column(name = "order_type")
+        public String orderType;
+        @Column(name = "payment_record_id")
+        public Long paymentRecordId;
+        @Enumerated(EnumType.STRING)
+        public RefundRequestStatus status;
+        public String channel;
+        public BigDecimal amount;
+        @Column(name = "user_id")
+        public Long userId;
+        @Column(name = "master_id")
+        public Long masterId;
+        @Column(name = "operator_id")
+        public Long operatorId;
+        @Column(name = "trace_id")
+        public String traceId;
+        @Column(name = "reason_text")
+        public String reasonText;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+        @Column(name = "updated_at")
+        public LocalDateTime updatedAt;
+        @Column(name = "approved_at")
+        public LocalDateTime approvedAt;
+        @Column(name = "completed_at")
+        public LocalDateTime completedAt;
+
+        public RefundRequestEntity() {}
+    }
+
+    @Entity(name = "SettlementBillEntity")
+    @Table(name = "settlement_bills")
+    public static class SettlementBillEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "biz_no")
+        public String bizNo;
+        @Column(name = "order_id")
+        public String orderId;
+        @Column(name = "order_type")
+        public String orderType;
+        @Enumerated(EnumType.STRING)
+        public SettlementBillStatus status;
+        public String channel;
+        public BigDecimal amount;
+        @Column(name = "user_id")
+        public Long userId;
+        @Column(name = "master_id")
+        public Long masterId;
+        @Column(name = "operator_id")
+        public Long operatorId;
+        @Column(name = "trace_id")
+        public String traceId;
+        @Column(name = "wallet_account_id")
+        public Long walletAccountId;
+        @Column(name = "remark_text")
+        public String remarkText;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+        @Column(name = "updated_at")
+        public LocalDateTime updatedAt;
+        @Column(name = "approved_at")
+        public LocalDateTime approvedAt;
+        @Column(name = "settled_at")
+        public LocalDateTime settledAt;
+
+        public SettlementBillEntity() {}
+    }
+
+    @Entity(name = "WalletLedgerEntity")
+    @Table(name = "wallet_ledgers")
+    public static class WalletLedgerEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "biz_no")
+        public String bizNo;
+        @Column(name = "wallet_account_id")
+        public Long walletAccountId;
+        @Column(name = "settlement_bill_id")
+        public Long settlementBillId;
+        @Column(name = "refund_request_id")
+        public Long refundRequestId;
+        @Column(name = "order_id")
+        public String orderId;
+        @Column(name = "order_type")
+        public String orderType;
+        @Enumerated(EnumType.STRING)
+        public WalletLedgerStatus status;
+        @Enumerated(EnumType.STRING)
+        @Column(name = "direction_code")
+        public WalletLedgerDirection directionCode;
+        public String channel;
+        public BigDecimal amount;
+        @Column(name = "user_id")
+        public Long userId;
+        @Column(name = "master_id")
+        public Long masterId;
+        @Column(name = "operator_id")
+        public Long operatorId;
+        @Column(name = "trace_id")
+        public String traceId;
+        public String title;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+        @Column(name = "updated_at")
+        public LocalDateTime updatedAt;
+
+        public WalletLedgerEntity() {}
+    }
+
+    @Entity(name = "AuditLogEntity")
+    @Table(name = "audit_logs")
+    public static class AuditLogEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "biz_no")
+        public String bizNo;
+        @Column(name = "biz_type")
+        public String bizType;
+        @Column(name = "biz_id")
+        public String bizId;
+        @Column(name = "action_code")
+        public String actionCode;
+        @Column(name = "status_code")
+        public String statusCode;
+        @Column(name = "operator_role")
+        public String operatorRole;
+        @Column(name = "operator_id")
+        public Long operatorId;
+        @Column(name = "user_id")
+        public Long userId;
+        @Column(name = "master_id")
+        public Long masterId;
+        @Column(name = "trace_id")
+        public String traceId;
+        @Lob
+        @Column(name = "detail_text")
+        public String detailText;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+
+        public AuditLogEntity() {}
+    }
+
+    @Entity(name = "NotificationTaskEntity")
+    @Table(name = "notification_tasks")
+    public static class NotificationTaskEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        public Long id;
+        @Column(name = "biz_no")
+        public String bizNo;
+        @Column(name = "biz_type")
+        public String bizType;
+        @Column(name = "biz_id")
+        public String bizId;
+        @Column(name = "target_role")
+        public String targetRole;
+        @Column(name = "target_user_id")
+        public Long targetUserId;
+        public String channel;
+        @Column(name = "template_code")
+        public String templateCode;
+        @Enumerated(EnumType.STRING)
+        public NotificationTaskStatus status;
+        @Lob
+        @Column(name = "payload_text")
+        public String payloadText;
+        @Column(name = "trace_id")
+        public String traceId;
+        @Column(name = "next_retry_at")
+        public LocalDateTime nextRetryAt;
+        @Column(name = "sent_at")
+        public LocalDateTime sentAt;
+        @Column(name = "created_at")
+        public LocalDateTime createdAt;
+        @Column(name = "updated_at")
+        public LocalDateTime updatedAt;
+
+        public NotificationTaskEntity() {}
     }
 
     @Entity(name = "MessageSessionEntity")

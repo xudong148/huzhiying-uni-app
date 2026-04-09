@@ -71,6 +71,10 @@ public class WebSocketEventGateway {
         publish("chat", "chat_message", payload);
     }
 
+    public void publishNotificationTask(Object payload) {
+        publish("orders", "notification_task_sent", payload);
+    }
+
     public void sendPong(WebSocketSession session, String payload) throws IOException {
         send(session, "pong", Map.of("payload", payload));
     }

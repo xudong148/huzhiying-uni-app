@@ -9,6 +9,43 @@ export function isWechatPayCanceled(error) {
   return /cancel/i.test(String(error?.errMsg || error?.message || ''));
 }
 
+function loginWithWechat() {
+  return new Promise((resolve, reject) => {
+    uni.login({
+      provider: 'weixin',
+      success: resolve,
+      fail: reject,
+    });
+  });
+}
+
+export async function buildWechatPrepayRequest(orderId) {
+  if (!orderId) {
+    throw new Error('缺少订单号，无法创建预支付请求');
+  }
+
+  const payload = { orderId, channel: 'JSAPI' };
+
+  // #ifdef MP-WEIXIN
+  const loginRes = await loginWithWechat();
+  if (!loginRes?.code) {
+    throw new Error('微信登录凭证获取失败，请稍后重试');
+  }
+  payload.channel = 'JSAPI';
+  payload.authCode = loginRes.code;
+  // #endif
+
+  // #ifdef APP-PLUS
+  payload.channel = 'APP';
+  // #endif
+
+  // #ifdef H5
+  throw new Error('当前 H5 暂不支持直接调起微信支付，请在微信小程序或 App 内完成支付');
+  // #endif
+
+  return payload;
+}
+
 /**
  * 调起微信支付
  * @param {Object} payParams - 后端预支付接口返回的支付参数
@@ -33,7 +70,20 @@ export function launchWechatPay(payParams) {
 
     const timeStamp = payParams.timeStamp || payParams.timestamp;
     const packageValue = payParams.package || payParams.packageValue;
-    const hasAppOrderInfo = Boolean(payParams.orderInfo);
+    const orderInfo = payParams.orderInfo || (
+      payParams.channel === 'APP' && payParams.appId && payParams.partnerId && payParams.prepayId
+        ? {
+            appid: payParams.appId,
+            partnerid: payParams.partnerId,
+            prepayid: payParams.prepayId,
+            package: packageValue || 'Sign=WXPay',
+            noncestr: payParams.nonceStr,
+            timestamp: timeStamp,
+            sign: payParams.paySign,
+          }
+        : null
+    );
+    const hasAppOrderInfo = Boolean(orderInfo);
     const hasMiniProgramParams = Boolean(timeStamp && payParams.nonceStr && packageValue && payParams.paySign);
 
     if (!hasAppOrderInfo && !hasMiniProgramParams) {
@@ -48,7 +98,7 @@ export function launchWechatPay(payParams) {
       package: packageValue,
       signType: payParams.signType || 'RSA',
       paySign: payParams.paySign,
-      ...(hasAppOrderInfo ? { orderInfo: payParams.orderInfo } : {}),
+      ...(hasAppOrderInfo ? { orderInfo } : {}),
     };
 
     try {

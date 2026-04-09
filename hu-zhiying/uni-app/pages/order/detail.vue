@@ -70,12 +70,12 @@
       </view>
       <view class="order-detail__action-copy">1. 支付失败或取消后，可以直接回到这里继续支付。</view>
       <view class="order-detail__action-copy">2. 履约过程中可催单、看轨迹、查看沟通记录。</view>
-      <view class="order-detail__action-copy">3. 对结果不满意时，可从这里进入售后申请。</view>
+      <view class="order-detail__action-copy">{{ refundGuideText }}</view>
     </view>
 
     <view class="card order-detail__actions">
       <button v-if="canPay" class="primary-btn" :loading="payLoading" @tap="safeHandlePay">继续支付</button>
-      <button class="secondary-btn" @tap="goRefund">申请售后</button>
+      <button class="secondary-btn" @tap="goRefund">{{ refundActionText }}</button>
       <button v-if="order.type === 'service' && canUrge" class="secondary-btn" :loading="urgeLoading" @tap="safeHandleUrge">催单</button>
       <button v-if="order.type === 'service' && canCancel" class="secondary-btn" :loading="cancelLoading" @tap="safeHandleCancel">取消订单</button>
       <button v-if="order.type === 'product' && order.installServiceOrderId" class="secondary-btn" @tap="goInstallOrder">查看安装工单</button>
@@ -92,7 +92,7 @@ import { cancelOrder, confirmQuotation, getOrderDetail, requestWechatPrepay, urg
 import { safeAsync } from '../../utils/page-task';
 import { setPendingChatTarget } from '../../utils/message-center';
 import { buildWsUrl, getRequestErrorMessage } from '../../utils/request';
-import { isWechatPayCanceled, launchWechatPay } from '../../utils/wechat-pay';
+import { buildWechatPrepayRequest, isWechatPayCanceled, launchWechatPay } from '../../utils/wechat-pay';
 
 const orderId = ref('');
 const quoteLoading = ref(false);
@@ -116,6 +116,12 @@ const canPay = computed(() => {
 
 const canUrge = computed(() => Boolean(order.value.canUrge));
 const canCancel = computed(() => Boolean(order.value.canCancel));
+const refundActionText = computed(() => (order.value.afterSalesSummary?.refundRequestNo ? '查看售后' : '申请售后'));
+const refundGuideText = computed(() => (
+  order.value.afterSalesSummary?.refundRequestNo
+    ? '3. 当前订单已有售后记录，可直接查看处理进度或补充材料。'
+    : '3. 对结果不满意时，可从这里进入售后申请。'
+));
 
 const nextStepText = computed(() => {
   const status = order.value.status;
@@ -151,12 +157,17 @@ function goTracking() {
 }
 
 function goRefund() {
+  if (order.value.afterSalesSummary?.refundRequestNo) {
+    uni.navigateTo({ url: `/pages/order/after-sales?id=${order.value.id}` });
+    return;
+  }
   uni.navigateTo({ url: `/pages/order/refund?id=${order.value.id}` });
 }
 
 function goChat() {
   setPendingChatTarget({
     sessionId: order.value.messageSummary?.sessionId || 'MS-001',
+    sessionType: 'order',
     orderId: order.value.id || '',
     autoOpen: true,
   });
@@ -190,7 +201,8 @@ async function handlePay() {
   }
   payLoading.value = true;
   try {
-    const prepayRes = await requestWechatPrepay(order.value.id);
+    const prepayPayload = await buildWechatPrepayRequest(order.value.id);
+    const prepayRes = await requestWechatPrepay(prepayPayload);
     await launchWechatPay(prepayRes.data);
     uni.showToast({
       title: '支付结果确认中，请稍后刷新订单状态',

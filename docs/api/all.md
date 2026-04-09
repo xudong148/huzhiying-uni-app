@@ -12,7 +12,7 @@
 - 文档标题：`呼之应开放接口文档`
 - 版本：`v1`
 - 分组：`all`
-- 接口数量：`194`
+- 接口数量：`196`
 - OpenAPI 地址：`http://localhost:8080/v3/api-docs`
 
 ## 鉴权说明
@@ -119,6 +119,8 @@
 - [POST /api/admin/masters/{userId}/credit-score](#post-api-admin-masters-userid-credit-score)
 - [POST /api/admin/masters/{userId}/disable](#post-api-admin-masters-userid-disable)
 - [POST /api/admin/masters/{userId}/enable](#post-api-admin-masters-userid-enable)
+- [GET /api/admin/notifications](#get-api-admin-notifications)
+- [POST /api/admin/notifications/dispatch](#post-api-admin-notifications-dispatch)
 - [GET /api/admin/orders](#get-api-admin-orders)
 - [GET /api/admin/orders/{orderId}](#get-api-admin-orders-orderid)
 - [PUT /api/admin/orders/{orderId}/appointment](#put-api-admin-orders-orderid-appointment)
@@ -4791,6 +4793,86 @@
 | 参数名 | 位置 | 必填 | 类型 | 说明 |
 | --- | --- | --- | --- | --- |
 | `userId` | path | 是 | `integer` | - |
+
+### 请求体
+
+- 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## GET /api/admin/notifications
+
+- 摘要：查询通知任务列表
+- 标签：admin-dashboard
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `GET` |
+| 路径 | `/api/admin/notifications` |
+| OperationId | `notifications_1` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+- 当前接口没有显式参数。
+
+### 请求体
+
+- 当前接口没有请求体。
+
+### 响应说明
+
+#### 响应 `200`
+
+- 说明：OK
+
+- Content-Type: `*/*`
+
+#### 响应字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `success` | `boolean` | 否 | - |
+| `message` | `string` | 否 | - |
+| `data` | `object` | 否 | - |
+| `data` | `object` | 否 | - |
+
+## POST /api/admin/notifications/dispatch
+
+- 摘要：手动执行通知任务
+- 标签：admin-dashboard
+
+### 请求信息
+
+| 项目 | 值 |
+| --- | --- |
+| 请求方法 | `POST` |
+| 路径 | `/api/admin/notifications/dispatch` |
+| OperationId | `dispatchNotifications` |
+| 鉴权 | `bearerAuth` |
+
+### 路径 / 查询参数
+
+| 参数名 | 位置 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- | --- |
+| `limit` | query | 否 | `integer` | - |
 
 ### 请求体
 

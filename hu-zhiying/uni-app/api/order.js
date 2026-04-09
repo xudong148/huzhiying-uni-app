@@ -39,6 +39,19 @@ function normalizeQuotation(quotation) {
   };
 }
 
+function normalizeAfterSalesSummary(summary) {
+  if (!summary) {
+    return null;
+  }
+  return {
+    ...summary,
+    active: Boolean(summary.active),
+    refundRequestNo: summary.refundRequestNo || '',
+    status: summary.status || '',
+    statusText: summary.statusText || '售后处理中',
+  };
+}
+
 function normalizeServiceOrder(item) {
   return {
     ...item,
@@ -52,29 +65,48 @@ function normalizeServiceOrder(item) {
     timeline: normalizeTimeline(item.timeline),
     quotation: normalizeQuotation(item.quotation),
     mediaFiles: item.mediaFiles || [],
+    afterSalesSummary: normalizeAfterSalesSummary(item.afterSalesSummary),
     messageSummary: item.messageSummary || null,
   };
 }
 
 function normalizeProductOrder(item) {
-  const statusText = item.status === 'PENDING_SHIPMENT'
-    ? '仓库已打包，等待出库'
-    : item.status === 'PENDING_PAYMENT'
-      ? '等待完成支付确认'
-      : '商品订单处理中';
+  const statusText = item.statusText
+    || (item.status === 'PENDING_SHIPMENT'
+      ? '仓库已打包，等待出库'
+      : item.status === 'PENDING_PAYMENT'
+        ? '等待完成支付确认'
+        : item.status === 'REFUNDING'
+          ? '售后处理中'
+          : '商品订单处理中');
 
   return {
     ...item,
     type: 'product',
     statusText,
-    appointment: item.status === 'PENDING_SHIPMENT' ? '预计 1-2 天内送达' : '支付成功后开始备货',
+    appointment: item.appointment || (item.status === 'PENDING_SHIPMENT' ? '预计 1-2 天内送达' : '支付成功后开始备货'),
     address: item.address?.detail || item.address || '待补充地址',
     price: Number(item.amount || 0),
     tags: item.createInstallOrder ? ['商城订单', '自动生成安装工单'] : ['商城订单'],
-    timeline: [],
-    quotation: null,
-    mediaFiles: [],
-    messageSummary: null,
+    timeline: normalizeTimeline(item.timeline),
+    quotation: normalizeQuotation(item.quotation),
+    mediaFiles: item.mediaFiles || [],
+    afterSalesSummary: normalizeAfterSalesSummary(item.afterSalesSummary),
+    messageSummary: item.messageSummary || null,
+  };
+}
+
+function normalizeAfterSalesDetail(item) {
+  if (!item) {
+    return null;
+  }
+  return {
+    ...item,
+    orderType: item.orderType || 'service',
+    amount: Number(item.amount || 0),
+    timeline: normalizeTimeline(item.timeline),
+    evidenceFiles: item.evidenceFiles || [],
+    canAppendEvidence: Boolean(item.canAppendEvidence),
   };
 }
 
@@ -131,11 +163,14 @@ export function createProductOrder(payload) {
   });
 }
 
-export function requestWechatPrepay(orderId) {
+export function requestWechatPrepay(orderOrPayload) {
+  const data = typeof orderOrPayload === 'string'
+    ? { orderId: orderOrPayload }
+    : { ...(orderOrPayload || {}) };
   return request({
     url: '/api/payments/wechat/prepay',
     method: 'POST',
-    data: { orderId },
+    data,
   });
 }
 
@@ -171,6 +206,13 @@ export function refundOrder(orderId, payload = {}) {
       ...payload,
     },
   });
+}
+
+export async function getAfterSalesDetail(orderId) {
+  const response = await request({ url: `/api/orders/${orderId}/after-sales` });
+  return {
+    data: normalizeAfterSalesDetail(response.data),
+  };
 }
 
 export function cancelOrder(orderId, reason) {

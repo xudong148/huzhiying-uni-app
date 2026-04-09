@@ -1,7 +1,9 @@
 package com.huzhiying.server.repository;
 
+import com.huzhiying.domain.enums.DomainEnums.NotificationTaskStatus;
 import com.huzhiying.domain.enums.DomainEnums.RoleCode;
 import com.huzhiying.server.persistence.PersistenceEntities.AddressEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.AuditLogEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ArbitrationCaseEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.CommunityCommentEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.CommunityPostEntity;
@@ -22,6 +24,7 @@ import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionReadEn
 import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.NoticeEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.PaymentRecordEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.PermissionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductOrderEntity;
@@ -31,16 +34,20 @@ import com.huzhiying.server.persistence.PersistenceEntities.CommentEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.RoleEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.RoleMenuBindingEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.RolePermissionBindingEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.RefundRequestEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceCategoryEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceItemEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceOrderEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.SettlementBillEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.SkuEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.SmsCodeEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.UserEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.UserRoleBindingEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.WalletAccountEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.WalletLedgerEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.WalletTransactionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.WorkStepRecordEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.NotificationTaskEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -447,6 +454,202 @@ public class PlatformRepository {
         return entityManager.merge(entity);
     }
 
+    public List<PaymentRecordEntity> listPaymentRecordsByOrderId(String orderId) {
+        return entityManager.createQuery(
+                        "select p from PaymentRecordEntity p where p.orderId = :orderId order by p.createdAt asc, p.id asc",
+                        PaymentRecordEntity.class
+                )
+                .setParameter("orderId", orderId)
+                .getResultList();
+    }
+
+    public Optional<PaymentRecordEntity> findLatestPaymentRecordByOrderId(String orderId) {
+        TypedQuery<PaymentRecordEntity> query = entityManager.createQuery(
+                "select p from PaymentRecordEntity p where p.orderId = :orderId order by p.createdAt desc, p.id desc",
+                PaymentRecordEntity.class
+        );
+        query.setParameter("orderId", orderId);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public Optional<PaymentRecordEntity> findPaymentRecordByBizNo(String bizNo) {
+        TypedQuery<PaymentRecordEntity> query = entityManager.createQuery(
+                "select p from PaymentRecordEntity p where p.bizNo = :bizNo",
+                PaymentRecordEntity.class
+        );
+        query.setParameter("bizNo", bizNo);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public PaymentRecordEntity savePaymentRecord(PaymentRecordEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public List<RefundRequestEntity> listRefundRequests() {
+        return entityManager.createQuery(
+                        "select r from RefundRequestEntity r order by r.createdAt desc, r.id desc",
+                        RefundRequestEntity.class
+                )
+                .getResultList();
+    }
+
+    public List<RefundRequestEntity> listRefundRequestsByOrderId(String orderId) {
+        return entityManager.createQuery(
+                        "select r from RefundRequestEntity r where r.orderId = :orderId order by r.createdAt desc, r.id desc",
+                        RefundRequestEntity.class
+                )
+                .setParameter("orderId", orderId)
+                .getResultList();
+    }
+
+    public Optional<RefundRequestEntity> findLatestRefundRequestByOrderId(String orderId) {
+        TypedQuery<RefundRequestEntity> query = entityManager.createQuery(
+                "select r from RefundRequestEntity r where r.orderId = :orderId order by r.createdAt desc, r.id desc",
+                RefundRequestEntity.class
+        );
+        query.setParameter("orderId", orderId);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public Optional<RefundRequestEntity> findRefundRequest(Long id) {
+        return Optional.ofNullable(entityManager.find(RefundRequestEntity.class, id));
+    }
+
+    public Optional<RefundRequestEntity> findRefundRequestByBizNo(String bizNo) {
+        TypedQuery<RefundRequestEntity> query = entityManager.createQuery(
+                "select r from RefundRequestEntity r where r.bizNo = :bizNo",
+                RefundRequestEntity.class
+        );
+        query.setParameter("bizNo", bizNo);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public RefundRequestEntity saveRefundRequest(RefundRequestEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public List<SettlementBillEntity> listSettlementBills() {
+        return entityManager.createQuery(
+                        "select s from SettlementBillEntity s order by s.createdAt desc, s.id desc",
+                        SettlementBillEntity.class
+                )
+                .getResultList();
+    }
+
+    public Optional<SettlementBillEntity> findSettlementBill(Long id) {
+        return Optional.ofNullable(entityManager.find(SettlementBillEntity.class, id));
+    }
+
+    public Optional<SettlementBillEntity> findSettlementBillByOrderId(String orderId) {
+        TypedQuery<SettlementBillEntity> query = entityManager.createQuery(
+                "select s from SettlementBillEntity s where s.orderId = :orderId order by s.createdAt desc, s.id desc",
+                SettlementBillEntity.class
+        );
+        query.setParameter("orderId", orderId);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public SettlementBillEntity saveSettlementBill(SettlementBillEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public List<WalletLedgerEntity> listWalletLedgers(Long walletAccountId) {
+        return entityManager.createQuery(
+                        "select w from WalletLedgerEntity w where w.walletAccountId = :walletAccountId order by w.createdAt desc, w.id desc",
+                        WalletLedgerEntity.class
+                )
+                .setParameter("walletAccountId", walletAccountId)
+                .getResultList();
+    }
+
+    public Optional<WalletLedgerEntity> findWalletLedgerBySettlementBillId(Long settlementBillId) {
+        TypedQuery<WalletLedgerEntity> query = entityManager.createQuery(
+                "select w from WalletLedgerEntity w where w.settlementBillId = :settlementBillId order by w.createdAt desc, w.id desc",
+                WalletLedgerEntity.class
+        );
+        query.setParameter("settlementBillId", settlementBillId);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public Optional<WalletLedgerEntity> findWalletLedgerByRefundRequestId(Long refundRequestId) {
+        TypedQuery<WalletLedgerEntity> query = entityManager.createQuery(
+                "select w from WalletLedgerEntity w where w.refundRequestId = :refundRequestId order by w.createdAt desc, w.id desc",
+                WalletLedgerEntity.class
+        );
+        query.setParameter("refundRequestId", refundRequestId);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
+    }
+
+    public WalletLedgerEntity saveWalletLedger(WalletLedgerEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public List<AuditLogEntity> listAuditLogsByBiz(String bizType, String bizId) {
+        return entityManager.createQuery(
+                        "select a from AuditLogEntity a where a.bizType = :bizType and a.bizId = :bizId order by a.createdAt asc, a.id asc",
+                        AuditLogEntity.class
+                )
+                .setParameter("bizType", bizType)
+                .setParameter("bizId", bizId)
+                .getResultList();
+    }
+
+    public AuditLogEntity saveAuditLog(AuditLogEntity entity) {
+        return entityManager.merge(entity);
+    }
+
+    public List<NotificationTaskEntity> listNotificationTasksByBiz(String bizType, String bizId) {
+        return entityManager.createQuery(
+                        "select n from NotificationTaskEntity n where n.bizType = :bizType and n.bizId = :bizId order by n.createdAt asc, n.id asc",
+                        NotificationTaskEntity.class
+                )
+                .setParameter("bizType", bizType)
+                .setParameter("bizId", bizId)
+                .getResultList();
+    }
+
+    public List<NotificationTaskEntity> listNotificationTasks() {
+        return entityManager.createQuery(
+                        "select n from NotificationTaskEntity n order by n.createdAt desc, n.id desc",
+                        NotificationTaskEntity.class
+                )
+                .getResultList();
+    }
+
+    public List<NotificationTaskEntity> listPendingNotificationTasks(int limit) {
+        TypedQuery<NotificationTaskEntity> query = entityManager.createQuery(
+                "select n from NotificationTaskEntity n where n.status in :statuses and (n.nextRetryAt is null or n.nextRetryAt <= CURRENT_TIMESTAMP) order by n.createdAt asc, n.id asc",
+                NotificationTaskEntity.class
+        );
+        query.setParameter("statuses", List.of(NotificationTaskStatus.PENDING, NotificationTaskStatus.FAILED));
+        query.setMaxResults(Math.max(limit, 1));
+        return query.getResultList();
+    }
+
+    public List<NotificationTaskEntity> listPendingNotificationTasksForTarget(String targetRole, Long targetUserId, int limit) {
+        TypedQuery<NotificationTaskEntity> query = entityManager.createQuery(
+                "select n from NotificationTaskEntity n where n.status in :statuses and n.channel = :channel and n.targetRole = :targetRole and n.targetUserId = :targetUserId and (n.nextRetryAt is null or n.nextRetryAt <= CURRENT_TIMESTAMP) order by n.createdAt asc, n.id asc",
+                NotificationTaskEntity.class
+        );
+        query.setParameter("statuses", List.of(NotificationTaskStatus.PENDING, NotificationTaskStatus.FAILED));
+        query.setParameter("channel", "PLATFORM");
+        query.setParameter("targetRole", targetRole);
+        query.setParameter("targetUserId", targetUserId);
+        query.setMaxResults(Math.max(limit, 1));
+        return query.getResultList();
+    }
+
+    public NotificationTaskEntity saveNotificationTask(NotificationTaskEntity entity) {
+        return entityManager.merge(entity);
+    }
+
     public List<MessageSessionEntity> listMessageSessions() {
         return entityManager.createQuery("select m from MessageSessionEntity m order by m.id asc", MessageSessionEntity.class)
                 .getResultList();
@@ -454,6 +657,10 @@ public class PlatformRepository {
 
     public Optional<MessageSessionEntity> findMessageSession(String id) {
         return Optional.ofNullable(entityManager.find(MessageSessionEntity.class, id));
+    }
+
+    public MessageSessionEntity saveMessageSession(MessageSessionEntity entity) {
+        return entityManager.merge(entity);
     }
 
     public List<MessageItemEntity> listMessageItems(String sessionId) {

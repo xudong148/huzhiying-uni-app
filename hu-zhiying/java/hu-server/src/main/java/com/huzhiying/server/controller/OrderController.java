@@ -63,6 +63,12 @@ public class OrderController {
         return ApiResponse.success(platformFacadeService.orderTracking(id));
     }
 
+    @GetMapping("/api/orders/{id}/after-sales")
+    @Operation(summary = "查询售后详情")
+    public ApiResponse<?> afterSales(@PathVariable("id") String id) {
+        return ApiResponse.success(platformFacadeService.afterSalesDetail(id));
+    }
+
     @PostMapping("/api/orders/{id}/cancel")
     @Operation(summary = "取消订单")
     public ApiResponse<?> cancel(@PathVariable("id") String id, @RequestBody SupportDtos.CancelOrderRequest request) {

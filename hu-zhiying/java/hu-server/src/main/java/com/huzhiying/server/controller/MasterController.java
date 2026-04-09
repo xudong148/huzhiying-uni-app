@@ -91,7 +91,7 @@ public class MasterController {
     @GetMapping("/api/notifications")
     @Operation(summary = "查询通知中心")
     public ApiResponse<?> notifications() {
-        return ApiResponse.success(platformFacadeService.notices());
+        return ApiResponse.success(platformFacadeService.notifications());
     }
 
     @PostMapping("/api/master/orders/{id}/check-in")

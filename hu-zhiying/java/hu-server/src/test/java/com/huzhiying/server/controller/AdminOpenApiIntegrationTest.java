@@ -44,7 +44,9 @@ class AdminOpenApiIntegrationTest extends AdminControllerIntegrationSupport {
                 .andExpect(jsonPath("$.paths['/api/admin/orders/{orderId}']").exists())
                 .andExpect(jsonPath("$.paths['/api/admin/masters/{userId}']").exists())
                 .andExpect(jsonPath("$.paths['/api/admin/orders/{orderId}/grant-coupon']").exists())
-                .andExpect(jsonPath("$.paths['/api/admin/orders/{orderId}/appointment']").exists());
+                .andExpect(jsonPath("$.paths['/api/admin/orders/{orderId}/appointment']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/notifications']").exists())
+                .andExpect(jsonPath("$.paths['/api/admin/notifications/dispatch']").exists());
     }
 
     @Test

@@ -50,4 +50,42 @@ public interface DomainEnums {
         ROB,
         FORCE_ASSIGN
     }
+
+    enum PaymentRecordStatus {
+        PENDING,
+        SUCCESS,
+        FAILED,
+        REFUNDING,
+        REFUNDED
+    }
+
+    enum RefundRequestStatus {
+        PENDING_REVIEW,
+        APPROVED,
+        REJECTED,
+        COMPLETED
+    }
+
+    enum SettlementBillStatus {
+        PENDING_REVIEW,
+        APPROVED,
+        REVERSED
+    }
+
+    enum WalletLedgerStatus {
+        PENDING_REVIEW,
+        POSTED,
+        REVERSED
+    }
+
+    enum WalletLedgerDirection {
+        IN,
+        OUT
+    }
+
+    enum NotificationTaskStatus {
+        PENDING,
+        SENT,
+        FAILED
+    }
 }

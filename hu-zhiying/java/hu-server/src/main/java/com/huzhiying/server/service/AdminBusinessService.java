@@ -2,6 +2,8 @@ package com.huzhiying.server.service;
 
 import com.huzhiying.domain.enums.DomainEnums.PaymentStatus;
 import com.huzhiying.domain.enums.DomainEnums.ProductOrderStatus;
+import com.huzhiying.domain.enums.DomainEnums.RefundRequestStatus;
+import com.huzhiying.domain.enums.DomainEnums.SettlementBillStatus;
 import com.huzhiying.domain.enums.DomainEnums.ServiceOrderStatus;
 import com.huzhiying.server.dto.AdminBusinessDtos;
 import com.huzhiying.server.persistence.PersistenceEntities.AddressEntity;
@@ -15,12 +17,15 @@ import com.huzhiying.server.persistence.PersistenceEntities.MessageSessionEntity
 import com.huzhiying.server.persistence.PersistenceEntities.OrderTrackPointEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ProductOrderEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.QuotationEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.RefundRequestEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.ServiceOrderEntity;
+import com.huzhiying.server.persistence.PersistenceEntities.SettlementBillEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.UserEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.WalletAccountEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.WalletTransactionEntity;
 import com.huzhiying.server.persistence.PersistenceEntities.WorkStepRecordEntity;
 import com.huzhiying.server.repository.PlatformRepository;
+import com.huzhiying.server.service.payment.WechatPaymentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,15 +45,18 @@ public class AdminBusinessService {
     private final PlatformAssembler assembler;
     private final PlatformDomainSupport domainSupport;
     private final PlatformCommandService commandService;
+    private final WechatPaymentService wechatPaymentService;
 
     public AdminBusinessService(PlatformRepository platformRepository,
                                 PlatformAssembler assembler,
                                 PlatformDomainSupport domainSupport,
-                                PlatformCommandService commandService) {
+                                PlatformCommandService commandService,
+                                WechatPaymentService wechatPaymentService) {
         this.platformRepository = platformRepository;
         this.assembler = assembler;
         this.domainSupport = domainSupport;
         this.commandService = commandService;
+        this.wechatPaymentService = wechatPaymentService;
     }
 
     public AdminBusinessDtos.DispatchDetail dispatchDetail(String taskId) {
@@ -106,7 +114,7 @@ public class AdminBusinessService {
 
     @Transactional
     public AdminBusinessDtos.OrderDetail refundOrder(String orderId, AdminBusinessDtos.ReasonRequest request) {
-        commandService.refundOrder(orderId);
+        commandService.refundOrder(orderId, request == null ? null : request.reason());
         return orderDetail(orderId);
     }
 
@@ -217,6 +225,20 @@ public class AdminBusinessService {
 
     public AdminBusinessDtos.FinanceDetail financeDetail(String billNo) {
         if (billNo.startsWith("SETTLE-")) {
+            Long settlementId = Long.parseLong(billNo.substring("SETTLE-".length()));
+            SettlementBillEntity bill = platformRepository.findSettlementBill(settlementId).orElse(null);
+            if (bill != null) {
+                return toSettlementFinanceDetail(bill);
+            }
+        } else if (billNo.startsWith("REFUND-")) {
+            String orderId = billNo.substring("REFUND-".length());
+            RefundRequestEntity refundRequest = platformRepository.findLatestRefundRequestByOrderId(orderId).orElse(null);
+            if (refundRequest != null) {
+                return toRefundFinanceDetail(refundRequest);
+            }
+        }
+
+        if (billNo.startsWith("SETTLE-")) {
             Long transactionId = Long.parseLong(billNo.substring("SETTLE-".length()));
             WalletTransactionEntity transaction = platformRepository.findWalletTransaction(transactionId).orElseThrow();
             WalletAccountEntity account = platformRepository.findWalletAccount(transaction.walletAccountId).orElseThrow();
@@ -266,6 +288,22 @@ public class AdminBusinessService {
 
     @Transactional
     public AdminBusinessDtos.FinanceDetail approveFinance(String billNo, AdminBusinessDtos.FinanceApproveRequest request) {
+        if (billNo.startsWith("SETTLE-")) {
+            Long settlementId = Long.parseLong(billNo.substring("SETTLE-".length()));
+            SettlementBillEntity bill = platformRepository.findSettlementBill(settlementId).orElse(null);
+            if (bill != null) {
+                domainSupport.approveSettlement(bill, 90001L, request == null ? null : request.remark());
+                return financeDetail(billNo);
+            }
+        } else if (billNo.startsWith("REFUND-")) {
+            String orderId = billNo.substring("REFUND-".length());
+            RefundRequestEntity refundRequest = platformRepository.findLatestRefundRequestByOrderId(orderId).orElse(null);
+            if (refundRequest != null && refundRequest.status != RefundRequestStatus.COMPLETED) {
+                wechatPaymentService.approveRefund(refundRequest, 90001L, request == null ? null : request.remark());
+                return financeDetail(billNo);
+            }
+        }
+
         if (billNo.startsWith("SETTLE-")) {
             Long transactionId = Long.parseLong(billNo.substring("SETTLE-".length()));
             WalletTransactionEntity transaction = platformRepository.findWalletTransaction(transactionId).orElseThrow();
@@ -525,6 +563,62 @@ public class AdminBusinessService {
         }
         int blankIndex = title.indexOf(' ');
         return blankIndex > 0 ? title.substring(0, blankIndex) : "";
+    }
+
+    private AdminBusinessDtos.FinanceDetail toSettlementFinanceDetail(SettlementBillEntity bill) {
+        UserEntity master = bill.masterId == null ? null : platformRepository.findUser(bill.masterId).orElse(null);
+        String title = bill.remarkText == null || bill.remarkText.isBlank() ? bill.orderId : bill.remarkText;
+        return new AdminBusinessDtos.FinanceDetail(
+                "SETTLE-" + bill.id,
+                "甯堝倕缁撶畻",
+                settlementStatusLabel(bill.status),
+                bill.amount,
+                bill.orderId == null || bill.orderId.isBlank() ? extractOrderId(title) : bill.orderId,
+                title,
+                master == null ? "" : master.nickname,
+                bill.updatedAt == null ? "" : bill.updatedAt.toString(),
+                bill.bizNo == null ? "" : bill.bizNo
+        );
+    }
+
+    private AdminBusinessDtos.FinanceDetail toRefundFinanceDetail(RefundRequestEntity refundRequest) {
+        String title = platformRepository.findServiceOrder(refundRequest.orderId).map(order -> order.title)
+                .orElseGet(() -> platformRepository.findProductOrder(refundRequest.orderId).map(order -> order.title).orElse(refundRequest.orderId));
+        String type = "SERVICE".equalsIgnoreCase(refundRequest.orderType) ? "鏈嶅姟閫€娆?" : "鍟嗗搧閫€娆?";
+        return new AdminBusinessDtos.FinanceDetail(
+                "REFUND-" + refundRequest.orderId,
+                type,
+                refundStatusLabel(refundRequest.status),
+                refundRequest.amount,
+                refundRequest.orderId,
+                title,
+                "",
+                refundRequest.updatedAt == null ? "" : refundRequest.updatedAt.toString(),
+                refundRequest.bizNo == null ? "" : refundRequest.bizNo
+        );
+    }
+
+    private String settlementStatusLabel(SettlementBillStatus status) {
+        if (status == null) {
+            return "待结算";
+        }
+        return switch (status) {
+            case PENDING_REVIEW -> "待结算";
+            case APPROVED -> "已结算";
+            case REVERSED -> "已冲减";
+        };
+    }
+
+    private String refundStatusLabel(RefundRequestStatus status) {
+        if (status == null) {
+            return "处理中";
+        }
+        return switch (status) {
+            case PENDING_REVIEW -> "待审核";
+            case APPROVED -> "待退款";
+            case REJECTED -> "已拒绝";
+            case COMPLETED -> "已退款";
+        };
     }
 
     private String productStatusLabel(ProductOrderStatus status) {

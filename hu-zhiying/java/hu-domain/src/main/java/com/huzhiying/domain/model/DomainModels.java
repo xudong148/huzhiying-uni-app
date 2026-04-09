@@ -1,11 +1,17 @@
 package com.huzhiying.domain.model;
 
 import com.huzhiying.domain.enums.DomainEnums.DispatchMode;
+import com.huzhiying.domain.enums.DomainEnums.NotificationTaskStatus;
 import com.huzhiying.domain.enums.DomainEnums.PaymentStatus;
+import com.huzhiying.domain.enums.DomainEnums.PaymentRecordStatus;
 import com.huzhiying.domain.enums.DomainEnums.ProductOrderStatus;
 import com.huzhiying.domain.enums.DomainEnums.QuotationStatus;
+import com.huzhiying.domain.enums.DomainEnums.RefundRequestStatus;
 import com.huzhiying.domain.enums.DomainEnums.RoleCode;
+import com.huzhiying.domain.enums.DomainEnums.SettlementBillStatus;
 import com.huzhiying.domain.enums.DomainEnums.ServiceOrderStatus;
+import com.huzhiying.domain.enums.DomainEnums.WalletLedgerDirection;
+import com.huzhiying.domain.enums.DomainEnums.WalletLedgerStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -61,6 +67,34 @@ public interface DomainModels {
     record WalletAccount(BigDecimal available, BigDecimal frozen, BigDecimal todayIncome) {}
 
     record WalletTransaction(Long id, String title, BigDecimal amount, String time) {}
+
+    record PaymentRecord(Long id, String bizNo, String orderId, String orderType, PaymentRecordStatus status,
+                         String channel, BigDecimal amount, Long userId, Long masterId, Long operatorId,
+                         String traceId, String externalTransactionNo, String paymentStage,
+                         LocalDateTime createdAt, LocalDateTime updatedAt) {}
+
+    record RefundRequest(Long id, String bizNo, String orderId, String orderType, RefundRequestStatus status,
+                         String channel, BigDecimal amount, Long userId, Long masterId, Long operatorId,
+                         String traceId, String reason, LocalDateTime createdAt, LocalDateTime updatedAt) {}
+
+    record SettlementBill(Long id, String bizNo, String orderId, String orderType, SettlementBillStatus status,
+                          String channel, BigDecimal amount, Long userId, Long masterId, Long operatorId,
+                          String traceId, Long walletAccountId, LocalDateTime createdAt, LocalDateTime updatedAt,
+                          LocalDateTime approvedAt, LocalDateTime settledAt) {}
+
+    record WalletLedger(Long id, String bizNo, Long walletAccountId, Long settlementBillId, Long refundRequestId,
+                        String orderId, String orderType, WalletLedgerStatus status, WalletLedgerDirection direction,
+                        String channel, BigDecimal amount, Long userId, Long masterId, Long operatorId,
+                        String traceId, String title, LocalDateTime createdAt, LocalDateTime updatedAt) {}
+
+    record AuditLog(Long id, String bizNo, String bizType, String bizId, String action, String status,
+                    String operatorRole, Long operatorId, Long userId, Long masterId, String traceId,
+                    String detail, LocalDateTime createdAt) {}
+
+    record NotificationTask(Long id, String bizNo, String bizType, String bizId, String targetRole,
+                            Long targetUserId, String channel, String templateCode, NotificationTaskStatus status,
+                            String payload, String traceId, LocalDateTime createdAt, LocalDateTime updatedAt,
+                            LocalDateTime sentAt) {}
 
     record ArbitrationCase(String id, String orderId, String reason, String status) {}
 

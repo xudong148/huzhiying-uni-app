@@ -93,6 +93,10 @@ public final class SupportDtos {
     public record OrderTrackingPayload(
             @Schema(description = "订单号", example = "SO20260408001")
             String orderId,
+            @Schema(description = "支付渠道", example = "JSAPI")
+            String channel,
+            @Schema(description = "平台支付流水号", example = "PAY-1712553600000")
+            String outTradeNo,
             @Schema(description = "状态文案", example = "师傅已到场")
             String statusText,
             @Schema(description = "预约时间", example = "今天 14:00-16:00")
@@ -153,6 +157,8 @@ public final class SupportDtos {
     public record MessageSessionPayload(
             @Schema(description = "会话 ID", example = "MS-001")
             String sessionId,
+            @Schema(description = "会话类型", example = "order")
+            String sessionType,
             @Schema(description = "关联订单号", example = "SO20260407009")
             String orderId,
             @Schema(description = "会话标题", example = "智能锁安装沟通")
@@ -178,6 +184,54 @@ public final class SupportDtos {
             Long lastReadMessageId,
             @Schema(description = "当前未读消息数量", example = "0")
             int unreadCount
+    ) {
+    }
+
+    @Schema(name = "AfterSalesSummaryPayload", description = "订单详情中的售后摘要")
+    public record AfterSalesSummaryPayload(
+            @Schema(description = "是否存在处理中售后", example = "true")
+            boolean active,
+            @Schema(description = "退款申请号", example = "RFD-1712553600000")
+            String refundRequestNo,
+            @Schema(description = "售后状态", example = "PENDING_REVIEW")
+            String status,
+            @Schema(description = "售后状态文案", example = "等待平台审核")
+            String statusText
+    ) {
+    }
+
+    @Schema(name = "AfterSalesPayload", description = "售后详情聚合结构")
+    public record AfterSalesPayload(
+            @Schema(description = "退款申请号", example = "RFD-1712553600000")
+            String refundRequestNo,
+            @Schema(description = "订单号", example = "SO20260408001")
+            String orderId,
+            @Schema(description = "订单类型", example = "service")
+            String orderType,
+            @Schema(description = "售后状态", example = "PENDING_REVIEW")
+            String status,
+            @Schema(description = "售后状态文案", example = "等待平台审核")
+            String statusText,
+            @Schema(description = "申请原因", example = "服务未达标：现场没有完成约定项目")
+            String reason,
+            @Schema(description = "申请来源", example = "uni-app-refund-page")
+            String channel,
+            @Schema(description = "售后金额", example = "88.00")
+            BigDecimal amount,
+            @Schema(description = "申请时间", example = "2026-04-09T10:20:00")
+            LocalDateTime requestedAt,
+            @Schema(description = "审核通过时间", example = "2026-04-09T10:40:00")
+            LocalDateTime approvedAt,
+            @Schema(description = "退款完成时间", example = "2026-04-09T11:05:00")
+            LocalDateTime completedAt,
+            @Schema(description = "审核备注", example = "平台已核对轨迹与沟通记录，退款申请通过。")
+            String reviewRemark,
+            @ArraySchema(schema = @Schema(implementation = MediaFilePayload.class))
+            List<MediaFilePayload> evidenceFiles,
+            @ArraySchema(schema = @Schema(implementation = TimelineItemPayload.class))
+            List<TimelineItemPayload> timeline,
+            @Schema(description = "是否允许继续补充材料", example = "true")
+            boolean canAppendEvidence
     ) {
     }
 
@@ -225,6 +279,8 @@ public final class SupportDtos {
             List<MediaFilePayload> mediaFiles,
             @Schema(implementation = QuotationPayload.class)
             QuotationPayload quotation,
+            @Schema(implementation = AfterSalesSummaryPayload.class)
+            AfterSalesSummaryPayload afterSalesSummary,
             @Schema(implementation = MessageSummaryPayload.class)
             MessageSummaryPayload messageSummary
     ) {
@@ -234,8 +290,16 @@ public final class SupportDtos {
     public record WechatPrepayPayload(
             @Schema(description = "订单号", example = "SO20260408001")
             String orderId,
+            @Schema(description = "支付渠道", example = "JSAPI")
+            String channel,
+            @Schema(description = "平台支付流水号", example = "PAY-1712553600000")
+            String outTradeNo,
             @Schema(description = "微信应用 ID", example = "wx1234567890abcdef")
             String appId,
+            @Schema(description = "商户号", example = "1900000109")
+            String partnerId,
+            @Schema(description = "预支付 ID", example = "wx201410272009395522657a690389285100")
+            String prepayId,
             @Schema(description = "时间戳", example = "1712553600")
             String timeStamp,
             @Schema(description = "随机串", example = "f10c946ca14c4706abf414c0f8f10a1c")

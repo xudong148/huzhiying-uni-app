@@ -13,6 +13,8 @@ spring:
       port: 6379
 
 hzy:
+  wechat:
+    pay-enabled: false
   redis:
     enabled: false
 

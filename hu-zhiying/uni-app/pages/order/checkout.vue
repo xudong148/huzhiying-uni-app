@@ -122,7 +122,7 @@ import { createServiceOrder, getTimeSlots, requestWechatPrepay } from '../../api
 import { getAddressList } from '../../api/user';
 import { safeAsync } from '../../utils/page-task';
 import { getRequestErrorMessage } from '../../utils/request';
-import { isWechatPayCanceled, launchWechatPay } from '../../utils/wechat-pay';
+import { buildWechatPrepayRequest, isWechatPayCanceled, launchWechatPay } from '../../utils/wechat-pay';
 
 const serviceItemId = ref(201);
 const serviceTitle = ref('空调上门维修');
@@ -310,7 +310,8 @@ async function submitOrder() {
 
     const orderId = createRes.data.id;
     try {
-      const prepayRes = await requestWechatPrepay(orderId);
+      const prepayPayload = await buildWechatPrepayRequest(orderId);
+      const prepayRes = await requestWechatPrepay(prepayPayload);
       payEnabled.value = Boolean(prepayRes.data?.payEnabled);
       await launchWechatPay(prepayRes.data);
       uni.showToast({

@@ -207,6 +207,18 @@ export async function fetchAdminFinance() {
   }));
 }
 
+export async function fetchAdminNotifications() {
+  const data = (await rawRequest({ url: '/api/admin/notifications' })).data;
+  return Array.isArray(data?.items) ? data.items : [];
+}
+
+export async function dispatchAdminNotifications(limit = 20) {
+  return (await rawRequest({
+    url: `/api/admin/notifications/dispatch?limit=${limit}`,
+    method: 'POST',
+  })).data;
+}
+
 export async function fetchAdminArbitrations() {
   return (await rawRequest({ url: '/api/admin/arbitrations' })).data;
 }

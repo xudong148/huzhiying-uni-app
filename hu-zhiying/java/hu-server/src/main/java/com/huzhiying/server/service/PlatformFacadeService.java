@@ -1,16 +1,26 @@
 package com.huzhiying.server.service;
 
 import com.huzhiying.domain.enums.DomainEnums.ServiceOrderStatus;
+import com.huzhiying.server.dto.AdminOverviewDtos;
+import com.huzhiying.server.service.payment.WechatPaymentGateway;
+import com.huzhiying.server.service.payment.WechatPaymentService;
 
 @org.springframework.stereotype.Service
 public class PlatformFacadeService {
 
     private final PlatformQueryService queryService;
     private final PlatformCommandService commandService;
+    private final NotificationDispatchService notificationDispatchService;
+    private final WechatPaymentService wechatPaymentService;
 
-    public PlatformFacadeService(PlatformQueryService queryService, PlatformCommandService commandService) {
+    public PlatformFacadeService(PlatformQueryService queryService,
+                                 PlatformCommandService commandService,
+                                 NotificationDispatchService notificationDispatchService,
+                                 WechatPaymentService wechatPaymentService) {
         this.queryService = queryService;
         this.commandService = commandService;
+        this.notificationDispatchService = notificationDispatchService;
+        this.wechatPaymentService = wechatPaymentService;
     }
 
     public Object login(String role) { return commandService.login(role); }
@@ -34,6 +44,7 @@ public class PlatformFacadeService {
     public Object serviceOrders() { return queryService.serviceOrders(); }
     public Object serviceOrder(String id) { return queryService.serviceOrderDetail(id); }
     public Object orderTracking(String id) { return queryService.orderTracking(id); }
+    public Object afterSalesDetail(String id) { return queryService.afterSalesDetail(id); }
     public Object serviceComments(Long serviceItemId) { return queryService.serviceComments(serviceItemId); }
     public Object createServiceOrder(Long serviceItemId, String title, String appointment, Long addressId, String description, boolean emergency, boolean nightService, java.util.List<Long> evidenceFileIds) {
         return commandService.createServiceOrder(serviceItemId, title, appointment, addressId, description, emergency, nightService, evidenceFileIds);
@@ -69,6 +80,7 @@ public class PlatformFacadeService {
     public Object messageItems(String sessionId) { return queryService.messageItems(sessionId); }
     public Object markMessageSessionRead(String sessionId) { return commandService.markMessageSessionRead(sessionId); }
     public Object sendMessage(String sessionId, String senderCode, String messageType, String content) { return commandService.sendMessage(sessionId, senderCode, messageType, content); }
+    public Object notifications() { return queryService.notifications(); }
     public Object notices() { return queryService.notices(); }
     public Object adminDashboard() { return queryService.adminDashboard(); }
     public Object masters() { return queryService.masters(); }
@@ -76,8 +88,21 @@ public class PlatformFacadeService {
     public Object pricingRules() { return queryService.pricingRules(); }
     public Object adminDispatchRows() { return queryService.adminDispatchRows(); }
     public Object adminOrders() { return queryService.adminOrders(); }
-    public Object financeRows() { return queryService.financeRows(); }
-    public Object createWechatPrepay(String orderId) { return queryService.createWechatPrepay(orderId); }
-    public Object refundOrder(String orderId) { return commandService.refundOrder(orderId); }
+    public Object financeRows() { return queryService.adminFinanceRows(); }
+    public Object notificationTasks() { return new AdminOverviewDtos.NotificationTaskList(queryService.notificationTasks()); }
+    public Object dispatchNotificationTasks(int limit) { return notificationDispatchService.dispatchPendingTasks(limit); }
+    public Object createWechatPrepay(String orderId, String channel, String payerOpenId, String authCode, String clientIp) {
+        return wechatPaymentService.createPrepay(orderId, channel, payerOpenId, authCode, clientIp);
+    }
+    public Object refundOrder(String orderId, String reason) { return commandService.refundOrder(orderId, reason); }
+    public Object refundOrder(String orderId, String reason, String remark, String source, java.util.List<Long> evidenceFileIds) {
+        return commandService.refundOrder(orderId, reason, remark, source, evidenceFileIds);
+    }
     public Object handleWechatCallback(String orderId) { return commandService.handleWechatCallback(orderId); }
+    public void handleWechatTransactionNotification(WechatPaymentGateway.NotificationRequest request) {
+        wechatPaymentService.handleTransactionNotification(request);
+    }
+    public void handleWechatRefundNotification(WechatPaymentGateway.NotificationRequest request) {
+        wechatPaymentService.handleRefundNotification(request);
+    }
 }

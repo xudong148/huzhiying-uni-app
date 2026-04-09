@@ -5,10 +5,12 @@ import com.huzhiying.server.service.PlatformFacadeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name = "admin-dashboard", description = "后台仪表盘与业务列表接口")
+@Tag(name = "admin-dashboard", description = "后台仪表盘与总览列表接口")
 public class AdminController {
 
     private final PlatformFacadeService platformFacadeService;
@@ -57,5 +59,17 @@ public class AdminController {
     @Operation(summary = "查询财务结算列表")
     public ApiResponse<?> finance() {
         return ApiResponse.success(platformFacadeService.financeRows());
+    }
+
+    @GetMapping("/api/admin/notifications")
+    @Operation(summary = "查询通知任务列表")
+    public ApiResponse<?> notifications() {
+        return ApiResponse.success(platformFacadeService.notificationTasks());
+    }
+
+    @PostMapping("/api/admin/notifications/dispatch")
+    @Operation(summary = "手动执行通知任务")
+    public ApiResponse<?> dispatchNotifications(@RequestParam(value = "limit", defaultValue = "20") int limit) {
+        return ApiResponse.success(platformFacadeService.dispatchNotificationTasks(limit));
     }
 }
